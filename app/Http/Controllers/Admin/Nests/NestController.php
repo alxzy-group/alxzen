@@ -3,6 +3,7 @@
 namespace Pterodactyl\Http\Controllers\Admin\Nests;
 
 use Illuminate\View\View;
+use Illuminate\Http\Request; // Tambahkan ini
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
 use Illuminate\View\Factory as ViewFactory;
@@ -12,6 +13,7 @@ use Pterodactyl\Services\Nests\NestCreationService;
 use Pterodactyl\Services\Nests\NestDeletionService;
 use Pterodactyl\Contracts\Repository\NestRepositoryInterface;
 use Pterodactyl\Http\Requests\Admin\Nest\StoreNestFormRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class NestController extends Controller
 {
@@ -29,9 +31,17 @@ class NestController extends Controller
     }
 
     /**
+     * Helper untuk validasi akses ID 1
+     */
+    protected function validateOwner(Request $request)
+    {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Manajemen Nest hanya untuk Super Admin (ID 1).');
+        }
+    }
+
+    /**
      * Render nest listing page.
-     *
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function index(): View
     {
@@ -43,18 +53,20 @@ class NestController extends Controller
     /**
      * Render nest creation page.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        $this->validateOwner($request);
+
         return view('admin.nests.new');
     }
 
     /**
      * Handle the storage of a new nest.
-     *
-     * @throws \Pterodactyl\Exceptions\Model\DataValidationException
      */
     public function store(StoreNestFormRequest $request): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $nest = $this->nestCreationService->handle($request->normalize());
         $this->alert->success(trans('admin/nests.notices.created', ['name' => htmlspecialchars($nest->name)]))->flash();
 
@@ -63,8 +75,6 @@ class NestController extends Controller
 
     /**
      * Return details about a nest including all the eggs and servers per egg.
-     *
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function view(int $nest): View
     {
@@ -75,12 +85,11 @@ class NestController extends Controller
 
     /**
      * Handle request to update a nest.
-     *
-     * @throws \Pterodactyl\Exceptions\Model\DataValidationException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function update(StoreNestFormRequest $request, int $nest): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $this->nestUpdateService->handle($nest, $request->normalize());
         $this->alert->success(trans('admin/nests.notices.updated'))->flash();
 
@@ -89,11 +98,11 @@ class NestController extends Controller
 
     /**
      * Handle request to delete a nest.
-     *
-     * @throws \Pterodactyl\Exceptions\Service\HasActiveServersException
      */
-    public function destroy(int $nest): RedirectResponse
+    public function destroy(Request $request, int $nest): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $this->nestDeletionService->handle($nest);
         $this->alert->success(trans('admin/nests.notices.deleted'))->flash();
 

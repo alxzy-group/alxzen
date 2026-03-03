@@ -10,16 +10,20 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up()
-{
-    Schema::table('servers', function (Blueprint $table) {
-        $table->timestamp('expires_at')->nullable()->after('status');
-    });
-}
+    {
+        Schema::table('servers', function (Blueprint $table) {
+            // Menggunakan after('uuid') karena kolom uuid pasti ada di Pterodactyl
+            $table->timestamp('expires_at')->nullable()->after('uuid');
+        });
+    }
 
-public function down()
-{
-    Schema::table('servers', function (Blueprint $table) {
-        $table->dropColumn('expires_at');
-    });
-}
+    /**
+     * Reverse the migrations.
+     */
+    public function down()
+    {
+        Schema::table('servers', function (Blueprint $table) {
+            $table->dropColumn('expires_at');
+        });
+    }
 };

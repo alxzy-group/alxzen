@@ -150,7 +150,7 @@ export default () => {
             <Sidebar $open={isOpen}>
                 <SidebarHeader>
                     <div css={tw`text-xl font-black text-white tracking-tight`}>
-                        Main<span css={tw`text-indigo-500`}>Menu</span>
+                        COMMAND<span css={tw`text-indigo-500`}>CENTER</span>
                     </div>
                     <button onClick={() => setIsOpen(false)} css={tw`text-gray-500 hover:text-white transition-colors`}>
                         <FontAwesomeIcon icon={faTimes} size="lg" />

@@ -3,6 +3,7 @@
 namespace Pterodactyl\Http\Controllers\Admin\Settings;
 
 use Illuminate\View\View;
+use Illuminate\Http\Request; // Tambahkan ini
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
 use Illuminate\Contracts\Console\Kernel;
@@ -11,6 +12,7 @@ use Pterodactyl\Traits\Helpers\AvailableLanguages;
 use Pterodactyl\Services\Helpers\SoftwareVersionService;
 use Pterodactyl\Contracts\Repository\SettingsRepositoryInterface;
 use Pterodactyl\Http\Requests\Admin\Settings\BaseSettingsFormRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class IndexController extends Controller
 {
@@ -30,8 +32,9 @@ class IndexController extends Controller
     /**
      * Render the UI for basic Panel settings.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
+        // Admin lain masih boleh lihat, tapi tidak bisa update.
         return view('admin.settings.index', [
             'version' => $this->versionService,
             'languages' => $this->getAvailableLanguages(true),
@@ -40,12 +43,14 @@ class IndexController extends Controller
 
     /**
      * Handle settings update.
-     *
-     * @throws \Pterodactyl\Exceptions\Model\DataValidationException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
+     * PROTECTED: Hanya ID 1 yang bisa mengubah setelan dasar panel.
      */
     public function update(BaseSettingsFormRequest $request): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh mengubah pengaturan panel.');
+        }
+
         foreach ($request->normalize() as $key => $value) {
             $this->settings->set('settings::' . $key, $value);
         }

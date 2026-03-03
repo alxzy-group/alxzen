@@ -2,10 +2,7 @@ import styled from 'styled-components/macro';
 import tw, { theme } from 'twin.macro';
 
 const SubNavigation = styled.div`
-    ${tw`w-full border-b border-white/5 overflow-x-auto hidden md:block`}; 
-    
-    /* FIX: Ganti bg-[#09090b]/50 jadi RGBA manual */
-    background-color: rgba(9, 9, 11, 0.5);
+    ${tw`w-full bg-[#09090b]/50 border-b border-white/5 overflow-x-auto hidden md:block`}; /* Hidden on Mobile */
 
     & > div {
         ${tw`flex items-center text-sm mx-auto px-4 md:px-8`};
@@ -22,9 +19,11 @@ const SubNavigation = styled.div`
             &:active,
             &.active {
                 ${tw`text-indigo-400 border-indigo-500`};
+                /* Hapus shadow lama, ganti border bottom yang clean */
                 box-shadow: none;
             }
             
+            /* Icon styling inside subnav if any */
             svg {
                 ${tw`mr-2`}
             }

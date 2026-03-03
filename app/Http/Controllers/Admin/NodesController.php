@@ -25,6 +25,7 @@ use Pterodactyl\Services\Allocations\AllocationDeletionService;
 use Pterodactyl\Contracts\Repository\LocationRepositoryInterface;
 use Pterodactyl\Contracts\Repository\AllocationRepositoryInterface;
 use Pterodactyl\Http\Requests\Admin\Node\AllocationAliasFormRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class NodesController extends Controller
 {
@@ -49,10 +50,22 @@ class NodesController extends Controller
     }
 
     /**
+     * Helper untuk validasi Super Admin (ID 1)
+     */
+    protected function validateOwner(Request $request)
+    {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh mengelola infrastruktur Node.');
+        }
+    }
+
+    /**
      * Displays create new node page.
      */
-    public function create(): View|RedirectResponse
+    public function create(Request $request): View|RedirectResponse
     {
+        $this->validateOwner($request);
+
         $locations = $this->locationRepository->all();
         if (count($locations) < 1) {
             $this->alert->warning(trans('admin/node.notices.location_required'))->flash();
@@ -65,11 +78,11 @@ class NodesController extends Controller
 
     /**
      * Post controller to create a new node on the system.
-     *
-     * @throws \Pterodactyl\Exceptions\Model\DataValidationException
      */
     public function store(NodeFormRequest $request): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $node = $this->creationService->handle($request->normalize());
         $this->alert->info(trans('admin/node.notices.node_created'))->flash();
 
@@ -78,13 +91,11 @@ class NodesController extends Controller
 
     /**
      * Updates settings for a node.
-     *
-     * @throws \Pterodactyl\Exceptions\DisplayException
-     * @throws \Pterodactyl\Exceptions\Model\DataValidationException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function updateSettings(NodeFormRequest $request, Node $node): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $this->updateService->handle($node, $request->normalize(), $request->input('reset_secret') === 'on');
         $this->alert->success(trans('admin/node.notices.node_updated'))->flash();
 
@@ -93,11 +104,11 @@ class NodesController extends Controller
 
     /**
      * Removes a single allocation from a node.
-     *
-     * @throws \Pterodactyl\Exceptions\Service\Allocation\ServerUsingAllocationException
      */
-    public function allocationRemoveSingle(int $node, Allocation $allocation): Response
+    public function allocationRemoveSingle(Request $request, int $node, Allocation $allocation): Response
     {
+        $this->validateOwner($request);
+
         $this->allocationDeletionService->handle($allocation);
 
         return response('', 204);
@@ -105,16 +116,16 @@ class NodesController extends Controller
 
     /**
      * Removes multiple individual allocations from a node.
-     *
-     * @throws \Pterodactyl\Exceptions\Service\Allocation\ServerUsingAllocationException
      */
     public function allocationRemoveMultiple(Request $request, int $node): Response
     {
+        $this->validateOwner($request);
+
         $allocations = $request->input('allocations');
         foreach ($allocations as $rawAllocation) {
             $allocation = new Allocation();
             $allocation->id = $rawAllocation['id'];
-            $this->allocationRemoveSingle($node, $allocation);
+            $this->allocationDeletionService->handle($allocation);
         }
 
         return response('', 204);
@@ -125,6 +136,8 @@ class NodesController extends Controller
      */
     public function allocationRemoveBlock(Request $request, int $node): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $this->allocationRepository->deleteWhere([
             ['node_id', '=', $node],
             ['server_id', '=', null],
@@ -139,12 +152,11 @@ class NodesController extends Controller
 
     /**
      * Sets an alias for a specific allocation on a node.
-     *
-     * @throws \Pterodactyl\Exceptions\Model\DataValidationException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function allocationSetAlias(AllocationAliasFormRequest $request): \Symfony\Component\HttpFoundation\Response
     {
+        $this->validateOwner($request);
+
         $this->allocationRepository->update($request->input('allocation_id'), [
             'ip_alias' => (empty($request->input('alias'))) ? null : $request->input('alias'),
         ]);
@@ -154,14 +166,11 @@ class NodesController extends Controller
 
     /**
      * Creates new allocations on a node.
-     *
-     * @throws \Pterodactyl\Exceptions\Service\Allocation\CidrOutOfRangeException
-     * @throws \Pterodactyl\Exceptions\Service\Allocation\InvalidPortMappingException
-     * @throws \Pterodactyl\Exceptions\Service\Allocation\PortOutOfRangeException
-     * @throws \Pterodactyl\Exceptions\Service\Allocation\TooManyPortsInRangeException
      */
     public function createAllocation(AllocationFormRequest $request, Node $node): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $this->assignmentService->handle($node, $request->normalize());
         $this->alert->success(trans('admin/node.notices.allocations_added'))->flash();
 
@@ -170,11 +179,11 @@ class NodesController extends Controller
 
     /**
      * Deletes a node from the system.
-     *
-     * @throws \Pterodactyl\Exceptions\DisplayException
      */
-    public function delete(int|Node $node): RedirectResponse
+    public function delete(Request $request, int|Node $node): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $this->deletionService->handle($node);
         $this->alert->success(trans('admin/node.notices.node_deleted'))->flash();
 

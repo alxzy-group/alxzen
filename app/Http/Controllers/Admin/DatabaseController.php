@@ -3,6 +3,7 @@
 namespace Pterodactyl\Http\Controllers\Admin;
 
 use Illuminate\View\View;
+use Illuminate\Http\Request; // Tambahkan ini
 use Pterodactyl\Models\DatabaseHost;
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
@@ -44,8 +45,6 @@ class DatabaseController extends Controller
 
     /**
      * Display database host to user.
-     *
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function view(int $host): View
     {
@@ -58,11 +57,15 @@ class DatabaseController extends Controller
 
     /**
      * Handle request to create a new database host.
-     *
-     * @throws \Throwable
+     * PROTECTED: Hanya ID 1 yang bisa menambah Host.
      */
     public function create(DatabaseHostFormRequest $request): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            $this->alert->danger('Akses Ditolak: Hanya Super Admin yang bisa menambah Database Host!')->flash();
+            return redirect()->route('admin.databases');
+        }
+
         try {
             $host = $this->creationService->handle($request->normalize());
         } catch (\Exception $exception) {
@@ -84,19 +87,21 @@ class DatabaseController extends Controller
 
     /**
      * Handle updating database host.
-     *
-     * @throws \Throwable
+     * PROTECTED: Hanya ID 1 yang bisa mengedit Host.
      */
     public function update(DatabaseHostFormRequest $request, DatabaseHost $host): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            $this->alert->danger('Akses Ditolak: Anda tidak diizinkan mengubah konfigurasi Database Host!')->flash();
+            return redirect()->route('admin.databases.view', $host->id);
+        }
+
         $redirect = redirect()->route('admin.databases.view', $host->id);
 
         try {
             $this->updateService->handle($host->id, $request->normalize());
             $this->alert->success('Database host was updated successfully.')->flash();
         } catch (\Exception $exception) {
-            // Catch any SQL related exceptions and display them back to the user, otherwise just
-            // throw the exception like normal and move on with it.
             if ($exception instanceof \PDOException || $exception->getPrevious() instanceof \PDOException) {
                 $this->alert->danger(
                     sprintf('There was an error while trying to connect to the host or while executing a query: "%s"', $exception->getMessage())
@@ -113,11 +118,15 @@ class DatabaseController extends Controller
 
     /**
      * Handle request to delete a database host.
-     *
-     * @throws \Pterodactyl\Exceptions\Service\HasActiveServersException
+     * PROTECTED: Hanya ID 1 yang bisa menghapus Host.
      */
-    public function delete(int $host): RedirectResponse
+    public function delete(Request $request, int $host): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            $this->alert->danger('Aksi Ilegal: Hanya Super Admin yang bisa menghapus Database Host!')->flash();
+            return redirect()->route('admin.databases');
+        }
+
         $this->deletionService->handle($host);
         $this->alert->success('The requested database host has been deleted from the system.')->flash();
 

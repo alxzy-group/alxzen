@@ -3,29 +3,30 @@
 namespace Pterodactyl\Console\Commands;
 
 use Carbon\Carbon;
-use Illuminate\Console\Command;
 use Pterodactyl\Models\Server;
+use Illuminate\Console\Command;
 use Pterodactyl\Services\Servers\SuspensionService;
 
 class CheckServerExpirations extends Command
 {
     /**
-     * Nama command yang akan dipanggil di terminal/cronjob.
+     * Nama command yang dipanggil via terminal atau cronjob.
+     * Contoh: php artisan ptero:check-expiration
      */
     protected $signature = 'ptero:check-expiration';
 
     /**
-     * Deskripsi command.
+     * Deskripsi command yang muncul di daftar php artisan.
      */
-    protected $description = 'Cek server expired dan suspend otomatis jika lewat tanggal.';
+    protected $description = 'Mengecek server yang melewati batas waktu expires_at dan men-suspend secara otomatis.';
 
     /**
-     * Service untuk melakukan suspend server dengan aman.
+     * @var \Pterodactyl\Services\Servers\SuspensionService
      */
-    private $suspensionService;
+    protected $suspensionService;
 
     /**
-     * Constructor untuk inject service.
+     * CheckServerExpirations constructor.
      */
     public function __construct(SuspensionService $suspensionService)
     {
@@ -34,16 +35,13 @@ class CheckServerExpirations extends Command
     }
 
     /**
-     * Logic utama dijalankan di sini.
+     * Eksekusi logika utama.
      */
     public function handle()
     {
-        $this->info('Memulai pengecekan server expired...');
+        $this->info('alxzen Protect v3.0: Memulai pemindaian server expired...');
 
-        // Cari server yang:
-        // 1. Punya tanggal expired (tidak null)
-        // 2. Tanggal expired-nya KURANG DARI sekarang (sudah lewat)
-        // 3. Statusnya BELUM suspended (biar ga suspend ulang server yang udah mati)
+        // 1. Ambil server yang: punya tanggal expire, sudah lewat waktunya, dan belum disuspend.
         $servers = Server::query()
             ->whereNotNull('expires_at')
             ->where('expires_at', '<', Carbon::now())
@@ -51,24 +49,39 @@ class CheckServerExpirations extends Command
             ->get();
 
         if ($servers->isEmpty()) {
-            $this->info('Tidak ada server expired yang perlu disuspend.');
+            $this->info('Status: Aman. Tidak ada server expired yang aktif.');
             return;
         }
 
+        $this->warn('Ditemukan ' . $servers->count() . ' server expired. Memproses suspension...');
+
         foreach ($servers as $server) {
             try {
-                $this->info("Men-suspend server: {$server->name} (ID: {$server->id})");
+                $this->line("Memproses Server: {$server->name} (ID: {$server->id})");
+
+                /**
+                 * Menggunakan SuspensionService bawaan Pterodactyl.
+                 * Ini akan:
+                 * 1. Mengubah status server di database menjadi 'suspended'.
+                 * 2. Mengirim sinyal ke Wings (Node) untuk mematikan server.
+                 * 3. Mengunci akses SFTP dan File Manager bagi user.
+                 */
+                $this->suspensionService->toggle($server, SuspensionService::ACTION_SUSPEND);
+
+                $this->info("Hasil: Berhasil men-suspend {$server->name}.");
+
+            } catch (\Exception $exception) {
+                // Log jika terjadi kegagalan (misal: Node offline)
+                $this->error("Gagal memproses {$server->name}: " . $exception->getMessage());
                 
-                // Parameter 'suspend' artinya kita melakukan suspend.
-                // Kalau mau unsupend, ganti jadi 'unsuspend'.
-                $this->suspensionService->toggle($server, 'suspend');
-                
-                $this->info("Berhasil suspend {$server->name}.");
-            } catch (\Exception $e) {
-                $this->error("Gagal suspend {$server->name}: " . $e->getMessage());
+                // Fallback: Tetap paksa ubah status di database agar user tidak bisa start server
+                $this->warn("Menjalankan fallback database status update...");
+                $server->update([
+                    'status' => Server::STATUS_SUSPENDED
+                ]);
             }
         }
 
-        $this->info('Pengecekan selesai.');
+        $this->info('alxzen Expired v2.0: Seluruh proses selesai.');
     }
 }

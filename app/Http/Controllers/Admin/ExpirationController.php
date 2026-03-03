@@ -6,39 +6,60 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Pterodactyl\Models\Server;
 use Pterodactyl\Http\Controllers\Controller;
+use Pterodactyl\Services\Servers\SuspensionService; // Tambahkan ini
 
 class ExpirationController extends Controller
 {
     public function index()
     {
-        // Ambil data server
         $servers = Server::query()
-            ->select('id', 'name', 'expires_at', 'uuidShort', 'status', 'owner_id', 'node_id', 'allocation_id') // Select kolom yg dibutuhkan view
-            ->with(['user', 'node', 'allocation']) // Eager load biar ga error di view saat panggil user/node
+            ->select('id', 'name', 'expires_at', 'uuidShort', 'status', 'owner_id', 'node_id', 'allocation_id')
+            ->with(['user', 'node', 'allocation'])
+            ->orderBy('expires_at', 'asc') // Urutkan dari yang mau expired duluan
             ->paginate(50);
 
         return view('admin.expiration.index', compact('servers'));
     }
 
-    public function update(Request $request, Server $server)
+    public function update(Request $request, $id)
     {
-        // Validasi input hari
-        $days = (int) $request->input('days', 30);
+        $server = Server::findOrFail($id);
 
-        // Tentukan tanggal baru
-        // Jika sudah ada expired date, tambah dari tanggal itu.
-        // Jika belum (unlimited), tambah dari hari ini.
-        if ($server->expires_at) {
-            $newDate = $server->expires_at->copy()->addDays($days);
+        $request->validate([
+            'new_date' => 'nullable|date',
+        ]);
+
+        if ($request->filled('new_date')) {
+            $newDate = Carbon::parse($request->input('new_date'))->endOfDay();
         } else {
-            $newDate = Carbon::now()->addDays($days);
+            // Logika tambah 30 hari otomatis
+            if ($server->expires_at && $server->expires_at->isFuture()) {
+                $newDate = $server->expires_at->addDays(30);
+            } else {
+                $newDate = Carbon::now()->addDays(30);
+            }
         }
 
-        // Simpan ke database
-        $server->forceFill([
+        // Simpan tanggal baru
+        $server->update([
             'expires_at' => $newDate,
-        ])->save();
+        ]);
 
-        return redirect()->back()->with('success', 'Waktu server berhasil diperpanjang ' . $days . ' hari.');
+        /**
+         * OTOMATIS UNSUSPEND
+         * Jika admin memperpanjang server yang sedang mati (suspended), 
+         * kita panggil service untuk menyalakan aksesnya kembali di Wings.
+         */
+        if ($server->status === Server::STATUS_SUSPENDED) {
+            try {
+                // Menggunakan class SuspensionService secara formal agar lebih aman dari error
+                app(SuspensionService::class)->toggle($server, SuspensionService::ACTION_UNSUSPEND);
+            } catch (\Exception $e) {
+                // Jika gagal (node offline), kita tetap beri notifikasi sukses perpanjang tapi warning unsuspend
+                return redirect()->back()->with('error', "Tanggal diperbarui, tapi gagal unsuspend otomatis: " . $e->getMessage());
+            }
+        }
+
+        return redirect()->back()->with('success', "Server {$server->name} diperpanjang sampai {$newDate->format('d-m-Y H:i')}.");
     }
 }

@@ -15,6 +15,7 @@ use Pterodactyl\Providers\SettingsServiceProvider;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Pterodactyl\Contracts\Repository\SettingsRepositoryInterface;
 use Pterodactyl\Http\Requests\Admin\Settings\MailSettingsFormRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class MailController extends Controller
 {
@@ -30,8 +31,7 @@ class MailController extends Controller
     }
 
     /**
-     * Render UI for editing mail settings. This UI should only display if
-     * the server is configured to send mail using SMTP.
+     * Render UI for editing mail settings.
      */
     public function index(): View
     {
@@ -42,13 +42,15 @@ class MailController extends Controller
 
     /**
      * Handle request to update SMTP mail settings.
-     *
-     * @throws DisplayException
-     * @throws \Pterodactyl\Exceptions\Model\DataValidationException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
+     * PROTECTED: Hanya ID 1 yang bisa mengubah konfigurasi email.
      */
     public function update(MailSettingsFormRequest $request): Response
     {
+        // Gembok akses untuk selain ID 1
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Konfigurasi SMTP hanya bisa diubah oleh Super Admin (ID 1).');
+        }
+
         if ($this->config->get('mail.default') !== 'smtp') {
             throw new DisplayException('This feature is only available if SMTP is the selected email driver for the Panel.');
         }
@@ -73,9 +75,14 @@ class MailController extends Controller
 
     /**
      * Submit a request to send a test mail message.
+     * PROTECTED: Hanya ID 1 yang bisa melakukan test email.
      */
     public function test(Request $request): Response
     {
+        if ($request->user()->id !== 1) {
+            return response('Akses Ditolak.', 403);
+        }
+
         try {
             Notification::route('mail', $request->user()->email)
                 ->notify(new MailTested($request->user()));

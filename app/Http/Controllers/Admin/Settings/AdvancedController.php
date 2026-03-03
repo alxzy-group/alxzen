@@ -3,6 +3,7 @@
 namespace Pterodactyl\Http\Controllers\Admin\Settings;
 
 use Illuminate\View\View;
+use Illuminate\Http\Request; // Tambahkan ini
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
 use Illuminate\Contracts\Console\Kernel;
@@ -10,6 +11,7 @@ use Pterodactyl\Http\Controllers\Controller;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Pterodactyl\Contracts\Repository\SettingsRepositoryInterface;
 use Pterodactyl\Http\Requests\Admin\Settings\AdvancedSettingsFormRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AdvancedController extends Controller
 {
@@ -43,11 +45,16 @@ class AdvancedController extends Controller
     }
 
     /**
-     * @throws \Pterodactyl\Exceptions\Model\DataValidationException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
+     * Handle advanced settings update.
+     * PROTECTED: Hanya ID 1 yang punya akses ke pengaturan tingkat lanjut.
      */
     public function update(AdvancedSettingsFormRequest $request): RedirectResponse
     {
+        // Gembok akses untuk selain ID 1
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Pengaturan Advanced sangat sensitif dan hanya bisa diubah oleh Super Admin.');
+        }
+
         foreach ($request->normalize() as $key => $value) {
             $this->settings->set('settings::' . $key, $value);
         }

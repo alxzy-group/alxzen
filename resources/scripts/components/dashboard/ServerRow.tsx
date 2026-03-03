@@ -1,223 +1,195 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEthernet, faHdd, faMemory, faMicrochip, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
+import { faMicrochip, faMemory, faHdd, faNetworkWired, faTerminal, faSignal } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { Server } from '@/api/server/getServer';
-import getServerResourceUsage, { ServerPowerState, ServerStats } from '@/api/server/getServerResourceUsage';
-import { bytesToString, ip, mbToBytes } from '@/lib/formatters';
+import getServerResourceUsage, { ServerStats } from '@/api/server/getServerResourceUsage';
+import { bytesToString, ip } from '@/lib/formatters';
 import tw, { styled } from 'twin.macro';
 import Spinner from '@/components/elements/Spinner';
 import isEqual from 'react-fast-compare';
 
-// --- STYLED COMPONENTS ---
-
-// Container utama untuk Server Row
-const RowContainer = styled(Link)`
-    ${tw`block w-full mb-4 rounded-xl transition-all duration-300 relative overflow-hidden`}
-    ${tw`bg-gray-800/40 border border-white/5`}
-    text-decoration: none;
-
+const CardWrapper = styled(Link)`
+    ${tw`relative block w-full rounded-[24px] overflow-hidden transition-all duration-300`}
+    background: linear-gradient(145deg, rgba(20, 20, 25, 0.9), rgba(10, 10, 12, 0.95));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    
     &:hover {
-        ${tw`bg-gray-800/70 border-blue-500/30 shadow-lg`}
-        transform: translateY(-2px);
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.6);
+        border-color: rgba(99, 102, 241, 0.4);
+        
+        /* Highlight decoration */
+        &::before {
+            opacity: 1;
+        }
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #6366f1, transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
 `;
 
-// Wrapper untuk konten agar layout rapi (Grid System)
-const ContentGrid = styled.div`
-    ${tw`grid grid-cols-12 gap-4 p-4 items-center`}
+const Header = styled.div`
+    ${tw`p-6 flex items-start justify-between border-b border-white/5 bg-white/[0.02]`}
 `;
 
-// Bagian Icon Server (Kiri)
-const IconBox = styled.div<{ $status: ServerPowerState | undefined }>`
-    ${tw`flex items-center justify-center w-12 h-12 rounded-lg bg-gray-900/50 text-xl shadow-inner transition-colors duration-300`}
+const ServerName = styled.h3`
+    ${tw`text-xl font-bold text-white tracking-tight mb-1`}
+`;
+
+const ConnectionInfo = styled.div`
+    ${tw`flex items-center gap-2 text-xs font-mono text-gray-400 bg-black/30 px-3 py-1.5 rounded-lg border border-white/5 w-max`}
+`;
+
+const StatusBadge = styled.div<{ $status: string }>`
+    ${tw`flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase tracking-wider shadow-lg`}
     
-    color: ${({ $status }) => {
-        switch ($status) {
-            case 'running': return '#10b981'; // Emerald 500
-            case 'offline': return '#ef4444'; // Red 500
-            case 'starting': return '#f59e0b'; // Amber 500
-            default: return '#6b7280'; // Gray 500
-        }
-    }};
-`;
-
-// Indikator Status (Dot Bercahaya)
-const StatusDot = styled.div<{ $status: ServerPowerState | undefined }>`
-    ${tw`w-2.5 h-2.5 rounded-full mr-2 shadow-sm`}
+    background-color: ${({ $status }) => 
+        $status === 'running' ? 'rgba(34, 197, 94, 0.1)' : 
+        $status === 'offline' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(234, 179, 8, 0.1)'};
     
-    background-color: ${({ $status }) => {
-        switch ($status) {
-            case 'running': return '#10b981';
-            case 'offline': return '#ef4444';
-            case 'starting': return '#f59e0b';
-            default: return '#6b7280';
-        }
-    }};
-
-    box-shadow: 0 0 10px ${({ $status }) => {
-        switch ($status) {
-            case 'running': return 'rgba(16, 185, 129, 0.4)';
-            case 'offline': return 'rgba(239, 68, 68, 0.4)';
-            case 'starting': return 'rgba(245, 158, 11, 0.4)';
-            default: return 'transparent';
-        }
-    }};
-`;
-
-// Badge untuk IP Address
-const IpBadge = styled.div`
-    ${tw`inline-flex items-center px-2 py-1 rounded bg-black/20 text-xs font-mono text-gray-300 border border-white/5 mt-1`}
-`;
-
-// Style untuk Ikon Resource agar berwarna
-const ResourceIcon = styled(FontAwesomeIcon)<{ $type: 'cpu' | 'mem' | 'disk'; $alarm: boolean }>`
-    ${tw`mr-2 text-sm`}
-    ${props => props.$alarm && tw`text-red-500 animate-pulse`}
+    color: ${({ $status }) => 
+        $status === 'running' ? '#4ade80' : 
+        $status === 'offline' ? '#f87171' : '#facc15'};
     
-    color: ${({ $type, $alarm }) => {
-        if ($alarm) return undefined; // Biarkan class text-red-500 menangani
-        switch ($type) {
-            case 'cpu': return '#3b82f6'; // Blue
-            case 'mem': return '#a855f7'; // Purple
-            case 'disk': return '#f97316'; // Orange
-            default: return 'currentColor';
-        }
-    }};
+    border: 1px solid ${({ $status }) => 
+        $status === 'running' ? 'rgba(34, 197, 94, 0.2)' : 
+        $status === 'offline' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(234, 179, 8, 0.2)'};
+
+    .dot {
+        ${tw`w-2 h-2 rounded-full`}
+        background-color: currentColor;
+        box-shadow: 0 0 8px currentColor;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
 `;
 
-const StatLabel = styled.span`
-    ${tw`text-xs text-gray-500 uppercase font-bold tracking-wider ml-1`}
+const StatsGrid = styled.div`
+    ${tw`grid grid-cols-3 divide-x divide-white/5 p-6`}
 `;
 
-// --- LOGIC SECTION ---
+const StatBox = styled.div`
+    ${tw`flex flex-col items-center justify-center px-2 text-center`}
+`;
 
-const isAlarmState = (current: number, limit: number): boolean => limit > 0 && current / (limit * 1024 * 1024) >= 0.9;
+const StatValue = styled.div`
+    ${tw`text-lg font-bold text-white mb-1`}
+`;
 
-type Timer = ReturnType<typeof setInterval>;
+const StatLabel = styled.div`
+    ${tw`text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1.5 mb-2`}
+`;
+
+const ProgressBarContainer = styled.div`
+    ${tw`w-full h-1.5 bg-gray-800 rounded-full overflow-hidden`}
+`;
+
+const ProgressBarFill = styled.div<{ $percent: number; $color: string }>`
+    ${tw`h-full rounded-full transition-all duration-1000 ease-out`}
+    width: ${props => props.$percent}%;
+    background: ${props => props.$color};
+    box-shadow: 0 0 10px ${props => props.$color};
+`;
 
 export default memo(({ server, className }: { server: Server; className?: string }) => {
-    const interval = useRef<Timer>(null) as React.MutableRefObject<Timer>;
-    const [isSuspended, setIsSuspended] = useState(server.status === 'suspended');
+    const interval = useRef<any>(null);
     const [stats, setStats] = useState<ServerStats | null>(null);
 
     const getStats = () =>
         getServerResourceUsage(server.uuid)
             .then((data) => setStats(data))
-            .catch((error) => console.error(error));
+            .catch(() => {});
 
     useEffect(() => {
-        setIsSuspended(stats?.isSuspended || server.status === 'suspended');
-    }, [stats?.isSuspended, server.status]);
+        getStats();
+        interval.current = setInterval(getStats, 30000);
+        return () => clearInterval(interval.current);
+    }, []);
 
-    useEffect(() => {
-        if (isSuspended) return;
+    const status = stats?.status || (server.status === 'installing' ? 'starting' : 'offline');
+    const isRunning = status === 'running';
 
-        getStats().then(() => {
-            interval.current = setInterval(() => getStats(), 30000);
-        });
-
-        return () => {
-            interval.current && clearInterval(interval.current);
-        };
-    }, [isSuspended]);
-
-    const alarms = { cpu: false, memory: false, disk: false };
-    if (stats) {
-        alarms.cpu = server.limits.cpu === 0 ? false : stats.cpuUsagePercent >= server.limits.cpu * 0.9;
-        alarms.memory = isAlarmState(stats.memoryUsageInBytes, server.limits.memory);
-        alarms.disk = server.limits.disk === 0 ? false : isAlarmState(stats.diskUsageInBytes, server.limits.disk);
-    }
-
-    const diskLimit = server.limits.disk !== 0 ? bytesToString(mbToBytes(server.limits.disk)) : 'Unlimited';
-    const memoryLimit = server.limits.memory !== 0 ? bytesToString(mbToBytes(server.limits.memory)) : 'Unlimited';
-    const cpuLimit = server.limits.cpu !== 0 ? server.limits.cpu + ' %' : 'Unlimited';
+    // Limits
+    const cpuLimit = server.limits.cpu;
+    const memoryLimit = server.limits.memory;
+    const diskLimit = server.limits.disk;
 
     return (
-        <RowContainer to={`/server/${server.id}`} className={className}>
-            <ContentGrid>
-                {/* Bagian Nama Server & IP */}
-                <div css={tw`col-span-12 sm:col-span-5 lg:col-span-5 flex items-center`}>
-                    <IconBox $status={server.isTransferring ? 'starting' : stats?.status}>
-                        <FontAwesomeIcon icon={faServer} />
-                    </IconBox>
-                    <div css={tw`ml-4`}>
-                        <div css={tw`flex items-center mb-0.5`}>
-                            <StatusDot $status={server.isTransferring ? 'starting' : stats?.status} />
-                            <p css={tw`text-lg font-bold text-gray-100 tracking-tight leading-none`}>{server.name}</p>
-                        </div>
-                        
-                        {/* Allocation Display */}
-                        <IpBadge>
-                            <FontAwesomeIcon icon={faNetworkWired} css={tw`mr-1.5 opacity-50`} />
-                            {server.allocations
-                                .filter((alloc) => alloc.isDefault)
-                                .map((allocation) => (
-                                    <span key={allocation.ip + allocation.port.toString()}>
-                                        {allocation.alias || ip(allocation.ip)}:{allocation.port}
-                                    </span>
-                                ))}
-                        </IpBadge>
-                    </div>
+        <CardWrapper to={`/server/${server.id}`} className={className}>
+            <Header>
+                <div>
+                    <ServerName>{server.name}</ServerName>
+                    <ConnectionInfo>
+                        <FontAwesomeIcon icon={faNetworkWired} />
+                        {server.allocations.find(a => a.isDefault)?.alias || ip(server.allocations.find(a => a.isDefault)?.ip || '')}
+                    </ConnectionInfo>
                 </div>
+                <StatusBadge $status={status}>
+                    <div className="dot" />
+                    {status}
+                </StatusBadge>
+            </Header>
 
-                {/* Bagian Status / Statistik */}
-                <div css={tw`col-span-12 sm:col-span-7 lg:col-span-7`}>
-                    {!stats || isSuspended ? (
-                        <div css={tw`flex justify-end items-center h-full`}>
-                            {isSuspended ? (
-                                <span css={tw`bg-red-500/10 border border-red-500/20 text-red-400 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide`}>
-                                    {server.status === 'suspended' ? 'Suspended' : 'Connection Error'}
-                                </span>
-                            ) : server.isTransferring || server.status ? (
-                                <span css={tw`bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide flex items-center`}>
-                                    <Spinner size={'small'} css={tw`mr-2`} />
-                                    {server.isTransferring
-                                        ? 'Transferring'
-                                        : server.status === 'installing'
-                                        ? 'Installing'
-                                        : server.status === 'restoring_backup'
-                                        ? 'Restoring'
-                                        : 'Unavailable'}
-                                </span>
-                            ) : (
-                                <div css={tw`opacity-50`}>
-                                    <Spinner size={'small'} />
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div css={tw`grid grid-cols-3 gap-4`}>
-                            {/* CPU */}
-                            <div css={tw`flex flex-col items-center sm:items-start bg-gray-900/30 rounded p-2 border border-white/5`}>
-                                <div css={tw`flex items-center text-gray-200 font-mono text-sm`}>
-                                    <ResourceIcon icon={faMicrochip} $type="cpu" $alarm={alarms.cpu} />
-                                    {stats.cpuUsagePercent.toFixed(1)}%
-                                </div>
-                                <StatLabel>CPU Load</StatLabel>
-                            </div>
-
-                            {/* RAM */}
-                            <div css={tw`flex flex-col items-center sm:items-start bg-gray-900/30 rounded p-2 border border-white/5`}>
-                                <div css={tw`flex items-center text-gray-200 font-mono text-sm`}>
-                                    <ResourceIcon icon={faMemory} $type="mem" $alarm={alarms.memory} />
-                                    {bytesToString(stats.memoryUsageInBytes)}
-                                </div>
-                                <StatLabel>Memory</StatLabel>
-                            </div>
-
-                            {/* DISK */}
-                            <div css={tw`flex flex-col items-center sm:items-start bg-gray-900/30 rounded p-2 border border-white/5`}>
-                                <div css={tw`flex items-center text-gray-200 font-mono text-sm`}>
-                                    <ResourceIcon icon={faHdd} $type="disk" $alarm={alarms.disk} />
-                                    {bytesToString(stats.diskUsageInBytes)}
-                                </div>
-                                <StatLabel>Disk</StatLabel>
-                            </div>
-                        </div>
-                    )}
+            {!stats && isRunning ? (
+                <div css={tw`p-10 flex justify-center`}>
+                    <Spinner size={'small'} />
                 </div>
-            </ContentGrid>
-        </RowContainer>
+            ) : !isRunning ? (
+                <div css={tw`p-10 text-center`}>
+                    <FontAwesomeIcon icon={faSignal} css={tw`text-gray-700 text-3xl mb-3`} />
+                    <div css={tw`text-xs font-mono text-gray-600`}>SERVER IS OFFLINE</div>
+                </div>
+            ) : (
+                <StatsGrid>
+                    {/* CPU */}
+                    <StatBox>
+                        <StatLabel><FontAwesomeIcon icon={faMicrochip} /> CPU</StatLabel>
+                        <StatValue>{stats!.cpuUsagePercent.toFixed(1)}%</StatValue>
+                        <ProgressBarContainer>
+                            <ProgressBarFill 
+                                $percent={Math.min(stats!.cpuUsagePercent, 100)} 
+                                $color="#60a5fa" // Blue
+                            />
+                        </ProgressBarContainer>
+                    </StatBox>
+
+                    {/* RAM */}
+                    <StatBox>
+                        <StatLabel><FontAwesomeIcon icon={faMemory} /> MEM</StatLabel>
+                        <StatValue>{bytesToString(stats!.memoryUsageInBytes)}</StatValue>
+                        <ProgressBarContainer>
+                            <ProgressBarFill 
+                                $percent={(stats!.memoryUsageInBytes / (memoryLimit * 1024 * 1024)) * 100} 
+                                $color="#c084fc" // Purple
+                            />
+                        </ProgressBarContainer>
+                    </StatBox>
+
+                    {/* DISK */}
+                    <StatBox>
+                        <StatLabel><FontAwesomeIcon icon={faHdd} /> DISK</StatLabel>
+                        <StatValue>{bytesToString(stats!.diskUsageInBytes)}</StatValue>
+                        <ProgressBarContainer>
+                            <ProgressBarFill 
+                                $percent={(stats!.diskUsageInBytes / (diskLimit * 1024 * 1024)) * 100} 
+                                $color="#f472b6" // Pink
+                            />
+                        </ProgressBarContainer>
+                    </StatBox>
+                </StatsGrid>
+            )}
+        </CardWrapper>
     );
-}, isEqual);    
+}, isEqual);

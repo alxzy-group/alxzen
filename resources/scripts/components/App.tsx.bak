@@ -16,14 +16,16 @@ import '@/assets/tailwind.css';
 import Spinner from '@/components/elements/Spinner';
 import { createGlobalStyle } from 'styled-components';
 
+// --- STYLED COMPONENTS ---
 const GlobalScrollbar = createGlobalStyle`
     body {
         ${tw`bg-neutral-900 text-gray-100 overflow-x-hidden`}
-        background-color: #09090b;
-        background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #09090b 40%);
+        background-color: #09090b; /* Zinc-950 equivalent */
+        background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #09090b 40%); /* Subtle light from top */
         min-height: 100vh;
     }
     
+    /* Scrollbar Tipis & Modern */
     ::-webkit-scrollbar {
         width: 4px;
         height: 4px;

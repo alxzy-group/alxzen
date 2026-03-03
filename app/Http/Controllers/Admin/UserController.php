@@ -84,29 +84,40 @@ class UserController extends Controller
 
     /**
      * Delete a user from the system.
-     *
-     * @throws \Exception
-     * @throws DisplayException
+     * MODIFIED: Menjamin ID 1 aman & mencegah kudeta sesama admin.
      */
     public function delete(Request $request, User $user): RedirectResponse
     {
+        // 1. Gak ada yang boleh hapus ID 1. Titik.
+        if ($user->id === 1) {
+            $this->alert->danger('Aksi Ilegal: Akun Owner Utama tidak dapat dihapus!')->flash();
+            return redirect()->back();
+        }
+
+        // 2. Admin lain (ID != 1) dilarang hapus sesama Admin.
+        // Ini biar mereka gak bisa bersih-bersih admin lain buat kuasai panel.
+        if ($request->user()->id !== 1 && $user->root_admin) {
+            $this->alert->danger('Akses Ditolak: Anda tidak memiliki izin untuk menghapus sesama Admin.')->flash();
+            return redirect()->back();
+        }
+
         if ($request->user()->is($user)) {
             throw new DisplayException(__('admin/user.exceptions.delete_self'));
         }
 
         $this->deletionService->handle($user);
+        $this->alert->success('User berhasil dihapus dari sistem.')->flash();
 
         return redirect()->route('admin.users');
     }
 
     /**
      * Create a user.
-     *
-     * @throws \Exception
-     * @throws \Throwable
+     * IZINKAN: Supaya bot create panel (API) tetap jalan.
      */
     public function store(NewUserFormRequest $request): RedirectResponse
     {
+        // Tetap izinkan pembuatan user agar bot billing lancar.
         $user = $this->creationService->handle($request->normalize());
         $this->alert->success($this->translator->get('admin/user.notices.account_created'))->flash();
 
@@ -115,12 +126,23 @@ class UserController extends Controller
 
     /**
      * Update a user on the system.
-     *
-     * @throws \Pterodactyl\Exceptions\Model\DataValidationException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
+     * PROTECTED: Melindungi ID 1 dan mencegah kenaikan pangkat ilegal.
      */
     public function update(UserFormRequest $request, User $user): RedirectResponse
     {
+        // 1. Hanya ID 1 yang boleh edit data ID 1.
+        if ($user->id === 1 && $request->user()->id !== 1) {
+            $this->alert->danger('Keamanan: Anda tidak diizinkan mengubah data Super Admin!')->flash();
+            return redirect()->back();
+        }
+
+        // 2. Admin lain (ID != 1) dilarang membuat Admin baru (root_admin).
+        // Jadi bot tetap bisa create/edit user biasa, tapi gak bisa bikin admin siluman.
+        if ($request->input('root_admin') == 1 && $request->user()->id !== 1) {
+             $this->alert->danger('Aksi Ilegal: Hanya Owner Utama yang bisa mengangkat Admin baru!')->flash();
+             return redirect()->back();
+        }
+
         $this->updateService
             ->setUserLevel(User::USER_LEVEL_ADMIN)
             ->handle($user, $request->normalize());
@@ -137,19 +159,15 @@ class UserController extends Controller
     {
         $users = QueryBuilder::for(User::query())->allowedFilters(['email'])->paginate(25);
 
-        // Handle single user requests.
         if ($request->query('user_id')) {
             $user = User::query()->findOrFail($request->input('user_id'));
-            // @phpstan-ignore-next-line property.notFound
             $user->md5 = md5(strtolower($user->email));
 
             return $user;
         }
 
         return $users->map(function ($item) {
-            // @phpstan-ignore-next-line property.notFound
             $item->md5 = md5(strtolower($item->email));
-
             return $item;
         });
     }

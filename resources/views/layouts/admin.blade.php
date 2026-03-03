@@ -15,6 +15,88 @@
         <link rel="shortcut icon" href="/favicons/favicon.ico">
         <meta name="msapplication-config" content="/favicons/browserconfig.xml">
         <meta name="theme-color" content="#0e4688">
+                  <style>
+            /* 1. Warna Dasar & Sidebar (Hitam & Ungu) */
+            .main-sidebar {
+                background-color: #0a0a0c !important; /* Hitam Pekat */
+            }
+            .sidebar-menu > li.header {
+                background: #000000 !important;
+                color: #8e44ad !important; /* Ungu Header */
+                font-weight: 800 !important;
+                letter-spacing: 1px;
+            }
+
+            /* 2. Menu Sidebar (Font Tebal & Hover Ungu) */
+            .sidebar-menu > li > a {
+                font-weight: 600 !important; /* Tebalkan Font Menu */
+                border-left: 3px solid transparent;
+                transition: all 0.3s ease;
+            }
+            .sidebar-menu > li:hover > a, .sidebar-menu > li.active > a {
+                background: #1a1a20 !important;
+                color: #a29bfe !important; /* Ungu Muda */
+                border-left-color: #6c5ce7 !important; /* Garis Ungu di samping */
+            }
+
+            /* 3. Navbar Atas & Logo */
+            .main-header .logo {
+                background-color: #000000 !important;
+                color: #a29bfe !important;
+                font-weight: 800 !important;
+                border-bottom: 1px solid #1a1a20;
+            }
+            .main-header .navbar {
+                background-color: #0a0a0c !important;
+                border-bottom: 1px solid #1a1a20;
+            }
+
+            /* 4. Body Content (Hitam Sedikit Ungu) */
+            .content-wrapper {
+                background-color: #111116 !important;
+            }
+            .content-header h1 {
+                font-weight: 800 !important;
+                color: #ffffff;
+                text-shadow: 0 0 10px rgba(162, 155, 254, 0.2);
+            }
+
+            /* 5. Box / Panel (Modern Dark) */
+            .box {
+                background: #1a1a20 !important;
+                border-top: 3px solid #6c5ce7 !important; /* Border atas Ungu */
+                border-radius: 8px !important;
+                color: #ffffff !important;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.5) !important;
+            }
+            .box-header {
+                color: #ffffff !important;
+                font-weight: 700 !important;
+            }
+
+            /* 6. Tombol & Badge (Tebal) */
+            .btn {
+                font-weight: 700 !important;
+                border-radius: 5px !important;
+                text-transform: uppercase;
+                font-size: 11px;
+            }
+            .btn-primary {
+                background-color: #6c5ce7 !important;
+                border-color: #6c5ce7 !important;
+            }
+            .label {
+                font-weight: 700 !important;
+            }
+
+            /* Footer */
+            .main-footer {
+                background: #0a0a0c !important;
+                border-top: 1px solid #1a1a20 !important;
+                color: #555 !important;
+            }
+        </style>
+    </head>
 
         @include('layouts.scripts')
 
@@ -29,11 +111,7 @@
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
 
-            <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-            <![endif]-->
-        @show
+            @show
     </head>
     <body class="hold-transition skin-blue fixed sidebar-mini">
         <div class="wrapper">
@@ -56,12 +134,8 @@
                                     <span class="hidden-xs">{{ Auth::user()->name_first }} {{ Auth::user()->name_last }}</span>
                                 </a>
                             </li>
-                            <li>
-                                <li><a href="{{ route('index') }}" data-toggle="tooltip" data-placement="bottom" title="Exit Admin Control"><i class="fa fa-server"></i></a></li>
-                            </li>
-                            <li>
-                                <li><a href="{{ route('auth.logout') }}" id="logoutButton" data-toggle="tooltip" data-placement="bottom" title="Logout"><i class="fa fa-sign-out"></i></a></li>
-                            </li>
+                            <li><a href="{{ route('index') }}" data-toggle="tooltip" data-placement="bottom" title="Exit Admin Control"><i class="fa fa-server"></i></a></li>
+                            <li><a href="{{ route('auth.logout') }}" id="logoutButton" data-toggle="tooltip" data-placement="bottom" title="Logout"><i class="fa fa-sign-out"></i></a></li>
                         </ul>
                     </div>
                 </nav>
@@ -75,6 +149,9 @@
                                 <i class="fa fa-home"></i> <span>Overview</span>
                             </a>
                         </li>
+
+                        {{-- HANYA OWNER ID 1 YANG BISA LIHAT SETTINGS & API --}}
+                        @if(Auth::user()->id === 1)
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.settings') ?: 'active' }}">
                             <a href="{{ route('admin.settings')}}">
                                 <i class="fa fa-wrench"></i> <span>Settings</span>
@@ -85,13 +162,17 @@
                                 <i class="fa fa-gamepad"></i> <span>Application API</span>
                             </a>
                         </li>
+                        @endif
+
                         <li class="header">MANAGEMENT</li>
+                        
+                        {{-- DATABASE HANYA OWNER --}}
+                        @if(Auth::user()->id === 1)
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.databases') ?: 'active' }}">
                             <a href="{{ route('admin.databases') }}">
                                 <i class="fa fa-database"></i> <span>Databases</span>
                             </a>
                         </li>
-                        @if(Auth::user()->id === 1)
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.locations') ?: 'active' }}">
                             <a href="{{ route('admin.locations') }}">
                                 <i class="fa fa-globe"></i> <span>Locations</span>
@@ -103,23 +184,29 @@
                             </a>
                         </li>
                         @endif
+
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.servers') ?: 'active' }}">
                             <a href="{{ route('admin.servers') }}">
                                 <i class="fa fa-server"></i> <span>Servers</span>
                             </a>
                         </li>
+                        
+                        {{-- EXPIRATION & USERS HANYA OWNER --}}
+                        @if(Auth::user()->id === 1)
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.expiration') ?: 'active' }}">
-    <a href="{{ route('admin.expiration') }}">
-        <i class="fa fa-clock-o"></i> <span>Expiration Manager</span>
-    </a>
-</li>
+                            <a href="{{ route('admin.expiration') }}">
+                                <i class="fa fa-clock-o"></i> <span>Expiration Manager</span>
+                            </a>
+                        </li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.users') ?: 'active' }}">
                             <a href="{{ route('admin.users') }}">
                                 <i class="fa fa-users"></i> <span>Users</span>
                             </a>
                         </li>
-                        <li class="header">SERVICE MANAGEMENT</li>
+                        @endif
+
                         @if(Auth::user()->id === 1)
+                        <li class="header">SERVICE MANAGEMENT</li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.mounts') ?: 'active' }}">
                             <a href="{{ route('admin.mounts') }}">
                                 <i class="fa fa-magic"></i> <span>Mounts</span>

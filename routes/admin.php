@@ -7,110 +7,53 @@ use Illuminate\Http\Request;
 
 Route::get('/', [Admin\BaseController::class, 'index'])->name('admin.index');
 
-/*
-|--------------------------------------------------------------------------
-| Location Controller Routes
-|--------------------------------------------------------------------------
-|
-| Endpoint: /admin/api
-|
-*/
 Route::group(['prefix' => 'api'], function () {
     Route::get('/', [Admin\ApiController::class, 'index'])->name('admin.api.index');
     Route::get('/new', [Admin\ApiController::class, 'create'])->name('admin.api.new');
-
     Route::post('/new', [Admin\ApiController::class, 'store']);
-
     Route::delete('/revoke/{identifier}', [Admin\ApiController::class, 'delete'])->name('admin.api.delete');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Location Controller Routes
-|--------------------------------------------------------------------------
-|
-| Endpoint: /admin/locations
-|
-| DIPROTEKSI: Hanya User ID 1
-*/
 Route::group(['prefix' => 'locations', 'middleware' => function (Request $request, $next) {
     if ($request->user()->id !== 1) {
-        abort(403, 'Access Denied: Area Locations khusus Super Admin.');
+        abort(403, 'Access Denied');
     }
     return $next($request);
 }], function () {
     Route::get('/', [Admin\LocationController::class, 'index'])->name('admin.locations');
     Route::get('/view/{location:id}', [Admin\LocationController::class, 'view'])->name('admin.locations.view');
-
     Route::post('/', [Admin\LocationController::class, 'create']);
     Route::patch('/view/{location:id}', [Admin\LocationController::class, 'update']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| Database Controller Routes
-|--------------------------------------------------------------------------
-|
-| Endpoint: /admin/databases
-|
-*/
 Route::group(['prefix' => 'databases'], function () {
     Route::get('/', [Admin\DatabaseController::class, 'index'])->name('admin.databases');
     Route::get('/view/{host:id}', [Admin\DatabaseController::class, 'view'])->name('admin.databases.view');
-
     Route::post('/', [Admin\DatabaseController::class, 'create']);
     Route::patch('/view/{host:id}', [Admin\DatabaseController::class, 'update']);
     Route::delete('/view/{host:id}', [Admin\DatabaseController::class, 'delete']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| Settings Controller Routes
-|--------------------------------------------------------------------------
-|
-| Endpoint: /admin/settings
-|
-*/
 Route::group(['prefix' => 'settings'], function () {
     Route::get('/', [Admin\Settings\IndexController::class, 'index'])->name('admin.settings');
     Route::get('/mail', [Admin\Settings\MailController::class, 'index'])->name('admin.settings.mail');
     Route::get('/advanced', [Admin\Settings\AdvancedController::class, 'index'])->name('admin.settings.advanced');
-
     Route::post('/mail/test', [Admin\Settings\MailController::class, 'test'])->name('admin.settings.mail.test');
-
     Route::patch('/', [Admin\Settings\IndexController::class, 'update']);
     Route::patch('/mail', [Admin\Settings\MailController::class, 'update']);
     Route::patch('/advanced', [Admin\Settings\AdvancedController::class, 'update']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| User Controller Routes
-|--------------------------------------------------------------------------
-|
-| Endpoint: /admin/users
-|
-*/
 Route::group(['prefix' => 'users'], function () {
     Route::get('/', [Admin\UserController::class, 'index'])->name('admin.users');
     Route::get('/accounts.json', [Admin\UserController::class, 'json'])->name('admin.users.json');
     Route::get('/new', [Admin\UserController::class, 'create'])->name('admin.users.new');
     Route::get('/view/{user:id}', [Admin\UserController::class, 'view'])->name('admin.users.view');
-
     Route::post('/new', [Admin\UserController::class, 'store']);
-
     Route::patch('/view/{user:id}', [Admin\UserController::class, 'update']);
     Route::delete('/view/{user:id}', [Admin\UserController::class, 'delete'])->name('admin.users.delete');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Server Controller Routes
-|--------------------------------------------------------------------------
-|
-| Endpoint: /admin/servers
-|
-*/
 Route::group(['prefix' => 'servers'], function () {
     Route::get('/', [Admin\Servers\ServerController::class, 'index'])->name('admin.servers');
     Route::get('/new', [Admin\Servers\CreateServerController::class, 'index'])->name('admin.servers.new');
@@ -142,22 +85,12 @@ Route::group(['prefix' => 'servers'], function () {
     Route::patch('/view/{server:id}/database', [Admin\ServersController::class, 'resetDatabasePassword']);
 
     Route::delete('/view/{server:id}/database/{database:id}/delete', [Admin\ServersController::class, 'deleteDatabase'])->name('admin.servers.view.database.delete');
-    Route::delete('/view/{server:id}/mounts/{mount:id}', [Admin\ServersController::class, 'deleteMount'])
-        ->name('admin.servers.view.mounts.delete');
+    Route::delete('/view/{server:id}/mounts/{mount:id}', [Admin\ServersController::class, 'deleteMount'])->name('admin.servers.view.mounts.delete');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Node Controller Routes
-|--------------------------------------------------------------------------
-|
-| Endpoint: /admin/nodes
-|
-| DIPROTEKSI: Hanya User ID 1
-*/
 Route::group(['prefix' => 'nodes', 'middleware' => function (Request $request, $next) {
     if ($request->user()->id !== 1) {
-        abort(403, 'Access Denied: Area Nodes khusus Super Admin.');
+        abort(403, 'Access Denied');
     }
     return $next($request);
 }], function () {
@@ -183,46 +116,25 @@ Route::group(['prefix' => 'nodes', 'middleware' => function (Request $request, $
     Route::delete('/view/{node:id}/allocations', [Admin\NodesController::class, 'allocationRemoveMultiple'])->name('admin.nodes.view.allocation.removeMultiple');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Mount Controller Routes
-|--------------------------------------------------------------------------
-|
-| Endpoint: /admin/mounts
-|
-| DIPROTEKSI: Hanya User ID 1
-*/
 Route::group(['prefix' => 'mounts', 'middleware' => function (Request $request, $next) {
     if ($request->user()->id !== 1) {
-        abort(403, 'Access Denied: Area Mounts khusus Super Admin.');
+        abort(403, 'Access Denied');
     }
     return $next($request);
 }], function () {
     Route::get('/', [Admin\MountController::class, 'index'])->name('admin.mounts');
     Route::get('/view/{mount:id}', [Admin\MountController::class, 'view'])->name('admin.mounts.view');
-
     Route::post('/', [Admin\MountController::class, 'create']);
     Route::post('/{mount:id}/eggs', [Admin\MountController::class, 'addEggs'])->name('admin.mounts.eggs');
     Route::post('/{mount:id}/nodes', [Admin\MountController::class, 'addNodes'])->name('admin.mounts.nodes');
-
     Route::patch('/view/{mount:id}', [Admin\MountController::class, 'update']);
-
     Route::delete('/{mount:id}/eggs/{egg_id}', [Admin\MountController::class, 'deleteEgg']);
     Route::delete('/{mount:id}/nodes/{node_id}', [Admin\MountController::class, 'deleteNode']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| Nest Controller Routes
-|--------------------------------------------------------------------------
-|
-| Endpoint: /admin/nests
-|
-| DIPROTEKSI: Hanya User ID 1
-*/
 Route::group(['prefix' => 'nests', 'middleware' => function (Request $request, $next) {
     if ($request->user()->id !== 1) {
-        abort(403, 'Access Denied: Area Nests/Eggs khusus Super Admin.');
+        abort(403, 'Access Denied');
     }
     return $next($request);
 }], function () {
@@ -252,18 +164,7 @@ Route::group(['prefix' => 'nests', 'middleware' => function (Request $request, $
     Route::delete('/egg/{egg:id}/variables/{variable:id}', [Admin\Nests\EggVariableController::class, 'destroy']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| Expiration Manager Routes (Custom)
-|--------------------------------------------------------------------------
-|
-| Endpoint: /admin/expiration
-|
-*/
 Route::group(['prefix' => 'expiration'], function () {
-    // Halaman utama list server expired
     Route::get('/', [Admin\ExpirationController::class, 'index'])->name('admin.expiration');
-    
-    // Action tombol untuk tambah hari
-    Route::post('/{server}', [Admin\ExpirationController::class, 'update'])->name('admin.expiration.update');
+    Route::post('/{id}', [Admin\ExpirationController::class, 'update'])->name('admin.expiration.update');
 });

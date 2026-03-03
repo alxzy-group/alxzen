@@ -13,6 +13,7 @@ use Pterodactyl\Repositories\Eloquent\ServerRepository;
 use Pterodactyl\Traits\Controllers\JavascriptInjection;
 use Pterodactyl\Services\Helpers\SoftwareVersionService;
 use Pterodactyl\Repositories\Eloquent\LocationRepository;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class NodeViewController extends Controller
 {
@@ -30,10 +31,22 @@ class NodeViewController extends Controller
     }
 
     /**
+     * Helper untuk validasi Super Admin (ID 1)
+     */
+    protected function validateOwner(Request $request)
+    {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Detail infrastruktur Node hanya boleh diakses oleh Super Admin.');
+        }
+    }
+
+    /**
      * Returns index view for a specific node on the system.
      */
     public function index(Request $request, Node $node): View
     {
+        $this->validateOwner($request);
+
         $node = $this->repository->loadLocationAndServerCount($node);
 
         return view('admin.nodes.view.index', [
@@ -48,6 +61,8 @@ class NodeViewController extends Controller
      */
     public function settings(Request $request, Node $node): View
     {
+        $this->validateOwner($request);
+
         return view('admin.nodes.view.settings', [
             'node' => $node,
             'locations' => $this->locationRepository->all(),
@@ -56,9 +71,12 @@ class NodeViewController extends Controller
 
     /**
      * Return the node configuration page for a specific node.
+     * SANGAT KRUSIAL: Berisi Token Wings.
      */
     public function configuration(Request $request, Node $node): View
     {
+        $this->validateOwner($request);
+
         return view('admin.nodes.view.configuration', compact('node'));
     }
 
@@ -67,6 +85,8 @@ class NodeViewController extends Controller
      */
     public function allocations(Request $request, Node $node): View
     {
+        $this->validateOwner($request);
+
         $node = $this->repository->loadNodeAllocations($node);
 
         $this->plainInject(['node' => Collection::make([$node])->only(['id'])]);
@@ -85,6 +105,8 @@ class NodeViewController extends Controller
      */
     public function servers(Request $request, Node $node): View
     {
+        $this->validateOwner($request);
+
         $this->plainInject([
             'node' => Collection::make([$node->makeVisible(['daemon_token_id', 'daemon_token'])])
                 ->only(['scheme', 'fqdn', 'daemonListen', 'daemon_token_id', 'daemon_token']),

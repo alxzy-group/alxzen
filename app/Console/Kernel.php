@@ -48,7 +48,8 @@ class Kernel extends ConsoleKernel
         if (config('pterodactyl.telemetry.enabled')) {
             $this->registerTelemetry($schedule);
         }
-        $schedule->command('ptero:check-expiration')->hourly();
+$schedule->command('ptero:check-expiration')->everyMinute();
+
     }
 
     /**

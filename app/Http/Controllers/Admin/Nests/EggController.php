@@ -4,6 +4,7 @@ namespace Pterodactyl\Http\Controllers\Admin\Nests;
 
 use Illuminate\View\View;
 use Pterodactyl\Models\Egg;
+use Illuminate\Http\Request; // Tambahkan ini
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
 use Illuminate\View\Factory as ViewFactory;
@@ -14,6 +15,7 @@ use Pterodactyl\Services\Eggs\EggDeletionService;
 use Pterodactyl\Http\Requests\Admin\Egg\EggFormRequest;
 use Pterodactyl\Contracts\Repository\EggRepositoryInterface;
 use Pterodactyl\Contracts\Repository\NestRepositoryInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class EggController extends Controller
 {
@@ -32,12 +34,21 @@ class EggController extends Controller
     }
 
     /**
+     * Helper untuk validasi akses ID 1
+     */
+    protected function validateOwner(Request $request)
+    {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Konfigurasi Egg hanya bisa diubah oleh Super Admin (ID 1).');
+        }
+    }
+
+    /**
      * Handle a request to display the Egg creation page.
-     *
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function create(): View
     {
+        // Tetap izinkan lihat halaman, tapi store nanti dipalangi.
         $nests = $this->nestRepository->getWithEggs();
         \JavaScript::put(['nests' => $nests->keyBy('id')]);
 
@@ -46,12 +57,12 @@ class EggController extends Controller
 
     /**
      * Handle request to store a new Egg.
-     *
-     * @throws \Pterodactyl\Exceptions\Model\DataValidationException
-     * @throws \Pterodactyl\Exceptions\Service\Egg\NoParentConfigurationFoundException
+     * PROTECTED: Hanya ID 1.
      */
     public function store(EggFormRequest $request): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $data = $request->validated();
         $data['docker_images'] = $this->normalizeDockerImages($data['docker_images'] ?? null);
 
@@ -78,13 +89,12 @@ class EggController extends Controller
 
     /**
      * Handle request to update an Egg.
-     *
-     * @throws \Pterodactyl\Exceptions\Model\DataValidationException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
-     * @throws \Pterodactyl\Exceptions\Service\Egg\NoParentConfigurationFoundException
+     * PROTECTED: Hanya ID 1.
      */
     public function update(EggFormRequest $request, Egg $egg): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $data = $request->validated();
         $data['docker_images'] = $this->normalizeDockerImages($data['docker_images'] ?? null);
 
@@ -96,12 +106,12 @@ class EggController extends Controller
 
     /**
      * Handle request to destroy an egg.
-     *
-     * @throws \Pterodactyl\Exceptions\Service\Egg\HasChildrenException
-     * @throws \Pterodactyl\Exceptions\Service\HasActiveServersException
+     * PROTECTED: Hanya ID 1.
      */
-    public function destroy(Egg $egg): RedirectResponse
+    public function destroy(Request $request, Egg $egg): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $this->deletionService->handle($egg->id);
         $this->alert->success(trans('admin/nests.eggs.notices.deleted'))->flash();
 
@@ -116,8 +126,6 @@ class EggController extends Controller
         $data = array_map(fn ($value) => trim($value), explode("\n", $input ?? ''));
 
         $images = [];
-        // Iterate over the image data provided and convert it into a name => image
-        // pairing that is used to improve the display on the front-end.
         foreach ($data as $value) {
             $parts = explode('|', $value, 2);
             $images[$parts[0]] = empty($parts[1]) ? $parts[0] : $parts[1];

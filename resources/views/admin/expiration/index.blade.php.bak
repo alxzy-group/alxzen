@@ -34,38 +34,27 @@
                     <thead>
                         <tr>
                             <th>Server Name</th>
-                            <th>Owner</th> <th>Node</th>  <th>Expired At</th>
+                            <th>Expired At</th>
                             <th>Status</th>
-                            <th class="text-right" style="width: 250px;">Action</th>
+                            <th class="text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($servers as $server)
                             <tr>
-                                <td style="vertical-align: middle;">
-                                    <a href="{{ route('admin.servers.view', $server->id) }}" style="font-weight: bold;">{{ $server->name }}</a>
+                                <td>
+                                    <a href="{{ route('admin.servers.view', $server->id) }}">{{ $server->name }}</a>
                                 </td>
 
-                                <td style="vertical-align: middle;">
-                                    <a href="{{ route('admin.users.view', $server->user->id) }}">{{ $server->user->username }}</a>
-                                    <br>
-                                    <small class="text-muted">{{ $server->user->email }}</small>
-                                </td>
-
-                                <td style="vertical-align: middle;">
-                                    {{ $server->node->name }}
-                                </td>
-
-                                <td style="vertical-align: middle;">
+                                <td>
                                     @if($server->expires_at)
-                                        {{ $server->expires_at->format('d M Y') }} <br>
-                                        <small>{{ $server->expires_at->format('H:i') }}</small>
+                                        {{ $server->expires_at->format('d M Y H:i') }}
                                     @else
                                         <span class="text-muted">Unlimited</span>
                                     @endif
                                 </td>
 
-                                <td style="vertical-align: middle;">
+                                <td>
                                     @if(!$server->expires_at)
                                         <span class="label label-default">Unlimited</span>
                                     @elseif($server->expires_at->isPast())
@@ -77,22 +66,12 @@
                                     @endif
                                 </td>
 
-                                <td class="text-right" style="vertical-align: middle;">
+                                <td class="text-right">
                                     <form action="{{ route('admin.expiration.update', $server->id) }}" method="POST">
                                         {!! csrf_field() !!}
-                                        <div class="input-group input-group-sm">
-                                            <input type="date" name="new_date" class="form-control" title="Pick a specific date">
-                                            
-                                            <div class="input-group-btn">
-                                                <button type="submit" class="btn btn-primary" title="Set to selected date">
-                                                    <i class="fa fa-calendar-check-o"></i>
-                                                </button>
-                                                
-                                                <button type="submit" name="days" value="30" class="btn btn-success" title="Add 30 Days from now/current expiry">
-                                                    +30D
-                                                </button>
-                                            </div>
-                                        </div>
+                                        <button type="submit" class="btn btn-xs btn-primary">
+                                            <i class="fa fa-plus-circle"></i> +30 Days
+                                        </button>
                                     </form>
                                 </td>
                             </tr>

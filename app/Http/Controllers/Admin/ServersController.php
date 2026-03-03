@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
 use Pterodactyl\Exceptions\DisplayException;
 use Pterodactyl\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth; // Tambahan untuk keamanan
 use Illuminate\Validation\ValidationException;
 use Pterodactyl\Services\Servers\SuspensionService;
 use Pterodactyl\Repositories\Eloquent\MountRepository;
@@ -63,9 +64,6 @@ class ServersController extends Controller
 
     /**
      * Update the details for a server.
-     *
-     * @throws DataValidationException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function setDetails(Request $request, Server $server): RedirectResponse
     {
@@ -80,10 +78,6 @@ class ServersController extends Controller
 
     /**
      * Toggles the installation status for a server.
-     *
-     * @throws DisplayException
-     * @throws DataValidationException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
      */
     public function toggleInstall(Server $server): RedirectResponse
     {
@@ -101,14 +95,16 @@ class ServersController extends Controller
     }
 
     /**
-     * Reinstalls the server with the currently assigned service.
-     *
-     * @throws DisplayException
-     * @throws DataValidationException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
+     * Reinstalls the server.
+     * PROTECTED: Hanya ID 1 yang bisa eksekusi.
      */
-    public function reinstallServer(Server $server): RedirectResponse
+    public function reinstallServer(Request $request, Server $server): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            $this->alert->danger('Akses ditolak! Fitur reinstall hanya untuk Owner.')->flash();
+            return redirect()->back();
+        }
+
         $this->reinstallService->handle($server);
         $this->alert->success(trans('admin/server.alerts.server_reinstalled'))->flash();
 
@@ -117,13 +113,15 @@ class ServersController extends Controller
 
     /**
      * Manage the suspension status for a server.
-     *
-     * @throws DisplayException
-     * @throws DataValidationException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
+     * PROTECTED: Hanya ID 1 yang bisa eksekusi.
      */
     public function manageSuspension(Request $request, Server $server): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            $this->alert->danger('Akses ditolak! Fitur suspend hanya untuk Owner.')->flash();
+            return redirect()->back();
+        }
+
         $this->suspensionService->toggle($server, $request->input('action'));
         $this->alert->success(trans('admin/server.alerts.suspension_toggled', [
             'status' => $request->input('action') . 'ed',
@@ -134,10 +132,6 @@ class ServersController extends Controller
 
     /**
      * Update the build configuration for a server.
-     *
-     * @throws DisplayException
-     * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
-     * @throws ValidationException
      */
     public function updateBuild(Request $request, Server $server): RedirectResponse
     {
@@ -158,12 +152,15 @@ class ServersController extends Controller
 
     /**
      * Start the server deletion process.
-     *
-     * @throws DisplayException
-     * @throws \Throwable
+     * PROTECTED: Hanya ID 1 yang bisa eksekusi.
      */
     public function delete(Request $request, Server $server): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            $this->alert->danger('PERINGATAN: Kamu tidak memiliki izin untuk menghapus server!')->flash();
+            return redirect()->back();
+        }
+
         $this->deletionService->withForce($request->filled('force_delete'))->handle($server);
         $this->alert->success(trans('admin/server.alerts.server_deleted'))->flash();
 
@@ -172,8 +169,6 @@ class ServersController extends Controller
 
     /**
      * Update the startup command as well as variables.
-     *
-     * @throws ValidationException
      */
     public function saveStartup(Request $request, Server $server): RedirectResponse
     {
@@ -198,8 +193,6 @@ class ServersController extends Controller
 
     /**
      * Creates a new database assigned to a specific server.
-     *
-     * @throws \Throwable
      */
     public function newDatabase(StoreServerDatabaseRequest $request, Server $server): RedirectResponse
     {
@@ -214,9 +207,7 @@ class ServersController extends Controller
     }
 
     /**
-     * Resets the database password for a specific database on this server.
-     *
-     * @throws \Throwable
+     * Resets the database password.
      */
     public function resetDatabasePassword(Request $request, Server $server): Response
     {
@@ -230,11 +221,13 @@ class ServersController extends Controller
 
     /**
      * Deletes a database from a server.
-     *
-     * @throws \Exception
      */
-    public function deleteDatabase(Server $server, Database $database): Response
+    public function deleteDatabase(Request $request, Server $server, Database $database): Response
     {
+        if ($request->user()->id !== 1) {
+            return response('Unauthorized', 403);
+        }
+
         $this->databaseManagementService->delete($database);
 
         return response('', 204);
@@ -242,8 +235,6 @@ class ServersController extends Controller
 
     /**
      * Add a mount to a server.
-     *
-     * @throws \Throwable
      */
     public function addMount(Request $request, Server $server): RedirectResponse
     {
@@ -262,8 +253,13 @@ class ServersController extends Controller
     /**
      * Remove a mount from a server.
      */
-    public function deleteMount(Server $server, Mount $mount): RedirectResponse
+    public function deleteMount(Request $request, Server $server, Mount $mount): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+             $this->alert->danger('Akses ditolak!')->flash();
+             return redirect()->back();
+        }
+
         MountServer::where('mount_id', $mount->id)->where('server_id', $server->id)->delete();
 
         $this->alert->success('Mount was removed successfully.')->flash();
