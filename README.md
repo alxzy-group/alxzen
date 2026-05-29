@@ -1,9 +1,10 @@
 # [![alxzen Logo](https://cdn.pterodactyl.io/logos/new/pterodactyl_logo.png)](https://github.com/alxzy-group/alxzen)
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/pterodactyl/panel/ci.yaml?label=Tests&style=for-the-badge)
-![Theme Version](https://img.shields.io/badge/Theme-alxzen_v2.0-6c5ce7?style=for-the-badge)
+![Theme Version](https://img.shields.io/badge/Theme-alxzen_v2.1-6c5ce7?style=for-the-badge)
 ![Protect Version](https://img.shields.io/badge/Protect-v3.0-success?style=for-the-badge)
 ![Discord](https://img.shields.io/discord/122900397965705216?label=Discord&logo=Discord&logoColor=white&style=for-the-badge)
+![Route Cache](https://img.shields.io/badge/artisan_route%3Acache-✅_Compatible-00b894?style=for-the-badge)
 
 # alxzen Panel
 
@@ -20,6 +21,7 @@ Stop settling for generic. Make your platform stand out with a first-class citiz
 * **Auto-Suspension System**: Native integration with the Pterodactyl suspension engine for expired instances.
 * **Hardcoded Branding**: Permanent brand integrity for **alxzen** and **alxzy/alan** across the system.
 * **Root Protection v3.0**: Enhanced middleware restrictions ensuring core settings remain exclusive to the primary administrator.
+* **Route Cache Compatible**: All admin routes use proper middleware classes — `php artisan optimize` and `php artisan route:cache` work without errors.
 
 ---
 
@@ -77,7 +79,7 @@ php artisan key:generate --force
 
 ### 3. Finalization
 
-Before finalizing, edit your `.env` file (`nano .env`) and configure your database details (using the password `YOUR_PASSWORD_HERE` you created earlier), Redis, and App URL. 
+Before finalizing, edit your `.env` file (`nano .env`) and configure your database details (using the password `YOUR_PASSWORD_HERE` you created earlier), Redis, and App URL.
 
 ```bash
 # Database setup and Permissions
@@ -90,6 +92,9 @@ php artisan p:user:make
 # Set Permissions
 chown -R www-data:www-data /var/www/pterodactyl/*
 chown -R www-data:www-data /var/www/pterodactyl/.*
+
+# Route cache & optimization (compatible since v2.1)
+php artisan optimize
 ```
 
 *(Note: Don't forget to configure your Nginx virtual host and crontab as per the standard Pterodactyl documentation).*
@@ -112,12 +117,8 @@ cp .env ../.env.backup
 # Remove old files (excluding storage and .env)
 rm -rf app bootstrap config database public resources routes tests .editorconfig .env.example .eslintignore .eslintrc.js .gitattributes .gitignore .prettierignore .prettierrc artisan babel.config.js composer.json composer.lock jest.config.js package.json phpstan.neon postcss.config.js SECURITY.md tailwind.config.js tsconfig.json webpack.config.js yarn.lock
 
-# Download and extract the alxzen release (assuming a release tar.gz is provided, or clone over it)
-# Since alxzen is a full fork, you can download the tar.gz from the GitHub release tab:
+# Download and extract the alxzen release
 curl -L https://github.com/alxzy-group/alxzen/releases/latest/download/panel.tar.gz | tar -xzv
-
-# Ensure your .env is intact (it wasn't deleted in the rm command above, but just in case)
-# cp ../.env.backup .env
 
 # Install Dependencies
 composer install --no-dev --optimize-autoloader
@@ -131,6 +132,9 @@ chown -R www-data:www-data /var/www/pterodactyl/*
 chown -R www-data:www-data /var/www/pterodactyl/.*
 php artisan up
 php artisan queue:restart
+
+# Route cache (compatible since v2.1)
+php artisan optimize
 ```
 
 ---
@@ -145,3 +149,84 @@ mkdir -p /etc/pterodactyl
 curl -L -o /usr/local/bin/wings https://github.com/alxzy-group/wings/releases/latest/download/wings_linux_amd64
 chmod u+x /usr/local/bin/wings
 ```
+
+---
+
+## Troubleshooting
+
+### ❌ `php artisan optimize` / `php artisan route:cache` Error
+
+**Error:** `Call to undefined method Closure::__set_state()`
+
+**Cause:** Sebelum v2.1, beberapa route group di `routes/admin.php` menggunakan inline Closure sebagai middleware. Laravel tidak bisa meng-cache Closure/anonymous function ke file PHP.
+
+**Status:** ✅ **Fixed in v2.1** — Semua Closure middleware diganti dengan class `App\Http\Middleware\Admin\RequireAdminUserId`. Jalankan `php artisan optimize` dengan aman.
+
+---
+
+### ❌ WebSocket Error: "There was an error validating the credentials provided for the websocket"
+
+Error ini **bukan dari kode tema** — frontend alxzen tidak memiliki hardcoded URL. Error ini terjadi karena Wings menolak JWT token yang dikirim panel. Biasanya terjadi pada instalasi fresh atau migrasi VPS.
+
+**Penyebab & Fix:**
+
+#### 1. Wings belum dikonfigurasi di node
+
+```bash
+# Cek status Wings
+systemctl status wings
+
+# Jika belum setup: Admin Panel → Nodes → [Node] → Auto-Deploy
+# Salin perintah yang diberikan, jalankan di VPS node, lalu:
+systemctl enable --now wings
+```
+
+#### 2. FQDN Node tidak bisa diakses dari internet
+
+```bash
+# Admin Panel → Nodes → [Node] → Settings
+# Pastikan FQDN bisa di-resolve dari luar VPS
+# Buka port Wings di firewall:
+ufw allow 8080
+ufw allow 2022
+```
+
+#### 3. SSL mismatch (Panel HTTPS, Wings HTTP)
+
+Jika panel menggunakan `https://`, Wings **wajib** pakai SSL juga. Browser akan memblokir koneksi `wss://` ke Wings yang tidak ber-SSL.
+
+```yaml
+# /etc/pterodactyl/config.yml
+ssl:
+  enabled: true
+  cert: /etc/letsencrypt/live/node.domain.com/fullchain.pem
+  key: /etc/letsencrypt/live/node.domain.com/privkey.pem
+```
+
+```bash
+systemctl restart wings
+```
+
+#### 4. Database belum di-migrate
+
+```bash
+php artisan migrate --force
+```
+
+---
+
+## Changelog
+
+### v2.1 — Route Cache Fix & Stability
+- **fix:** Replaced all 4 inline Closure middleware in `routes/admin.php` with proper `RequireAdminUserId` middleware class
+- **fix:** `php artisan route:cache` and `php artisan optimize` now work on any VPS without errors
+- **feat:** Registered `admin.superuser` middleware alias in `Kernel.php`
+- **docs:** Added Troubleshooting section for WebSocket and artisan errors
+- **docs:** Added Changelog section
+- **chore:** Removed unused `use Illuminate\Http\Request` import from `routes/admin.php`
+
+### v2.0
+- Initial alxzen theme release with Dark Purple UI
+- Expiration Manager with auto-suspension system
+- Root Protection v3.0
+- Integrated Wings fork support

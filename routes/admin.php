@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Pterodactyl\Http\Controllers\Admin;
 use Pterodactyl\Http\Middleware\Admin\Servers\ServerInstalled;
-use Illuminate\Http\Request;
 
 Route::get('/', [Admin\BaseController::class, 'index'])->name('admin.index');
 
@@ -14,12 +13,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::delete('/revoke/{identifier}', [Admin\ApiController::class, 'delete'])->name('admin.api.delete');
 });
 
-Route::group(['prefix' => 'locations', 'middleware' => function (Request $request, $next) {
-    if ($request->user()->id !== 1) {
-        abort(403, 'Access Denied');
-    }
-    return $next($request);
-}], function () {
+Route::group(['prefix' => 'locations', 'middleware' => 'admin.superuser'], function () {
     Route::get('/', [Admin\LocationController::class, 'index'])->name('admin.locations');
     Route::get('/view/{location:id}', [Admin\LocationController::class, 'view'])->name('admin.locations.view');
     Route::post('/', [Admin\LocationController::class, 'create']);
@@ -88,12 +82,7 @@ Route::group(['prefix' => 'servers'], function () {
     Route::delete('/view/{server:id}/mounts/{mount:id}', [Admin\ServersController::class, 'deleteMount'])->name('admin.servers.view.mounts.delete');
 });
 
-Route::group(['prefix' => 'nodes', 'middleware' => function (Request $request, $next) {
-    if ($request->user()->id !== 1) {
-        abort(403, 'Access Denied');
-    }
-    return $next($request);
-}], function () {
+Route::group(['prefix' => 'nodes', 'middleware' => 'admin.superuser'], function () {
     Route::get('/', [Admin\Nodes\NodeController::class, 'index'])->name('admin.nodes');
     Route::get('/new', [Admin\NodesController::class, 'create'])->name('admin.nodes.new');
     Route::get('/view/{node:id}', [Admin\Nodes\NodeViewController::class, 'index'])->name('admin.nodes.view');
@@ -116,12 +105,7 @@ Route::group(['prefix' => 'nodes', 'middleware' => function (Request $request, $
     Route::delete('/view/{node:id}/allocations', [Admin\NodesController::class, 'allocationRemoveMultiple'])->name('admin.nodes.view.allocation.removeMultiple');
 });
 
-Route::group(['prefix' => 'mounts', 'middleware' => function (Request $request, $next) {
-    if ($request->user()->id !== 1) {
-        abort(403, 'Access Denied');
-    }
-    return $next($request);
-}], function () {
+Route::group(['prefix' => 'mounts', 'middleware' => 'admin.superuser'], function () {
     Route::get('/', [Admin\MountController::class, 'index'])->name('admin.mounts');
     Route::get('/view/{mount:id}', [Admin\MountController::class, 'view'])->name('admin.mounts.view');
     Route::post('/', [Admin\MountController::class, 'create']);
@@ -132,12 +116,7 @@ Route::group(['prefix' => 'mounts', 'middleware' => function (Request $request, 
     Route::delete('/{mount:id}/nodes/{node_id}', [Admin\MountController::class, 'deleteNode']);
 });
 
-Route::group(['prefix' => 'nests', 'middleware' => function (Request $request, $next) {
-    if ($request->user()->id !== 1) {
-        abort(403, 'Access Denied');
-    }
-    return $next($request);
-}], function () {
+Route::group(['prefix' => 'nests', 'middleware' => 'admin.superuser'], function () {
     Route::get('/', [Admin\Nests\NestController::class, 'index'])->name('admin.nests');
     Route::get('/new', [Admin\Nests\NestController::class, 'create'])->name('admin.nests.new');
     Route::get('/view/{nest:id}', [Admin\Nests\NestController::class, 'view'])->name('admin.nests.view');
