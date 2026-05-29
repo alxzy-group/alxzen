@@ -1,0 +1,10 @@
+diff a/app/Http/Controllers/Api/Client/Servers/BackupController.php b/app/Http/Controllers/Api/Client/Servers/BackupController.php	(rejected hunks)
+@@ -78,7 +78,7 @@ class BackupController extends ClientApiController
+         }
+ 
+         $backup = Activity::event('server:backup.start')->transaction(function ($log) use ($action, $server, $request) {
+-            $server->backups()->lockForUpdate();
++            $server->backups()->lockForUpdate()->count();
+ 
+             $backup = $action->handle($server, $request->input('name'));
+ 

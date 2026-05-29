@@ -4,6 +4,7 @@ namespace Pterodactyl\Http\Controllers\Api\Client\Servers;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Response;
+use Pterodactyl\Enum\JwtScope;
 use Pterodactyl\Models\Server;
 use Illuminate\Http\JsonResponse;
 use Pterodactyl\Facades\Activity;
@@ -22,7 +23,6 @@ use Pterodactyl\Http\Requests\Api\Client\Servers\Files\CompressFilesRequest;
 use Pterodactyl\Http\Requests\Api\Client\Servers\Files\DecompressFilesRequest;
 use Pterodactyl\Http\Requests\Api\Client\Servers\Files\GetFileContentsRequest;
 use Pterodactyl\Http\Requests\Api\Client\Servers\Files\WriteFileContentRequest;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class FileController extends ClientApiController
 {
@@ -37,24 +37,12 @@ class FileController extends ClientApiController
     }
 
     /**
-     * Helper untuk validasi akses admin nakal.
-     */
-    protected function validateAccess($request, Server $server)
-    {
-        $user = $request->user();
-        // Jika user adalah Admin tapi bukan ID 1, dan bukan pemilik server, blokir.
-        if ($user->root_admin && $user->id !== 1 && $user->id !== $server->owner_id) {
-            throw new HttpException(403, 'Anda tidak diizinkan mengakses file manager server ini.');
-        }
-    }
-
-    /**
      * Returns a listing of files in a given directory.
+     *
+     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
      */
     public function directory(ListFilesRequest $request, Server $server): array
     {
-        $this->validateAccess($request, $server);
-
         $contents = $this->fileRepository
             ->setServer($server)
             ->getDirectory($request->get('directory') ?? '/');
@@ -66,11 +54,11 @@ class FileController extends ClientApiController
 
     /**
      * Return the contents of a specified file for the user.
+     *
+     * @throws \Throwable
      */
     public function contents(GetFileContentsRequest $request, Server $server): Response
     {
-        $this->validateAccess($request, $server);
-
         $response = $this->fileRepository->setServer($server)->getContent(
             $request->get('file'),
             config('pterodactyl.files.max_edit_size')
@@ -82,12 +70,13 @@ class FileController extends ClientApiController
     }
 
     /**
-     * Generates a one-time token for download.
+     * Generates a one-time token with a link that the user can use to
+     * download a given file.
+     *
+     * @throws \Throwable
      */
     public function download(GetFileContentsRequest $request, Server $server): array
     {
-        $this->validateAccess($request, $server);
-
         $token = $this->jwtService
             ->setExpiresAt(CarbonImmutable::now()->addMinutes(15))
             ->setUser($request->user())
@@ -95,6 +84,7 @@ class FileController extends ClientApiController
                 'file_path' => rawurldecode($request->get('file')),
                 'server_uuid' => $server->uuid,
             ])
+            ->setScopes(JwtScope::FileDownload)
             ->handle($server->node, $request->user()->id . $server->uuid);
 
         Activity::event('server:file.download')->property('file', $request->get('file'))->log();
@@ -112,12 +102,12 @@ class FileController extends ClientApiController
     }
 
     /**
-     * Writes the contents of the specified file.
+     * Writes the contents of the specified file to the server.
+     *
+     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
      */
     public function write(WriteFileContentRequest $request, Server $server): JsonResponse
     {
-        $this->validateAccess($request, $server);
-
         $this->fileRepository->setServer($server)->putContent($request->get('file'), $request->getContent());
 
         Activity::event('server:file.write')->property('file', $request->get('file'))->log();
@@ -127,11 +117,11 @@ class FileController extends ClientApiController
 
     /**
      * Creates a new folder on the server.
+     *
+     * @throws \Throwable
      */
     public function create(CreateFolderRequest $request, Server $server): JsonResponse
     {
-        $this->validateAccess($request, $server);
-
         $this->fileRepository
             ->setServer($server)
             ->createDirectory($request->input('name'), $request->input('root', '/'));
@@ -146,11 +136,11 @@ class FileController extends ClientApiController
 
     /**
      * Renames a file on the remote machine.
+     *
+     * @throws \Throwable
      */
     public function rename(RenameFileRequest $request, Server $server): JsonResponse
     {
-        $this->validateAccess($request, $server);
-
         $this->fileRepository
             ->setServer($server)
             ->renameFiles($request->input('root'), $request->input('files'));
@@ -165,11 +155,11 @@ class FileController extends ClientApiController
 
     /**
      * Copies a file on the server.
+     *
+     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
      */
     public function copy(CopyFileRequest $request, Server $server): JsonResponse
     {
-        $this->validateAccess($request, $server);
-
         $this->fileRepository
             ->setServer($server)
             ->copyFile($request->input('location'));
@@ -180,12 +170,10 @@ class FileController extends ClientApiController
     }
 
     /**
-     * Compress files.
+     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
      */
     public function compress(CompressFilesRequest $request, Server $server): array
     {
-        $this->validateAccess($request, $server);
-
         $file = $this->fileRepository->setServer($server)->compressFiles(
             $request->input('root'),
             $request->input('files')
@@ -202,11 +190,10 @@ class FileController extends ClientApiController
     }
 
     /**
-     * Decompress a file.
+     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
      */
     public function decompress(DecompressFilesRequest $request, Server $server): JsonResponse
     {
-        $this->validateAccess($request, $server);
         set_time_limit(300);
 
         $this->fileRepository->setServer($server)->decompressFile(
@@ -223,12 +210,12 @@ class FileController extends ClientApiController
     }
 
     /**
-     * Deletes files or folders.
+     * Deletes files or folders for the server in the given root directory.
+     *
+     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
      */
     public function delete(DeleteFileRequest $request, Server $server): JsonResponse
     {
-        $this->validateAccess($request, $server);
-
         $this->fileRepository->setServer($server)->deleteFiles(
             $request->input('root'),
             $request->input('files')
@@ -243,12 +230,12 @@ class FileController extends ClientApiController
     }
 
     /**
-     * Updates file permissions.
+     * Updates file permissions for file(s) in the given root directory.
+     *
+     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
      */
     public function chmod(ChmodFilesRequest $request, Server $server): JsonResponse
     {
-        $this->validateAccess($request, $server);
-
         $this->fileRepository->setServer($server)->chmodFiles(
             $request->input('root'),
             $request->input('files')
@@ -258,12 +245,12 @@ class FileController extends ClientApiController
     }
 
     /**
-     * Pull a file from remote URL.
+     * Requests that a file be downloaded from a remote location by Wings.
+     *
+     * @throws \Throwable
      */
     public function pull(PullFileRequest $request, Server $server): JsonResponse
     {
-        $this->validateAccess($request, $server);
-
         $this->fileRepository->setServer($server)->pull(
             $request->input('url'),
             $request->input('directory'),
