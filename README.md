@@ -109,31 +109,38 @@ If you already have a working Pterodactyl panel installed and want to switch to 
 cd /var/www/pterodactyl
 php artisan down
 
-# Backup your existing .env and other crucial files
+# ── STEP 1: Backup .env ──────────────────────────────────────────────────────
 cp .env ../.env.backup
-# Optional: backup the whole directory just in case
+# Optional: backup seluruh folder
 # cp -r /var/www/pterodactyl /var/www/pterodactyl_backup
 
-# Remove old files (excluding storage and .env)
-rm -rf app bootstrap config database public resources routes tests .editorconfig .env.example .eslintignore .eslintrc.js .gitattributes .gitignore .prettierignore .prettierrc artisan babel.config.js composer.json composer.lock jest.config.js package.json phpstan.neon postcss.config.js SECURITY.md tailwind.config.js tsconfig.json webpack.config.js yarn.lock
+# ── STEP 2: Hapus file lama (storage dan .env TIDAK ikut terhapus) ───────────
+rm -rf app bootstrap config database public resources routes tests \
+  .editorconfig .env.example .eslintignore .eslintrc.js \
+  .gitattributes .gitignore .prettierignore .prettierrc artisan \
+  babel.config.js composer.json composer.lock jest.config.js \
+  package.json phpstan.neon postcss.config.js SECURITY.md \
+  tailwind.config.js tsconfig.json webpack.config.js yarn.lock
 
-# Download and extract the alxzen release
+# ── STEP 3: Download & extract release alxzen ────────────────────────────────
 curl -L https://github.com/alxzy-group/alxzen/releases/latest/download/panel.tar.gz | tar -xzv
 
-# Install Dependencies
+# ── STEP 4: Restore .env dari backup ─────────────────────────────────────────
+# WAJIB! Release baru membawa .env.example — restore konfigurasi lamamu.
+cp ../.env.backup .env
+
+# ── STEP 5: Install Dependencies ─────────────────────────────────────────────
 composer install --no-dev --optimize-autoloader
 yarn install
 yarn build:production
 
-# Finalize
+# ── STEP 6: Finalize & Cache ─────────────────────────────────────────────────
 php artisan view:clear && php artisan config:clear
 php artisan migrate --force
 chown -R www-data:www-data /var/www/pterodactyl/*
 chown -R www-data:www-data /var/www/pterodactyl/.*
 php artisan up
 php artisan queue:restart
-
-# Route cache (compatible since v2.1)
 php artisan optimize
 ```
 
