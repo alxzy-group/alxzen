@@ -27,69 +27,36 @@ Stop settling for generic. Make your platform stand out with a first-class citiz
 
 ## Installation & Update (Standalone Fork)
 
-To install **alxzen**, you must first prepare your environment. The following instructions are designed for **Ubuntu 22.04 / 24.04**. Do **not** install the original Pterodactyl panel first.
+To install **alxzen**, you must first prepare your environment. The following instructions are designed for **Ubuntu 22.04 / 24.04** and **Debian 12 / 13**. Do **not** install the original Pterodactyl panel first.
 
-### 1. Prerequisites Setup (PHP 8.3, MariaDB, Redis, Nginx)
+### Auto Installer (Recommended)
+You can run our comprehensive auto-installer, which will install PHP 8.3, MariaDB, Redis, Nginx, Node.js 22, and the Panel itself automatically:
 
 ```bash
-# Add PHP 8.3 repository
-apt update && apt -y install software-properties-common curl apt-transport-https ca-certificates gnupg
-LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
-curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
-
-# Install Dependencies
-apt update
-apt -y install php8.3 php8.3-{common,cli,gd,mysql,mbstring,bcmath,xml,fpm,curl,zip} mariadb-server nginx tar unzip git redis-server
-
-# Install Composer
-curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
-
-# Set up MariaDB
-mysql -u root -e "CREATE USER 'pterodactyl'@'127.0.0.1' IDENTIFIED BY 'YOUR_PASSWORD_HERE';"
-mysql -u root -e "CREATE DATABASE panel;"
-mysql -u root -e "GRANT ALL PRIVILEGES ON panel.* TO 'pterodactyl'@'127.0.0.1' WITH GRANT OPTION;"
-mysql -u root -e "FLUSH PRIVILEGES;"
+bash <(curl -s https://raw.githubusercontent.com/alxzy-group/alxzen/main/setup.sh)
 ```
+*Note: Make sure to run this as root on a fresh server.*
 
-### 2. Panel Deployment
+After installation, follow standard Pterodactyl documentation to configure your Nginx webserver.
+
+### Manual Installation
+If you prefer to install manually, make sure to install dependencies (PHP 8.3, Redis, MariaDB) and then clone the panel:
 
 ```bash
-# Prepare Directory
-mkdir -p /var/www/pterodactyl
 cd /var/www/pterodactyl
-
-# Clone Repository
 git clone https://github.com/alxzy-group/alxzen.git .
-cp .env.example .env
 
-# Install Node.js & Yarn (For compiling assets if necessary)
+# Install Node.js 22 (Required for compiling frontend assets)
 curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 apt -y install nodejs
-npm install -g yarn
 
-# Optimization & Dependencies
+# Enable Corepack for Yarn (Recommended approach)
+corepack enable
+
 composer install --no-dev --optimize-autoloader
 yarn install
 yarn build:production
-
-# Environment Configuration -- Edit .env dulu sebelum lanjut!
-cp .env.example .env
-nano .env  # Isi: APP_URL, DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD
 ```
-
-### 3. Finalization - Cukup 1 Perintah
-
-Jalankan setup script yang otomatis mengurus: validasi APP_URL, clear cache, migrasi DB, set permissions, dan rebuild cache.
-
-```bash
-# Setup otomatis -- validasi config, migrasi, cache, permissions
-bash setup.sh
-
-# Buat akun admin pertama
-php artisan p:user:make
-```
-*(Note: Don't forget to configure your Nginx virtual host and crontab as per the standard Pterodactyl documentation).*
 
 ---
 
