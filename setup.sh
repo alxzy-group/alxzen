@@ -256,6 +256,8 @@ download_panel() {
     curl -Lo panel.tar.gz "$GITHUB_PANEL_DL" 2>/dev/null
     tar -xzf panel.tar.gz
     rm -f panel.tar.gz
+    
+    mkdir -p storage/logs storage/framework/{sessions,views,cache} bootstrap/cache
     chmod -R 755 storage/* bootstrap/cache/ 2>/dev/null || true
 
     print_ok "Panel files extracted to ${PANEL_DIR}"
