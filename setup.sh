@@ -753,6 +753,34 @@ uninstall_wings() {
     print_ok "${GREEN}${BOLD}Wings uninstalled successfully.${NC}"
 }
 
+configure_wings_ssl() {
+    print_step "Setting Up Let's Encrypt SSL Certificate for Wings Node"
+
+    local wings_fqdn
+    wings_fqdn=$(ask_input "Node FQDN (e.g. node.alxzyy.my.id)")
+
+    apt-get install -y -qq certbot
+
+    # Stop nginx temporarily for standalone mode if it's running
+    systemctl stop nginx 2>/dev/null || true
+
+    if certbot certonly --standalone --non-interactive --agree-tos \
+        --register-unsafely-without-email -d "$wings_fqdn" 2>/dev/null; then
+        print_ok "SSL certificate obtained for ${wings_fqdn}"
+
+        # Setup auto-renewal
+        systemctl enable --now certbot.timer 2>/dev/null || \
+            (crontab -l 2>/dev/null | grep -v "certbot renew" ; echo "0 23 * * * certbot renew --quiet") | crontab -
+
+        print_ok "Auto-renewal configured."
+    else
+        print_warn "Failed to obtain SSL certificate. Make sure ${wings_fqdn} points to this server's IP."
+        print_warn "You may need to configure certificates manually if DNS hasn't propagated."
+    fi
+
+    systemctl start nginx 2>/dev/null || true
+}
+
 # ==============================================================================
 #  INSTALLATION ORCHESTRATORS
 # ==============================================================================
@@ -853,6 +881,12 @@ install_wings() {
         configure_ufw_wings_flag=true
     fi
 
+    local configure_ssl_wings_flag=false
+    echo ""
+    if ask_yn "Configure Let's Encrypt SSL for this Node?" "y"; then
+        configure_ssl_wings_flag=true
+    fi
+
     echo ""
     print_info "Starting Wings installation..."
     echo ""
@@ -863,6 +897,10 @@ install_wings() {
 
     if [ "$configure_ufw_wings_flag" = true ]; then
         configure_ufw_wings
+    fi
+
+    if [ "$configure_ssl_wings_flag" = true ]; then
+        configure_wings_ssl
     fi
 
     # ── Summary ──

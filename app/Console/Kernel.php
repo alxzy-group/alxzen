@@ -30,8 +30,8 @@ class Kernel extends ConsoleKernel
     {
         // https://laravel.com/docs/10.x/upgrade#redis-cache-tags
         $schedule->command('cache:prune-stale-tags')->hourly();
-       $schedule->command('ptero:cleantasks')->minutes(5);
-        $schedule->command('ptero:cleancounts')->minutes(15);
+        $schedule->command('ptero:cleantasks')->everyFiveMinutes();
+        $schedule->command('ptero:cleancounts')->everyFifteenMinutes();
         // Execute scheduled commands for servers every minute, as if there was a normal cron running.
         $schedule->command(ProcessRunnableCommand::class)->everyMinute()->withoutOverlapping();
         $schedule->command(CleanServiceBackupFilesCommand::class)->daily();
