@@ -157,9 +157,9 @@ ask_input() {
     local result
 
     if [ -n "$default" ]; then
-        echo -ne "  ${YELLOW}?${NC} $prompt [${default}]: "
+        echo -ne "  ${YELLOW}?${NC} $prompt [${default}]: " >&2
     else
-        echo -ne "  ${YELLOW}?${NC} $prompt: "
+        echo -ne "  ${YELLOW}?${NC} $prompt: " >&2
     fi
     read -r result
     echo "${result:-$default}"
