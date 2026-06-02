@@ -8,13 +8,6 @@
 # https://github.com/alxzy-group/alxzen
 # ==============================================================================
 
-# ─── Auto-fix Windows CRLF line endings ──────────────────────────────────────
-# If this script was downloaded with \r\n endings, fix it and re-run
-if grep -qP '\r$' "$0" 2>/dev/null; then
-    sed -i 's/\r$//' "$0"
-    exec bash "$0" "$@"
-fi
-
 set -e
 
 # ─── Colors & Formatting ─────────────────────────────────────────────────────
