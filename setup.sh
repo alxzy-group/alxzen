@@ -238,13 +238,15 @@ configure_database() {
 
     mysql -u root <<MYSQL_SCRIPT
 CREATE USER IF NOT EXISTS 'pterodactyl'@'127.0.0.1' IDENTIFIED BY '${DB_PASS}';
+CREATE USER IF NOT EXISTS 'pterodactyl'@'localhost' IDENTIFIED BY '${DB_PASS}';
 CREATE DATABASE IF NOT EXISTS panel;
 GRANT ALL PRIVILEGES ON panel.* TO 'pterodactyl'@'127.0.0.1' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON panel.* TO 'pterodactyl'@'localhost' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 MYSQL_SCRIPT
 
     print_ok "Database 'panel' created."
-    print_ok "User 'pterodactyl'@'127.0.0.1' configured."
+    print_ok "User 'pterodactyl' configured."
 }
 
 download_panel() {
@@ -269,6 +271,11 @@ configure_environment() {
     cd "$PANEL_DIR"
 
     cp .env.example .env
+
+    # Ensure APP_KEY exists so artisan key:generate works
+    if ! grep -q "^APP_KEY=" .env; then
+        echo "APP_KEY=" >> .env
+    fi
 
     local app_url
     if [ "$ASSUME_SSL" = true ]; then
