@@ -80,15 +80,44 @@ const NavItem = styled(NavLink)`
     }
 `;
 
-const ServerSectionTitle = styled.button`
-    ${tw`flex items-center justify-between w-full text-[10px] font-black text-gray-600 uppercase tracking-widest mt-6 mb-3 px-4 hover:text-gray-400 transition-colors cursor-pointer outline-none`}
+const ServerSectionTitle = styled.button<{ $open: boolean }>`
+    ${tw`flex items-center justify-between w-full mt-6 mb-2 px-4 py-3 rounded-xl transition-all duration-300 outline-none border`}
+    background-color: ${props => props.$open ? 'rgba(79, 70, 229, 0.1)' : 'rgba(255, 255, 255, 0.03)'};
+    border-color: ${props => props.$open ? 'rgba(79, 70, 229, 0.3)' : 'transparent'};
+    
+    &:hover {
+        background-color: ${props => props.$open ? 'rgba(79, 70, 229, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
+        border-color: ${props => props.$open ? 'rgba(79, 70, 229, 0.5)' : 'rgba(255, 255, 255, 0.1)'};
+    }
+
+    > div {
+        ${tw`flex items-center gap-3`}
+    }
+
+    .title-text {
+        ${tw`text-xs font-bold uppercase tracking-wider transition-colors`}
+        color: ${props => props.$open ? '#818cf8' : '#9ca3af'};
+    }
+
+    .icon {
+        ${tw`w-4 h-4 transition-transform duration-300`}
+        color: ${props => props.$open ? '#818cf8' : '#6b7280'};
+        transform: ${props => props.$open ? 'rotate(180deg)' : 'rotate(0deg)'};
+    }
 `;
 
 const SubMenuContainer = styled.div<{ $open: boolean }>`
-    ${tw`flex flex-col gap-1 overflow-hidden transition-all duration-300`}
+    ${tw`flex flex-col gap-1 overflow-hidden transition-all duration-500 ease-in-out`}
     max-height: ${props => props.$open ? '800px' : '0'};
     opacity: ${props => props.$open ? 1 : 0};
-    margin-bottom: ${props => props.$open ? '0' : '0'};
+    margin-top: ${props => props.$open ? '0.5rem' : '0'};
+    padding-left: 0.5rem;
+    border-left: 2px solid rgba(255, 255, 255, 0.05);
+    margin-left: 1rem;
+`;
+
+const SimpleSectionTitle = styled.div`
+    ${tw`text-[10px] font-black text-gray-500 uppercase tracking-widest mt-6 mb-3 px-4`}
 `;
 
 const UserFooter = styled.div`
@@ -172,7 +201,7 @@ export default () => {
                         <FontAwesomeIcon icon={faServer} css={tw`w-5`} /> Dashboard
                     </NavItem>
 
-                    <ServerSectionTitle>Account Settings</ServerSectionTitle>
+                    <SimpleSectionTitle>Account Settings</SimpleSectionTitle>
                     <NavItem to={'/account'} exact>
                         <FontAwesomeIcon icon={faUserCircle} css={tw`w-5`} /> My Account
                     </NavItem>
@@ -189,9 +218,12 @@ export default () => {
                     {serverId && (
                         <>
                             <div css={tw`my-2`} />
-                            <ServerSectionTitle onClick={() => setIsServerMenuOpen(!isServerMenuOpen)}>
-                                <span>Management Console</span>
-                                <FontAwesomeIcon icon={isServerMenuOpen ? faChevronDown : faChevronRight} css={tw`w-3 h-3`} />
+                            <ServerSectionTitle $open={isServerMenuOpen} onClick={() => setIsServerMenuOpen(!isServerMenuOpen)}>
+                                <div>
+                                    <FontAwesomeIcon icon={faServer} css={tw`w-4 h-4`} className="icon" />
+                                    <span className="title-text">Management Console</span>
+                                </div>
+                                <FontAwesomeIcon icon={faChevronDown} className="icon" />
                             </ServerSectionTitle>
                             
                             <SubMenuContainer $open={isServerMenuOpen}>
