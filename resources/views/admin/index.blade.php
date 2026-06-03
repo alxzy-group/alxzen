@@ -14,18 +14,14 @@
 
 @section('content')
 <div class="row">
-    {{-- Box Informasi Pterodactyl --}}
+    {{-- Box Informasi Sistem Alxzen --}}
     <div class="col-md-6">
-        <div class="box @if($version->isLatestPanel()) box-success @else box-danger @endif">
+        <div class="box box-success">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-info-circle"></i> System Information</h3>
             </div>
             <div class="box-body">
-                @if ($version->isLatestPanel())
-                    You are running Pterodactyl Panel version <code>{{ config('app.version') }}</code>. Your panel is up-to-date!
-                @else
-                    Your panel is <strong>not up-to-date!</strong> The latest version is <a href="https://github.com/Pterodactyl/Panel/releases/v{{ $version->getPanel() }}" target="_blank"><code>{{ $version->getPanel() }}</code></a> and you are currently running version <code>{{ config('app.version') }}</code>.
-                @endif
+                You are running Alxzen Panel version <code>{{ config('app.version') }}</code>. Your panel is up-to-date!
             </div>
         </div>
     </div>
@@ -34,11 +30,10 @@
     <div class="col-md-6">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-shield"></i> {{ config('app.theme_name') }} Branding & Protection</h3>
+                <h3 class="box-title"><i class="fa fa-shield"></i> Alxzen Branding & Protection</h3>
             </div>
             <div class="box-body">
                 <ul class="list-unstyled">
-                    <li><strong>Theme Name:</strong> <code>{{ config('app.theme_name') }}</code></li>
                     <li><strong>Developed by:</strong> <span class="label label-primary">{{ config('app.author') }}</span></li>
                     <li><strong>Theme Version:</strong> <code>v{{ config('app.theme_version') }}</code></li>
                     <li><strong>Protection System:</strong> <span class="label label-success">Active (v{{ config('app.protect_version') }})</span></li>
