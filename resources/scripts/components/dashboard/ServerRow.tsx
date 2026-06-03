@@ -8,16 +8,33 @@ import { bytesToString, ip } from '@/lib/formatters';
 import tw, { styled } from 'twin.macro';
 import Spinner from '@/components/elements/Spinner';
 import isEqual from 'react-fast-compare';
+import { motion } from 'framer-motion';
 
-const CardWrapper = styled(Link)`
-    ${tw`relative block w-full rounded-[24px] overflow-hidden transition-all duration-300`}
+const CardWrapper = styled(motion(Link))<{ $status: string }>`
+    ${tw`relative block w-full rounded-[24px] overflow-hidden`}
     background: linear-gradient(145deg, rgba(20, 20, 25, 0.9), rgba(10, 10, 12, 0.95));
-    border: 1px solid rgba(255, 255, 255, 0.08);
     
+    border: 1px solid ${({ $status }) => 
+        $status === 'running' ? 'rgba(34, 197, 94, 0.2)' : 
+        $status === 'starting' ? 'rgba(96, 165, 250, 0.3)' :
+        $status === 'offline' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(234, 179, 8, 0.3)'};
+        
+    box-shadow: ${({ $status }) => 
+        $status === 'running' ? '0 0 20px -5px rgba(34, 197, 94, 0.15)' : 
+        $status === 'starting' ? '0 0 25px -2px rgba(96, 165, 250, 0.25)' :
+        $status === 'offline' ? '0 0 15px -5px rgba(0, 0, 0, 0.5)' : '0 0 20px -5px rgba(234, 179, 8, 0.15)'};
+    
+    transition: box-shadow 0.5s ease, border-color 0.5s ease;
+
     &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.6);
-        border-color: rgba(99, 102, 241, 0.4);
+        box-shadow: ${({ $status }) => 
+            $status === 'running' ? '0 20px 40px -5px rgba(34, 197, 94, 0.25)' : 
+            $status === 'starting' ? '0 20px 40px -5px rgba(96, 165, 250, 0.35)' :
+            $status === 'offline' ? '0 20px 40px -5px rgba(239, 68, 68, 0.15)' : '0 20px 40px -5px rgba(234, 179, 8, 0.25)'};
+        border-color: ${({ $status }) => 
+            $status === 'running' ? 'rgba(34, 197, 94, 0.5)' : 
+            $status === 'starting' ? 'rgba(96, 165, 250, 0.6)' :
+            $status === 'offline' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(234, 179, 8, 0.5)'};
         
         /* Highlight decoration */
         &::before {
@@ -25,14 +42,17 @@ const CardWrapper = styled(Link)`
         }
     }
 
+
     &::before {
         content: '';
         position: absolute;
         top: 0; left: 0; right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, #6366f1, transparent);
-        opacity: 0;
-        transition: opacity 0.3s ease;
+        height: 2px;
+        background: ${({ $status }) => 
+            $status === 'running' ? 'linear-gradient(90deg, transparent, #4ade80, transparent)' : 
+            $status === 'offline' ? 'linear-gradient(90deg, transparent, #f87171, transparent)' : 'linear-gradient(90deg, transparent, #facc15, transparent)'};
+        opacity: ${({ $status }) => $status === 'running' ? '0.5' : '0'};
+        transition: opacity 0.5s ease;
     }
 `;
 
@@ -127,7 +147,19 @@ export default memo(({ server, className }: { server: Server; className?: string
     const diskLimit = server.limits.disk;
 
     return (
-        <CardWrapper to={`/server/${server.id}`} className={className}>
+        <CardWrapper 
+            to={`/server/${server.id}`} 
+            className={className} 
+            $status={status}
+            animate={{
+                boxShadow: status === 'starting' 
+                    ? ['0 0 15px -2px rgba(96, 165, 250, 0.25)', '0 0 30px 2px rgba(96, 165, 250, 0.5)', '0 0 15px -2px rgba(96, 165, 250, 0.25)']
+                    : undefined
+            }}
+            transition={{
+                boxShadow: status === 'starting' ? { repeat: Infinity, duration: 2, ease: "easeInOut" } : undefined
+            }}
+        >
             <Header>
                 <div>
                     <ServerName>{server.name}</ServerName>
