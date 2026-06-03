@@ -13,6 +13,7 @@ import { PaginatedResult } from '@/api/http';
 import Pagination from '@/components/elements/Pagination';
 import { useLocation } from 'react-router-dom';
 import NavigationBar from '@/components/NavigationBar';
+import AnnounceBar from '@/components/elements/AnnounceBar';
 
 const RootContainer = styled.div`
     ${tw`w-full max-w-[1400px] mx-auto p-4 md:p-8`}
@@ -105,6 +106,8 @@ export default () => {
                         </FilterBar>
                     )}
                 </HeaderSection>
+                
+                <AnnounceBar displayLocation="dashboard" />
 
                 {!servers ? (
                     <Grid>
