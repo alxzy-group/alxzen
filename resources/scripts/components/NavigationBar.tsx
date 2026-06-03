@@ -8,6 +8,9 @@ import {
     faNetworkWired, faPlayCircle, faBoxOpen, faCloudDownloadAlt,
     faKey, faHistory, faUnlockAlt
 } from '@fortawesome/free-solid-svg-icons';
+import { useStoreState } from 'easy-peasy';
+import { ApplicationStore } from '@/state';
+import SearchContainer from '@/components/dashboard/search/SearchContainer';
 import tw, { styled, css } from 'twin.macro';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import http from '@/api/http';
