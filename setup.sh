@@ -335,7 +335,7 @@ configure_crontab() {
     print_step "Configuring Cron Job (Task Scheduler)"
 
     # Remove existing entry if present, then add
-    (crontab -l 2>/dev/null | grep -v "pterodactyl" ; echo "* * * * * php ${PANEL_DIR}/artisan schedule:run >> /dev/null 2>&1") | crontab -
+    { crontab -l 2>/dev/null | grep -v "pterodactyl" ; echo "* * * * * php ${PANEL_DIR}/artisan schedule:run >> /dev/null 2>&1"; } > /tmp/crontab_new && crontab /tmp/crontab_new; rm -f /tmp/crontab_new
 
     print_ok "Cron job installed (runs every minute)."
 }
@@ -518,7 +518,7 @@ configure_ssl() {
 
         # Setup auto-renewal
         systemctl enable --now certbot.timer 2>/dev/null || \
-            (crontab -l 2>/dev/null; echo "0 23 * * * certbot renew --quiet --deploy-hook 'systemctl reload nginx'") | crontab -
+            { crontab -l 2>/dev/null; echo "0 23 * * * certbot renew --quiet --deploy-hook 'systemctl reload nginx'"; } > /tmp/crontab_new && crontab /tmp/crontab_new; rm -f /tmp/crontab_new
 
         print_ok "Auto-renewal configured."
     else
@@ -684,7 +684,7 @@ uninstall_panel() {
     systemctl restart nginx 2>/dev/null || true
 
     # Remove cron
-    (crontab -l 2>/dev/null | grep -v "pterodactyl") | crontab -
+    { crontab -l 2>/dev/null | grep -v "pterodactyl"; } > /tmp/crontab_new && crontab /tmp/crontab_new; rm -f /tmp/crontab_new
 
     # Remove database
     if command -v mysql &> /dev/null; then
@@ -770,7 +770,7 @@ configure_wings_ssl() {
 
         # Setup auto-renewal
         systemctl enable --now certbot.timer 2>/dev/null || \
-            (crontab -l 2>/dev/null | grep -v "certbot renew" ; echo "0 23 * * * certbot renew --quiet") | crontab -
+            { crontab -l 2>/dev/null | grep -v "certbot renew" ; echo "0 23 * * * certbot renew --quiet"; } > /tmp/crontab_new && crontab /tmp/crontab_new; rm -f /tmp/crontab_new
 
         print_ok "Auto-renewal configured."
     else
