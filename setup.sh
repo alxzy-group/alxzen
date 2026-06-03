@@ -237,8 +237,10 @@ configure_database() {
     systemctl enable --now mariadb 2>/dev/null
 
     mysql -u root <<MYSQL_SCRIPT
-CREATE USER IF NOT EXISTS 'pterodactyl'@'127.0.0.1' IDENTIFIED BY '${DB_PASS}';
-CREATE USER IF NOT EXISTS 'pterodactyl'@'localhost' IDENTIFIED BY '${DB_PASS}';
+DROP USER IF EXISTS 'pterodactyl'@'127.0.0.1';
+DROP USER IF EXISTS 'pterodactyl'@'localhost';
+CREATE USER 'pterodactyl'@'127.0.0.1' IDENTIFIED BY '${DB_PASS}';
+CREATE USER 'pterodactyl'@'localhost' IDENTIFIED BY '${DB_PASS}';
 CREATE DATABASE IF NOT EXISTS panel;
 GRANT ALL PRIVILEGES ON panel.* TO 'pterodactyl'@'127.0.0.1' WITH GRANT OPTION;
 GRANT ALL PRIVILEGES ON panel.* TO 'pterodactyl'@'localhost' WITH GRANT OPTION;
