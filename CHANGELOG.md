@@ -3,6 +3,26 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v3.4 (alxzen UI Polish & Dropdown Fix)
+### Added
+* Server-specific **Management Console** dropdown in the left sidebar using accordion-style animation, replacing the old always-expanded flat list.
+* Smooth CSS Grid `grid-template-rows` animation (`0fr → 1fr`) for the dropdown — resolves the blank/invisible menu bug that occurred with the old `max-height` transition approach.
+* Chevron icon on the Management Console button now rotates 180° when the dropdown is open to provide clear open/closed visual feedback.
+* Visual distinction for the dropdown button: indigo tinted background and border when open, subtle hover effect when closed.
+* Sidebar items (Terminal, File Manager, Databases, Schedules, Users, Backups, Network, Startup, Activity, Settings) are now grouped and hidden under the dropdown, keeping the sidebar clean.
+
+### Fixed
+* **Critical:** `SubMenuContainer` items (Console, File Manager, etc.) were invisible after click due to `max-height: 800px` transition not working reliably across browsers — replaced with CSS Grid `1fr/0fr` approach that is guaranteed to render correctly.
+* **Critical:** `useStoreState` and `ApplicationStore` missing imports in `NavigationBar.tsx` that caused a runtime `ReferenceError` crashing the entire panel UI.
+* Dropdown click events not working because the button had no proper state toggle.
+* Duplicated `NavItem` entries inside `SubMenuContainer` caused by a failed partial patch — cleaned up.
+
+### Changed
+* `SubMenuContainer` styled component completely rewritten from `overflow: hidden` + `max-height` to CSS Grid `grid-template-rows` transition for more reliable animation.
+* Inner nav items now wrapped in a `<div>` inside `SubMenuContainer` to satisfy the CSS Grid row constraint requirement.
+
+---
+
 ## v3.3 (alxzen UI Overhaul)
 ### Added
 * Announcements feature for admins to broadcast messages to users on the Dashboard and Console.
