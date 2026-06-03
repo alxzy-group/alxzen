@@ -92,12 +92,12 @@ function getEmptyData(label: string, sets = 1, callback?: ChartDatasetCallback |
                         fill: true,
                         label,
                         data: Array(20).fill(-5),
-                        borderColor: theme('colors.cyan.400'),
+                        borderColor: theme('colors.indigo.400'),
                         backgroundColor: (context: any) => {
                             const ctx = context.chart.ctx;
                             const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                            gradient.addColorStop(0, hexToRgba(theme('colors.cyan.500'), 0.5));
-                            gradient.addColorStop(1, hexToRgba(theme('colors.cyan.500'), 0.0));
+                            gradient.addColorStop(0, hexToRgba(theme('colors.indigo.500'), 0.5));
+                            gradient.addColorStop(1, hexToRgba(theme('colors.indigo.500'), 0.0));
                             return gradient;
                         },
                     },

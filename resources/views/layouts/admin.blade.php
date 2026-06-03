@@ -142,7 +142,7 @@
             </header>
             <aside class="main-sidebar">
                 <section class="sidebar">
-                    <ul class="sidebar-menu">
+                    <ul class="sidebar-menu" data-widget="tree">
                         <li class="header">BASIC ADMINISTRATION</li>
                         <li class="{{ Route::currentRouteName() !== 'admin.index' ?: 'active' }}">
                             <a href="{{ route('admin.index') }}">
