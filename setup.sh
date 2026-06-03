@@ -175,7 +175,7 @@ install_panel_dependencies() {
     apt-get update -y -qq
     apt-get upgrade -y -qq
     apt-get install -y -qq curl apt-transport-https \
-        ca-certificates gnupg tar unzip git wget lsb-release
+        ca-certificates gnupg tar unzip git wget lsb-release cron
     
     if [ "$OS" == "ubuntu" ]; then
         apt-get install -y -qq software-properties-common
