@@ -10,7 +10,6 @@
 
 **Alxzen** is a customized distribution of the Pterodactyl® game server management panel, built with a focus on automation, aesthetic dominance, and system integrity. Featuring the **Alxzen Dark Purple** interface and an integrated **Expiration Management** system.
 
-![alxzen Preview](https://cdn.pterodactyl.io/site-assets/pterodactyl_v1_demo.gif)
 
 ---
 
@@ -51,6 +50,21 @@ The interactive installer will guide you through:
 | Debian | 11, 12, 13 |
 
 > **⚠️ Important:** Run only on a **fresh OS installation** as root. Do **not** install original Pterodactyl first.
+
+---
+
+## 🔄 Updating Alxzen Panel
+
+If you already have Alxzen Panel installed and want to update to the latest version without losing your data, simply run this command in your terminal:
+
+```bash
+cd /var/www/pterodactyl && php artisan down
+curl -L https://github.com/alxzy-group/alxzen/releases/latest/download/panel.tar.gz | tar -xzv
+php artisan view:clear && php artisan config:clear
+chown -R www-data:www-data /var/www/pterodactyl/*
+chown -R www-data:www-data /var/www/pterodactyl/.*
+php artisan up
+```
 
 ---
 
