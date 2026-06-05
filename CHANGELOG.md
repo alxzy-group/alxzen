@@ -1,4 +1,15 @@
 # Changelog
+
+## [v3.6] - 2026-06-05
+### Added
+- **Real-Time Node Resource Charts**: Replaced the static node overview with an interactive, 3-chart donut interface (CPU, Memory, Disk) using Chart.js.
+- **NodeSystemUsageController**: New backend API endpoint (`/admin/nodes/view/{node}/live-usage`) to fetch real-time physical server usage via concurrent HTTP pooling to the Wings daemon.
+- **Physical Disk Space Widget**: Dynamically calculates and displays remaining physical node space.
+
+### Fixed
+- **File Manager Context Menu**: Fixed Z-index and stacking context issues causing the file action dropdowns to be hidden behind subsequent table rows.
+- **File Manager Theme**: Updated the `DropdownMenu` to strictly adhere to the Alxzen dark mode aesthetic.
+
 This file is a running track of new features and fixes to each version of the panel released starting with `v0.4.0`.
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.

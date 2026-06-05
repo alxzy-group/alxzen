@@ -221,6 +221,25 @@
             </table>
         </div>
 
+        {{-- Servers & Status --}}
+        <div class="alx-card" style="margin-bottom: 20px;">
+            <div class="alx-card-header">
+                <h3 class="alx-card-title"><i class="fa fa-server"></i> Node Overview</h3>
+            </div>
+            <div class="alx-card-body" style="padding: 20px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                    <div><i class="fa fa-server" style="color: #6366f1; margin-right: 8px;"></i> <strong>Total Servers</strong></div>
+                    <div style="font-size: 16px; font-weight: 600; color: #e2e8f0;">{{ $node->servers_count }}</div>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div><i class="fa fa-{{ $node->maintenance_mode ? 'wrench' : 'check-circle' }}" style="color: {{ $node->maintenance_mode ? '#fbbf24' : '#34d399' }}; margin-right: 8px;"></i> <strong>Status</strong></div>
+                    <div style="font-size: 14px; font-weight: 600; color: {{ $node->maintenance_mode ? '#fbbf24' : '#34d399' }};">
+                        {{ $node->maintenance_mode ? 'Maintenance' : 'Operational' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- Description --}}
         @if ($node->description)
             <div class="alx-desc-card">
@@ -230,96 +249,70 @@
                 <pre>{{ $node->description }}</pre>
             </div>
         @endif
-
-        {{-- Delete --}}
-        <div class="alx-danger-card">
-            <div class="alx-danger-header"><i class="fa fa-trash"></i> Danger Zone — Delete Node</div>
-            <div class="alx-danger-body">
-                Deleting a node is <strong>irreversible</strong> and will immediately remove this node from the panel.
-                There must be <strong>no servers</strong> associated with this node before proceeding.
-            </div>
-            <div class="alx-danger-footer">
-                <form action="{{ route('admin.nodes.view.delete', $node->id) }}" method="POST">
-                    {!! csrf_field() !!}
-                    {!! method_field('DELETE') !!}
-                    <button type="submit" class="alx-btn-danger" {{ ($node->servers_count < 1) ?: 'disabled' }}>
-                        <i class="fa fa-trash"></i> Delete This Node
-                    </button>
-                </form>
-            </div>
-        </div>
     </div>
+</div>
 
-    {{-- RIGHT COL ─ KDE Plasma-style Resource Monitor --}}
-    <div class="col-sm-4">
+<div class="row">
+    <div class="col-xs-12">
         <div class="alx-card">
             <div class="alx-card-header">
-                <h3 class="alx-card-title"><i class="fa fa-bar-chart"></i> Resource Allocation</h3>
+                <h3 class="alx-card-title"><i class="fa fa-pie-chart"></i> Real-Time Resource Allocation</h3>
             </div>
-            <div class="alx-resource-grid">
-                {{-- Disk --}}
-                <div class="alx-resource-card alx-res-disk">
-                    <div class="alx-resource-icon"><i class="fa fa-hdd-o"></i></div>
-                    <div class="alx-resource-label">Disk Space</div>
-                    @php
-                        $diskVal = (float) str_replace(',', '', $stats['disk']['value']);
-                        $diskMax = (float) str_replace(',', '', $stats['disk']['max']);
-                    @endphp
-                    <div class="alx-resource-value">{{ number_format($diskVal / 1024, 1) }} GiB</div>
-                    <div class="alx-resource-sub">of {{ number_format($diskMax / 1024, 1) }} GiB allocated</div>
-                    <div class="alx-progress-wrap">
-                        <div class="alx-progress-bar" style="width: {{ min(100, $stats['disk']['percent']) }}%"></div>
+            <div class="alx-card-body" style="padding: 30px;">
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
+                    {{-- CPU Chart --}}
+                    <div style="width: 30%; min-width: 250px; text-align: center;">
+                        <h4 style="color: #e2e8f0; font-weight: 600; margin-bottom: 20px;">CPU Usage (%)</h4>
+                        <div style="position: relative; width: 200px; height: 200px; margin: 0 auto;">
+                            <canvas id="chartCpu"></canvas>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                <div id="cpuActiveText" style="font-size: 24px; font-weight: 700; color: #fff;">--%</div>
+                                <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase;">Active</div>
+                            </div>
+                        </div>
+                        <p id="cpuSubText" style="margin-top: 15px; font-size: 13px; color: #94a3b8;">-- of -- Cores Allocated</p>
                     </div>
-                    <div class="alx-progress-label">
-                        <span>{{ round($stats['disk']['percent']) }}% used</span>
-                        <span>{{ number_format(max(0, $diskMax - $diskVal) / 1024, 1) }} GiB free</span>
+
+                    {{-- Memory Chart --}}
+                    <div style="width: 30%; min-width: 250px; text-align: center;">
+                        <h4 style="color: #e2e8f0; font-weight: 600; margin-bottom: 20px;">Memory Usage (GiB)</h4>
+                        <div style="position: relative; width: 200px; height: 200px; margin: 0 auto;">
+                            <canvas id="chartMem"></canvas>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                <div id="memActiveText" style="font-size: 20px; font-weight: 700; color: #fff;">-- GiB</div>
+                                <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase;">Active</div>
+                            </div>
+                        </div>
+                        <p id="memSubText" style="margin-top: 15px; font-size: 13px; color: #94a3b8;">-- allocated of {{ number_format($node->memory / 1024, 1) }} GiB Total</p>
+                    </div>
+
+                    {{-- Disk Chart --}}
+                    <div style="width: 30%; min-width: 250px; text-align: center;">
+                        <h4 style="color: #e2e8f0; font-weight: 600; margin-bottom: 20px;">Disk Space Usage (GiB)</h4>
+                        <div style="position: relative; width: 200px; height: 200px; margin: 0 auto;">
+                            <canvas id="chartDisk"></canvas>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                <div id="diskActiveText" style="font-size: 20px; font-weight: 700; color: #fff;">-- GiB</div>
+                                <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase;">Active</div>
+                            </div>
+                        </div>
+                        <p id="diskSubText" style="margin-top: 15px; font-size: 13px; color: #94a3b8;">-- allocated of {{ number_format($node->disk / 1024, 1) }} GiB Total</p>
                     </div>
                 </div>
 
-                {{-- Memory --}}
-                <div class="alx-resource-card alx-res-memory">
-                    <div class="alx-resource-icon"><i class="fa fa-database"></i></div>
-                    <div class="alx-resource-label">Memory</div>
-                    @php
-                        $memVal = (float) str_replace(',', '', $stats['memory']['value']);
-                        $memMax = (float) str_replace(',', '', $stats['memory']['max']);
-                    @endphp
-                    <div class="alx-resource-value">{{ number_format($memVal / 1024, 1) }} GiB</div>
-                    <div class="alx-resource-sub">of {{ number_format($memMax / 1024, 1) }} GiB allocated</div>
-                    <div class="alx-progress-wrap">
-                        <div class="alx-progress-bar" style="width: {{ min(100, $stats['memory']['percent']) }}%"></div>
-                    </div>
-                    <div class="alx-progress-label">
-                        <span>{{ round($stats['memory']['percent']) }}% used</span>
-                        <span>{{ number_format(max(0, $memMax - $memVal) / 1024, 1) }} GiB free</span>
-                    </div>
-                </div>
-
-                {{-- Servers --}}
-                <div class="alx-resource-card alx-res-servers">
-                    <div class="alx-resource-icon"><i class="fa fa-server"></i></div>
-                    <div class="alx-resource-label">Total Servers</div>
-                    <div class="alx-resource-value">{{ $node->servers_count }}</div>
-                    <div class="alx-resource-sub">deployed on this node</div>
-                </div>
-
-                {{-- Status --}}
-                <div class="alx-resource-card alx-res-maint">
-                    <div class="alx-resource-icon"><i class="fa fa-{{ $node->maintenance_mode ? 'wrench' : 'check-circle' }}"></i></div>
-                    <div class="alx-resource-label">Node Status</div>
-                    <div class="alx-resource-value" style="font-size:16px; color: {{ $node->maintenance_mode ? '#fbbf24' : '#34d399' }}">
-                        {{ $node->maintenance_mode ? 'Maintenance' : 'Operational' }}
-                    </div>
-                    <div class="alx-resource-sub">{{ $node->public ? 'Public node' : 'Private node' }} · {{ $node->scheme === 'https' ? 'SSL enabled' : 'No SSL' }}</div>
+                {{-- Status Widget --}}
+                <div style="margin-top: 40px; padding: 20px; background: rgba(15,23,42,0.6); border: 1px solid rgba(99,102,241,0.2); border-radius: 12px; text-align: center;">
+                    <h4 style="margin: 0; color: #94a3b8; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Remaining Physical Disk Space</h4>
+                    <div id="diskRemaining" style="font-size: 28px; font-weight: 700; color: #4ade80; margin-top: 8px;">-- GiB</div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 5px;">(Total Node Capacity minus Real-Time Active Usage)</div>
                 </div>
             </div>
-        </div>
-    </div>
 </div>
 @endsection
 
 @section('footer-scripts')
     @parent
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script>
     function escapeHtml(str) {
         var div = document.createElement('div');
@@ -344,11 +337,161 @@
                 ' <span style="color:#64748b; font-size:12px">logical cores</span>'
             );
             $('#node-online-badge').fadeIn(200);
+            
+            // Update the CPU allocated cores text since we now know the physical cores
+            $('#cpuSubText').text('of ' + data.system.cpus + ' Physical Cores');
+            window.nodePhysicalCores = data.system.cpus;
         }).fail(function () {
             $('[data-attr="info-version"]').html('<span style="color:#f87171">Unreachable</span>');
         }).always(function() {
             setTimeout(getInformation, 10000);
         });
     })();
+
+    // Chart.js Setup
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.font.family = 'Inter, sans-serif';
+
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '75%',
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: 'rgba(15,23,42,0.9)',
+                titleColor: '#fff',
+                bodyColor: '#cbd5e1',
+                borderColor: 'rgba(99,102,241,0.3)',
+                borderWidth: 1,
+                callbacks: {
+                    label: function(context) {
+                        return ' ' + context.label + ': ' + context.formattedValue + (context.chart.canvas.id === 'chartCpu' ? '%' : ' GiB');
+                    }
+                }
+            }
+        }
+    };
+
+    // Initialize Charts with empty datasets
+    const chartCpu = new Chart(document.getElementById('chartCpu'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Active Usage', 'Free'],
+            datasets: [{
+                data: [0, 100],
+                backgroundColor: ['#6366f1', 'rgba(30,41,59,0.5)'],
+                borderWidth: 0,
+                borderRadius: 5
+            }]
+        },
+        options: commonOptions
+    });
+
+    const chartMem = new Chart(document.getElementById('chartMem'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Active Usage', 'Allocated', 'Free'],
+            datasets: [
+                {
+                    // Inner ring: Active Usage vs Total
+                    data: [0, 1],
+                    backgroundColor: ['#10b981', 'rgba(30,41,59,0.0)'], // inner uses green
+                    borderWidth: 0,
+                    weight: 1
+                },
+                {
+                    // Outer ring: Allocated vs Total
+                    data: [0, 1],
+                    backgroundColor: ['#3b82f6', 'rgba(30,41,59,0.5)'], // outer uses blue
+                    borderWidth: 0,
+                    weight: 0.5
+                }
+            ]
+        },
+        options: { ...commonOptions, cutout: '65%' }
+    });
+
+    const chartDisk = new Chart(document.getElementById('chartDisk'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Active Usage', 'Allocated', 'Free'],
+            datasets: [
+                {
+                    data: [0, 1],
+                    backgroundColor: ['#8b5cf6', 'rgba(30,41,59,0.0)'],
+                    borderWidth: 0,
+                    weight: 1
+                },
+                {
+                    data: [0, 1],
+                    backgroundColor: ['#f59e0b', 'rgba(30,41,59,0.5)'],
+                    borderWidth: 0,
+                    weight: 0.5
+                }
+            ]
+        },
+        options: { ...commonOptions, cutout: '65%' }
+    });
+
+    // Fetch Live Usage
+    const nodeTotalMem = {{ $node->memory }} / 1024; // GiB
+    const nodeTotalDisk = {{ $node->disk }} / 1024; // GiB
+    @php
+        $memAllocated = (float) str_replace(',', '', $stats['memory']['value']) / 1024;
+        $diskAllocated = (float) str_replace(',', '', $stats['disk']['value']) / 1024;
+    @endphp
+    const memAlloc = {{ $memAllocated }};
+    const diskAlloc = {{ $diskAllocated }};
+
+    function fetchLiveUsage() {
+        $.ajax({
+            method: 'GET',
+            url: '/admin/nodes/view/{{ $node->id }}/live-usage',
+            timeout: 8000,
+        }).done(function (data) {
+            let activeCpu = data.active.cpu;
+            let activeMem = data.active.memory_bytes / 1024 / 1024 / 1024;
+            let activeDisk = data.active.disk_bytes / 1024 / 1024 / 1024;
+
+            // Optional: calculate CPU % relative to physical cores if known, otherwise just show absolute total
+            let cpuPercent = activeCpu;
+            if (window.nodePhysicalCores) {
+                cpuPercent = activeCpu / window.nodePhysicalCores;
+            }
+
+            // Update UI Texts
+            $('#cpuActiveText').text(cpuPercent.toFixed(1) + '%');
+            $('#memActiveText').text(activeMem.toFixed(1) + ' GiB');
+            $('#diskActiveText').text(activeDisk.toFixed(1) + ' GiB');
+            $('#memSubText').text(memAlloc.toFixed(1) + ' GiB Allocated of ' + nodeTotalMem.toFixed(1) + ' GiB Total');
+            $('#diskSubText').text(diskAlloc.toFixed(1) + ' GiB Allocated of ' + nodeTotalDisk.toFixed(1) + ' GiB Total');
+
+            // Remaining Physical Disk = Node Total Disk - Active Used Disk
+            let remainingDisk = Math.max(0, nodeTotalDisk - activeDisk);
+            $('#diskRemaining').text(remainingDisk.toFixed(1) + ' GiB');
+
+            // Update CPU Chart
+            chartCpu.data.datasets[0].data = [cpuPercent, Math.max(0, 100 - cpuPercent)];
+            chartCpu.update();
+
+            // Update Memory Chart (Inner: Active, Outer: Allocated)
+            chartMem.data.datasets[0].data = [activeMem, Math.max(0, nodeTotalMem - activeMem)];
+            chartMem.data.datasets[1].data = [memAlloc, Math.max(0, nodeTotalMem - memAlloc)];
+            chartMem.update();
+
+            // Update Disk Chart
+            chartDisk.data.datasets[0].data = [activeDisk, Math.max(0, nodeTotalDisk - activeDisk)];
+            chartDisk.data.datasets[1].data = [diskAlloc, Math.max(0, nodeTotalDisk - diskAlloc)];
+            chartDisk.update();
+
+        }).always(function() {
+            setTimeout(fetchLiveUsage, 10000);
+        });
+    }
+    
+    // Start polling
+    fetchLiveUsage();
+
     </script>
 @endsection
