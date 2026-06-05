@@ -261,14 +261,18 @@
                 <div class="alx-resource-card alx-res-disk">
                     <div class="alx-resource-icon"><i class="fa fa-hdd-o"></i></div>
                     <div class="alx-resource-label">Disk Space</div>
-                    <div class="alx-resource-value">{{ number_format($stats['disk']['value'] / 1024, 1) }} GiB</div>
-                    <div class="alx-resource-sub">of {{ number_format($stats['disk']['max'] / 1024, 1) }} GiB allocated</div>
+                    @php
+                        $diskVal = (float) str_replace(',', '', $stats['disk']['value']);
+                        $diskMax = (float) str_replace(',', '', $stats['disk']['max']);
+                    @endphp
+                    <div class="alx-resource-value">{{ number_format($diskVal / 1024, 1) }} GiB</div>
+                    <div class="alx-resource-sub">of {{ number_format($diskMax / 1024, 1) }} GiB allocated</div>
                     <div class="alx-progress-wrap">
-                        <div class="alx-progress-bar" style="width: {{ $stats['disk']['percent'] }}%"></div>
+                        <div class="alx-progress-bar" style="width: {{ min(100, $stats['disk']['percent']) }}%"></div>
                     </div>
                     <div class="alx-progress-label">
                         <span>{{ round($stats['disk']['percent']) }}% used</span>
-                        <span>{{ number_format(($stats['disk']['max'] - $stats['disk']['value']) / 1024, 1) }} GiB free</span>
+                        <span>{{ number_format(max(0, $diskMax - $diskVal) / 1024, 1) }} GiB free</span>
                     </div>
                 </div>
 
@@ -276,14 +280,18 @@
                 <div class="alx-resource-card alx-res-memory">
                     <div class="alx-resource-icon"><i class="fa fa-database"></i></div>
                     <div class="alx-resource-label">Memory</div>
-                    <div class="alx-resource-value">{{ number_format($stats['memory']['value'] / 1024, 1) }} GiB</div>
-                    <div class="alx-resource-sub">of {{ number_format($stats['memory']['max'] / 1024, 1) }} GiB allocated</div>
+                    @php
+                        $memVal = (float) str_replace(',', '', $stats['memory']['value']);
+                        $memMax = (float) str_replace(',', '', $stats['memory']['max']);
+                    @endphp
+                    <div class="alx-resource-value">{{ number_format($memVal / 1024, 1) }} GiB</div>
+                    <div class="alx-resource-sub">of {{ number_format($memMax / 1024, 1) }} GiB allocated</div>
                     <div class="alx-progress-wrap">
-                        <div class="alx-progress-bar" style="width: {{ $stats['memory']['percent'] }}%"></div>
+                        <div class="alx-progress-bar" style="width: {{ min(100, $stats['memory']['percent']) }}%"></div>
                     </div>
                     <div class="alx-progress-label">
                         <span>{{ round($stats['memory']['percent']) }}% used</span>
-                        <span>{{ number_format(($stats['memory']['max'] - $stats['memory']['value']) / 1024, 1) }} GiB free</span>
+                        <span>{{ number_format(max(0, $memMax - $memVal) / 1024, 1) }} GiB free</span>
                     </div>
                 </div>
 
