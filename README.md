@@ -160,6 +160,7 @@ cp .env.example .env
 # - APP_TIMEZONE=Your/Timezone
 
 # Install Composer dependencies
+composer config audit.block-insecure false
 composer install --no-dev --optimize-autoloader
 
 # Generate app key
@@ -488,6 +489,7 @@ curl -L https://github.com/alxzy-group/alxzen/releases/latest/download/panel.tar
 cp ../.env.backup .env
 
 # Step 5: Install dependencies
+composer config audit.block-insecure false
 composer install --no-dev --optimize-autoloader
 
 # Step 6: Finalize
