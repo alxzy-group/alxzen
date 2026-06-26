@@ -24,6 +24,9 @@
     border: 1px solid rgba(99,102,241,0.2);
     border-radius: 10px;
     padding: 6px;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
 }
 .alx-tab {
     padding: 8px 18px;
@@ -34,6 +37,7 @@
     text-decoration: none;
     transition: all 0.2s;
     border: 1px solid transparent;
+    flex-shrink: 0;
 }
 .alx-tab:hover { color: #a5b4fc; background: rgba(99,102,241,0.1); text-decoration: none; }
 .alx-tab.active {
@@ -257,27 +261,29 @@
                     <i class="fa fa-circle" style="font-size:8px"></i> Online
                 </span>
             </div>
-            <table class="alx-info-table">
-                <tr>
-                    <td><i class="fa fa-code-fork" style="margin-right:6px;color:#818cf8"></i> Daemon Version</td>
-                    <td>
-                        <code data-attr="info-version"><i class="fa fa-refresh fa-spin fa-fw"></i></code>
-                        <span style="color:#475569; font-size:12px"> — Latest: <code>{{ $version->getDaemon() }}</code></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><i class="fa fa-linux" style="margin-right:6px;color:#818cf8"></i> OS</td>
-                    <td data-attr="info-system"><i class="fa fa-refresh fa-spin fa-fw" style="color:#64748b"></i></td>
-                </tr>
-                <tr>
-                    <td><i class="fa fa-tasks" style="margin-right:6px;color:#818cf8"></i> CPU Threads</td>
-                    <td data-attr="info-cpus"><i class="fa fa-refresh fa-spin fa-fw" style="color:#64748b"></i></td>
-                </tr>
-                <tr>
-                    <td><i class="fa fa-globe" style="margin-right:6px;color:#818cf8"></i> Address</td>
-                    <td><code>{{ $node->fqdn }}:{{ $node->daemonListen }}</code></td>
-                </tr>
-            </table>
+            <div style="overflow-x: auto;">
+                <table class="alx-info-table">
+                    <tr>
+                        <td><i class="fa fa-code-fork" style="margin-right:6px;color:#818cf8"></i> Daemon Version</td>
+                        <td>
+                            <code data-attr="info-version"><i class="fa fa-refresh fa-spin fa-fw"></i></code>
+                            <span style="color:#475569; font-size:12px"> — Latest: <code>{{ $version->getDaemon() }}</code></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><i class="fa fa-linux" style="margin-right:6px;color:#818cf8"></i> OS</td>
+                        <td data-attr="info-system"><i class="fa fa-refresh fa-spin fa-fw" style="color:#64748b"></i></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fa fa-tasks" style="margin-right:6px;color:#818cf8"></i> CPU Threads</td>
+                        <td data-attr="info-cpus"><i class="fa fa-refresh fa-spin fa-fw" style="color:#64748b"></i></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fa fa-globe" style="margin-right:6px;color:#818cf8"></i> Address</td>
+                        <td><code>{{ $node->fqdn }}:{{ $node->daemonListen }}</code></td>
+                    </tr>
+                </table>
+            </div>
         </div>
 
         {{-- Description --}}
