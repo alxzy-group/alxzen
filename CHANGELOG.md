@@ -1,5 +1,14 @@
 # Changelog
 
+## [v3.7] - 2026-06-26
+### Added
+- **Update Panel Installer**: Added a new option `[4] Update Panel` to `setup.sh` to allow users to update the panel directly from the installer menu.
+- **APP_ENVIRONMENT_ONLY configuration**: Updated `.env.example` and `README.md` to set `APP_ENVIRONMENT_ONLY=false` by default, allowing company name and UI settings to be edited directly from the admin panel.
+
+### Fixed
+- **Mobile Scrolling**: Fixed horizontal scrolling on mobile devices for the Servers, Users, and Nodes lists in the admin area by adding `.table-responsive` equivalent wrappers.
+- **Node Views Mobile Scrolling**: Fixed horizontal scrolling for Node Allocation view and Node Overview tabs to prevent layout breaking on small screens.
+
 ## [v3.6] - 2026-06-05
 ### Added
 - **Real-Time Node Resource Charts**: Replaced the static node overview with an interactive, 3-chart donut interface (CPU, Memory, Disk) using Chart.js.

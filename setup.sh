@@ -800,6 +800,33 @@ configure_wings_ssl() {
 #  INSTALLATION ORCHESTRATORS
 # ==============================================================================
 
+update_panel() {
+    print_header
+    echo -e "  ${YELLOW}${BOLD}🔄 UPDATE PANEL${NC}"
+    echo ""
+    print_info "Updating Alxzen Panel..."
+    
+    cd "$PANEL_DIR"
+    php artisan down
+
+    # Download & extract latest release
+    curl -Lo /tmp/panel.tar.gz "$GITHUB_PANEL_DL" 2>/dev/null
+    tar -xzf /tmp/panel.tar.gz
+    rm -f /tmp/panel.tar.gz
+
+    # Clear caches & set permissions
+    php artisan view:clear && php artisan config:clear
+    chown -R www-data:www-data "$PANEL_DIR"/*
+    chown -R www-data:www-data "$PANEL_DIR"/.[!.]*
+
+    # Bring panel back online
+    php artisan up
+    
+    echo ""
+    print_ok "${GREEN}${BOLD}Panel updated successfully.${NC}"
+}
+
+
 install_panel() {
     print_header
     echo -e "  ${CYAN}${BOLD}📦 PANEL INSTALLATION${NC}"
@@ -1001,20 +1028,23 @@ main_menu() {
         echo -e "    ${GREEN}[2]${NC} Install Wings Only"
         echo -e "    ${GREEN}[3]${NC} Install Panel + Wings (Same Machine)"
         echo ""
-        echo -e "    ${RED}[4]${NC} Uninstall Panel"
-        echo -e "    ${RED}[5]${NC} Uninstall Wings"
+        echo -e "    ${YELLOW}[4]${NC} Update Panel"
+        echo ""
+        echo -e "    ${RED}[5]${NC} Uninstall Panel"
+        echo -e "    ${RED}[6]${NC} Uninstall Wings"
         echo ""
         echo -e "    ${DIM}[0]${NC} Exit"
         echo ""
-        echo -ne "  ${YELLOW}?${NC} ${BOLD}Enter your choice [0-5]:${NC} "
+        echo -ne "  ${YELLOW}?${NC} ${BOLD}Enter your choice [0-6]:${NC} "
         read -r choice
 
         case "$choice" in
             1) install_panel; break ;;
             2) install_wings; break ;;
             3) install_both; break ;;
-            4) uninstall_panel; break ;;
-            5) uninstall_wings; break ;;
+            4) update_panel; break ;;
+            5) uninstall_panel; break ;;
+            6) uninstall_wings; break ;;
             0)
                 echo ""
                 print_info "Goodbye! Visit ${CYAN}${GITHUB_PANEL}${NC} for docs & support."

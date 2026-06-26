@@ -156,6 +156,7 @@ cp .env.example .env
 
 # Edit .env with your settings:
 # - APP_URL=https://panel.yourdomain.com
+# - APP_ENVIRONMENT_ONLY=false
 # - DB_PASSWORD=YOUR_SECURE_PASSWORD
 # - APP_TIMEZONE=Your/Timezone
 

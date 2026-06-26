@@ -162,7 +162,7 @@
                     </div>
                 </form>
             </div>
-            <div>
+            <div style="overflow-x: auto;">
                 <table class="alx-table">
                     <thead>
                         <tr>
