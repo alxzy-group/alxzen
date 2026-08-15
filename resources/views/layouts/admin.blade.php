@@ -289,8 +289,6 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                {{-- DATABASE HANYA OWNER --}}
-                                @if(Auth::user()->id === 1)
                                 <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.databases') ?: 'active' }}">
                                     <a href="{{ route('admin.databases') }}">
                                         <i class="fa fa-database"></i> <span>Databases</span>
@@ -306,7 +304,6 @@
                                         <i class="fa fa-sitemap"></i> <span>Nodes</span>
                                     </a>
                                 </li>
-                                @endif
 
                                 <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.servers') ?: 'active' }}">
                                     <a href="{{ route('admin.servers') }}">
@@ -314,8 +311,6 @@
                                     </a>
                                 </li>
                                 
-                                {{-- EXPIRATION & USERS HANYA OWNER --}}
-                                @if(Auth::user()->id === 1)
                                 <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.expiration') ?: 'active' }}">
                                     <a href="{{ route('admin.expiration') }}">
                                         <i class="fa fa-clock-o"></i> <span>Expiration Manager</span>
@@ -326,11 +321,9 @@
                                         <i class="fa fa-users"></i> <span>Users</span>
                                     </a>
                                 </li>
-                                @endif
                             </ul>
                         </li>
 
-                        @if(Auth::user()->id === 1)
                         <li class="treeview {{ starts_with(Route::currentRouteName(), ['admin.mounts', 'admin.nests']) ? 'active' : '' }}">
                             <a href="#">
                                 <i class="fa fa-server"></i> <span>Service Management</span>
@@ -351,7 +344,6 @@
                                 </li>
                             </ul>
                         </li>
-                        @endif
                     </ul>
                 </section>
             </aside>

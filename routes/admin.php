@@ -13,19 +13,19 @@ Route::group(['prefix' => 'api'], function () {
     Route::delete('/revoke/{identifier}', [Admin\ApiController::class, 'delete'])->name('admin.api.delete');
 });
 
-Route::group(['prefix' => 'locations', 'middleware' => 'admin.superuser'], function () {
+Route::group(['prefix' => 'locations'], function () {
     Route::get('/', [Admin\LocationController::class, 'index'])->name('admin.locations');
     Route::get('/view/{location:id}', [Admin\LocationController::class, 'view'])->name('admin.locations.view');
     Route::post('/', [Admin\LocationController::class, 'create']);
-    Route::patch('/view/{location:id}', [Admin\LocationController::class, 'update']);
+    Route::patch('/view/{location:id}', [Admin\LocationController::class, 'update'])->middleware('admin.superuser');
 });
 
 Route::group(['prefix' => 'databases'], function () {
     Route::get('/', [Admin\DatabaseController::class, 'index'])->name('admin.databases');
     Route::get('/view/{host:id}', [Admin\DatabaseController::class, 'view'])->name('admin.databases.view');
     Route::post('/', [Admin\DatabaseController::class, 'create']);
-    Route::patch('/view/{host:id}', [Admin\DatabaseController::class, 'update']);
-    Route::delete('/view/{host:id}', [Admin\DatabaseController::class, 'delete']);
+    Route::patch('/view/{host:id}', [Admin\DatabaseController::class, 'update'])->middleware('admin.superuser');
+    Route::delete('/view/{host:id}', [Admin\DatabaseController::class, 'delete'])->middleware('admin.superuser');
 });
 
 Route::group(['prefix' => 'settings'], function () {
@@ -44,8 +44,8 @@ Route::group(['prefix' => 'users'], function () {
     Route::get('/new', [Admin\UserController::class, 'create'])->name('admin.users.new');
     Route::get('/view/{user:id}', [Admin\UserController::class, 'view'])->name('admin.users.view');
     Route::post('/new', [Admin\UserController::class, 'store']);
-    Route::patch('/view/{user:id}', [Admin\UserController::class, 'update']);
-    Route::delete('/view/{user:id}', [Admin\UserController::class, 'delete'])->name('admin.users.delete');
+    Route::patch('/view/{user:id}', [Admin\UserController::class, 'update'])->middleware('admin.superuser');
+    Route::delete('/view/{user:id}', [Admin\UserController::class, 'delete'])->name('admin.users.delete')->middleware('admin.superuser');
 });
 
 Route::group(['prefix' => 'servers'], function () {
@@ -61,28 +61,28 @@ Route::group(['prefix' => 'servers'], function () {
         Route::get('/view/{server:id}/mounts', [Admin\Servers\ServerViewController::class, 'mounts'])->name('admin.servers.view.mounts');
     });
 
-    Route::get('/view/{server:id}/manage', [Admin\Servers\ServerViewController::class, 'manage'])->name('admin.servers.view.manage');
-    Route::get('/view/{server:id}/delete', [Admin\Servers\ServerViewController::class, 'delete'])->name('admin.servers.view.delete');
+    Route::get('/view/{server:id}/manage', [Admin\Servers\ServerViewController::class, 'manage'])->name('admin.servers.view.manage')->middleware('admin.superuser');
+    Route::get('/view/{server:id}/delete', [Admin\Servers\ServerViewController::class, 'delete'])->name('admin.servers.view.delete')->middleware('admin.superuser');
 
     Route::post('/new', [Admin\Servers\CreateServerController::class, 'store']);
     Route::post('/view/{server:id}/build', [Admin\ServersController::class, 'updateBuild']);
     Route::post('/view/{server:id}/startup', [Admin\ServersController::class, 'saveStartup']);
     Route::post('/view/{server:id}/database', [Admin\ServersController::class, 'newDatabase']);
     Route::post('/view/{server:id}/mounts', [Admin\ServersController::class, 'addMount'])->name('admin.servers.view.mounts.store');
-    Route::post('/view/{server:id}/manage/toggle', [Admin\ServersController::class, 'toggleInstall'])->name('admin.servers.view.manage.toggle');
-    Route::post('/view/{server:id}/manage/suspension', [Admin\ServersController::class, 'manageSuspension'])->name('admin.servers.view.manage.suspension');
-    Route::post('/view/{server:id}/manage/reinstall', [Admin\ServersController::class, 'reinstallServer'])->name('admin.servers.view.manage.reinstall');
-    Route::post('/view/{server:id}/manage/transfer', [Admin\Servers\ServerTransferController::class, 'transfer'])->name('admin.servers.view.manage.transfer');
-    Route::post('/view/{server:id}/delete', [Admin\ServersController::class, 'delete']);
+    Route::post('/view/{server:id}/manage/toggle', [Admin\ServersController::class, 'toggleInstall'])->name('admin.servers.view.manage.toggle')->middleware('admin.superuser');
+    Route::post('/view/{server:id}/manage/suspension', [Admin\ServersController::class, 'manageSuspension'])->name('admin.servers.view.manage.suspension')->middleware('admin.superuser');
+    Route::post('/view/{server:id}/manage/reinstall', [Admin\ServersController::class, 'reinstallServer'])->name('admin.servers.view.manage.reinstall')->middleware('admin.superuser');
+    Route::post('/view/{server:id}/manage/transfer', [Admin\Servers\ServerTransferController::class, 'transfer'])->name('admin.servers.view.manage.transfer')->middleware('admin.superuser');
+    Route::post('/view/{server:id}/delete', [Admin\ServersController::class, 'delete'])->middleware('admin.superuser');
 
-    Route::patch('/view/{server:id}/details', [Admin\ServersController::class, 'setDetails']);
-    Route::patch('/view/{server:id}/database', [Admin\ServersController::class, 'resetDatabasePassword']);
+    Route::patch('/view/{server:id}/details', [Admin\ServersController::class, 'setDetails'])->middleware('admin.superuser');
+    Route::patch('/view/{server:id}/database', [Admin\ServersController::class, 'resetDatabasePassword'])->middleware('admin.superuser');
 
-    Route::delete('/view/{server:id}/database/{database:id}/delete', [Admin\ServersController::class, 'deleteDatabase'])->name('admin.servers.view.database.delete');
-    Route::delete('/view/{server:id}/mounts/{mount:id}', [Admin\ServersController::class, 'deleteMount'])->name('admin.servers.view.mounts.delete');
+    Route::delete('/view/{server:id}/database/{database:id}/delete', [Admin\ServersController::class, 'deleteDatabase'])->name('admin.servers.view.database.delete')->middleware('admin.superuser');
+    Route::delete('/view/{server:id}/mounts/{mount:id}', [Admin\ServersController::class, 'deleteMount'])->name('admin.servers.view.mounts.delete')->middleware('admin.superuser');
 });
 
-Route::group(['prefix' => 'nodes', 'middleware' => 'admin.superuser'], function () {
+Route::group(['prefix' => 'nodes'], function () {
     Route::get('/', [Admin\Nodes\NodeController::class, 'index'])->name('admin.nodes');
     Route::get('/new', [Admin\NodesController::class, 'create'])->name('admin.nodes.new');
     Route::get('/view/{node:id}', [Admin\Nodes\NodeViewController::class, 'index'])->name('admin.nodes.view');
@@ -95,29 +95,29 @@ Route::group(['prefix' => 'nodes', 'middleware' => 'admin.superuser'], function 
 
     Route::post('/new', [Admin\NodesController::class, 'store']);
     Route::post('/view/{node:id}/allocation', [Admin\NodesController::class, 'createAllocation']);
-    Route::post('/view/{node:id}/allocation/remove', [Admin\NodesController::class, 'allocationRemoveBlock'])->name('admin.nodes.view.allocation.removeBlock');
-    Route::post('/view/{node:id}/allocation/alias', [Admin\NodesController::class, 'allocationSetAlias'])->name('admin.nodes.view.allocation.setAlias');
-    Route::post('/view/{node:id}/settings/token', Admin\NodeAutoDeployController::class)->name('admin.nodes.view.configuration.token');
+    Route::post('/view/{node:id}/allocation/remove', [Admin\NodesController::class, 'allocationRemoveBlock'])->name('admin.nodes.view.allocation.removeBlock')->middleware('admin.superuser');
+    Route::post('/view/{node:id}/allocation/alias', [Admin\NodesController::class, 'allocationSetAlias'])->name('admin.nodes.view.allocation.setAlias')->middleware('admin.superuser');
+    Route::post('/view/{node:id}/settings/token', Admin\NodeAutoDeployController::class)->name('admin.nodes.view.configuration.token')->middleware('admin.superuser');
 
-    Route::patch('/view/{node:id}/settings', [Admin\NodesController::class, 'updateSettings']);
+    Route::patch('/view/{node:id}/settings', [Admin\NodesController::class, 'updateSettings'])->middleware('admin.superuser');
 
-    Route::delete('/view/{node:id}/delete', [Admin\NodesController::class, 'delete'])->name('admin.nodes.view.delete');
-    Route::delete('/view/{node:id}/allocation/remove/{allocation:id}', [Admin\NodesController::class, 'allocationRemoveSingle'])->name('admin.nodes.view.allocation.removeSingle');
-    Route::delete('/view/{node:id}/allocations', [Admin\NodesController::class, 'allocationRemoveMultiple'])->name('admin.nodes.view.allocation.removeMultiple');
+    Route::delete('/view/{node:id}/delete', [Admin\NodesController::class, 'delete'])->name('admin.nodes.view.delete')->middleware('admin.superuser');
+    Route::delete('/view/{node:id}/allocation/remove/{allocation:id}', [Admin\NodesController::class, 'allocationRemoveSingle'])->name('admin.nodes.view.allocation.removeSingle')->middleware('admin.superuser');
+    Route::delete('/view/{node:id}/allocations', [Admin\NodesController::class, 'allocationRemoveMultiple'])->name('admin.nodes.view.allocation.removeMultiple')->middleware('admin.superuser');
 });
 
-Route::group(['prefix' => 'mounts', 'middleware' => 'admin.superuser'], function () {
+Route::group(['prefix' => 'mounts'], function () {
     Route::get('/', [Admin\MountController::class, 'index'])->name('admin.mounts');
     Route::get('/view/{mount:id}', [Admin\MountController::class, 'view'])->name('admin.mounts.view');
     Route::post('/', [Admin\MountController::class, 'create']);
     Route::post('/{mount:id}/eggs', [Admin\MountController::class, 'addEggs'])->name('admin.mounts.eggs');
     Route::post('/{mount:id}/nodes', [Admin\MountController::class, 'addNodes'])->name('admin.mounts.nodes');
-    Route::patch('/view/{mount:id}', [Admin\MountController::class, 'update']);
-    Route::delete('/{mount:id}/eggs/{egg_id}', [Admin\MountController::class, 'deleteEgg']);
-    Route::delete('/{mount:id}/nodes/{node_id}', [Admin\MountController::class, 'deleteNode']);
+    Route::patch('/view/{mount:id}', [Admin\MountController::class, 'update'])->middleware('admin.superuser');
+    Route::delete('/{mount:id}/eggs/{egg_id}', [Admin\MountController::class, 'deleteEgg'])->middleware('admin.superuser');
+    Route::delete('/{mount:id}/nodes/{node_id}', [Admin\MountController::class, 'deleteNode'])->middleware('admin.superuser');
 });
 
-Route::group(['prefix' => 'nests', 'middleware' => 'admin.superuser'], function () {
+Route::group(['prefix' => 'nests'], function () {
     Route::get('/', [Admin\Nests\NestController::class, 'index'])->name('admin.nests');
     Route::get('/new', [Admin\Nests\NestController::class, 'create'])->name('admin.nests.new');
     Route::get('/view/{nest:id}', [Admin\Nests\NestController::class, 'view'])->name('admin.nests.view');
@@ -132,27 +132,27 @@ Route::group(['prefix' => 'nests', 'middleware' => 'admin.superuser'], function 
     Route::post('/egg/new', [Admin\Nests\EggController::class, 'store']);
     Route::post('/egg/{egg:id}/variables', [Admin\Nests\EggVariableController::class, 'store']);
 
-    Route::put('/egg/{egg:id}', [Admin\Nests\EggShareController::class, 'update']);
+    Route::put('/egg/{egg:id}', [Admin\Nests\EggShareController::class, 'update'])->middleware('admin.superuser');
 
-    Route::patch('/view/{nest:id}', [Admin\Nests\NestController::class, 'update']);
-    Route::patch('/egg/{egg:id}', [Admin\Nests\EggController::class, 'update']);
-    Route::patch('/egg/{egg:id}/scripts', [Admin\Nests\EggScriptController::class, 'update']);
-    Route::patch('/egg/{egg:id}/variables/{variable:id}', [Admin\Nests\EggVariableController::class, 'update'])->name('admin.nests.egg.variables.edit');
+    Route::patch('/view/{nest:id}', [Admin\Nests\NestController::class, 'update'])->middleware('admin.superuser');
+    Route::patch('/egg/{egg:id}', [Admin\Nests\EggController::class, 'update'])->middleware('admin.superuser');
+    Route::patch('/egg/{egg:id}/scripts', [Admin\Nests\EggScriptController::class, 'update'])->middleware('admin.superuser');
+    Route::patch('/egg/{egg:id}/variables/{variable:id}', [Admin\Nests\EggVariableController::class, 'update'])->name('admin.nests.egg.variables.edit')->middleware('admin.superuser');
 
-    Route::delete('/view/{nest:id}', [Admin\Nests\NestController::class, 'destroy']);
-    Route::delete('/egg/{egg:id}', [Admin\Nests\EggController::class, 'destroy']);
-    Route::delete('/egg/{egg:id}/variables/{variable:id}', [Admin\Nests\EggVariableController::class, 'destroy']);
+    Route::delete('/view/{nest:id}', [Admin\Nests\NestController::class, 'destroy'])->middleware('admin.superuser');
+    Route::delete('/egg/{egg:id}', [Admin\Nests\EggController::class, 'destroy'])->middleware('admin.superuser');
+    Route::delete('/egg/{egg:id}/variables/{variable:id}', [Admin\Nests\EggVariableController::class, 'destroy'])->middleware('admin.superuser');
 });
 
 Route::group(['prefix' => 'expiration'], function () {
     Route::get('/', [Admin\ExpirationController::class, 'index'])->name('admin.expiration');
-    Route::post('/delete-all', [Admin\ExpirationController::class, 'deleteAllExpired'])->name('admin.expiration.deleteAll');
-    Route::post('/{id}', [Admin\ExpirationController::class, 'update'])->name('admin.expiration.update');
+    Route::post('/delete-all', [Admin\ExpirationController::class, 'deleteAllExpired'])->name('admin.expiration.deleteAll')->middleware('admin.superuser');
+    Route::post('/{id}', [Admin\ExpirationController::class, 'update'])->name('admin.expiration.update')->middleware('admin.superuser');
 });
 
 Route::group(['prefix' => 'announcements'], function () {
     Route::get('/', [Admin\AnnouncementController::class, 'index'])->name('admin.announcements');
     Route::get('/new', [Admin\AnnouncementController::class, 'create'])->name('admin.announcements.new');
     Route::post('/new', [Admin\AnnouncementController::class, 'store'])->name('admin.announcements.store');
-    Route::delete('/{id}', [Admin\AnnouncementController::class, 'destroy'])->name('admin.announcements.delete');
+    Route::delete('/{id}', [Admin\AnnouncementController::class, 'destroy'])->name('admin.announcements.delete')->middleware('admin.superuser');
 });

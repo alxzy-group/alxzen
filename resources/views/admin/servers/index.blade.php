@@ -67,7 +67,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     gap: 12px;
     padding: 18px 24px;
     border-bottom: 1px solid rgba(124,58,237,0.1);
@@ -96,7 +97,7 @@
 }
 
 /* Search controls */
-.alx-admin-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.alx-admin-controls { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
 .alx-admin-input {
     background: rgba(0,0,0,0.6) !important;
     border: 1px solid rgba(124,58,237,0.2) !important;
