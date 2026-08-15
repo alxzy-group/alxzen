@@ -27,7 +27,7 @@
     overflow: hidden;
 }
 .alx-card-header {
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between; overflow-x: auto;
     padding: 18px 24px; border-bottom: 1px solid rgba(99,102,241,0.15);
     background: rgba(99,102,241,0.05);
 }
