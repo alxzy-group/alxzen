@@ -18,22 +18,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 const toPercent = (val: number, max: number) => max > 0 ? Math.min((val / max) * 100, 100) : 0;
 
 const globalStyles = `
-@keyframes srv-scan {
-    0%   { transform: translateY(-100%); opacity: 0; }
-    10%  { opacity: 0.4; }
-    90%  { opacity: 0.4; }
-    100% { transform: translateY(100%); opacity: 0; }
-}
-@keyframes srv-dot-pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%       { opacity: 0.4; transform: scale(0.75); }
-}
 @keyframes srv-bar-in {
     from { width: 0%; opacity: 0; }
 }
 @keyframes srv-border-breathe {
-    0%,100% { border-left-color: rgba(124,58,237,0.3); }
-    50%      { border-left-color: rgba(124,58,237,0.8); }
+    0%,100% { border-left-color: rgba(14, 165, 233, 0.3); }
+    50%      { border-left-color: rgba(14, 165, 233, 0.8); }
 }
 `;
 
@@ -41,52 +31,31 @@ const InjectStyles = () => <style dangerouslySetInnerHTML={{ __html: globalStyle
 
 const CardWrapper = styled(motion(Link))<{ $status: string }>`
     ${tw`relative block w-full overflow-hidden`}
-    background: linear-gradient(160deg, #0d0c14 0%, #09090f 100%);
-    border: 1px solid rgba(124, 58, 237, 0.12);
+    background: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-left: 3px solid ${({ $status }) =>
         $status === 'running'  ? '#4ade80' :
-        $status === 'starting' ? '#a78bfa' :
-        $status === 'offline'  ? 'rgba(124,58,237,0.3)' : '#facc15'};
-    border-radius: 0;
+        $status === 'starting' ? '#0ea5e9' :
+        $status === 'offline'  ? '#333333' : '#facc15'};
+    border-radius: 16px;
     isolation: isolate;
-    animation: srv-border-breathe 5s ease-in-out infinite;
-
-    /* scan line */
-    &::before {
-        content: '';
-        position: absolute;
-        left: 0; right: 0;
-        height: 50px;
-        background: linear-gradient(180deg, rgba(124,58,237,0.04) 0%, transparent 100%);
-        animation: srv-scan 7s linear infinite;
-        pointer-events: none;
-        z-index: 0;
-    }
-    /* dot grid texture */
-    &::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-image: radial-gradient(rgba(124,58,237,0.08) 1px, transparent 1px);
-        background-size: 24px 24px;
-        pointer-events: none;
-        z-index: 0;
-    }
+    
     & > * { position: relative; z-index: 1; }
 `;
 
 const Header = styled.div`
     ${tw`p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3`}
-    border-bottom: 1px solid rgba(124,58,237,0.08);
-    background: rgba(124,58,237,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    background: transparent;
 `;
 
 const ServerIconBox = styled.div`
     width: 36px; height: 36px;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(124,58,237,0.1);
-    border: 1px solid rgba(124,58,237,0.2);
-    color: #a78bfa;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #a1a1aa;
     font-size: 13px;
     flex-shrink: 0;
 `;
@@ -97,53 +66,53 @@ const ServerName = styled.h3`
 
 const ConnectionBadge = styled.div`
     ${tw`flex items-center gap-1.5 text-[11px] font-mono mt-1.5`}
-    color: #4b5563;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(124,58,237,0.08);
+    color: #a1a1aa;
+    background: #000000;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
     padding: 2px 8px;
 `;
 
 const StatusBadge = styled.div<{ $status: string }>`
     ${tw`flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest flex-shrink-0`}
     padding: 5px 12px;
+    border-radius: 6px;
     background: ${({ $status }) =>
         $status === 'running'  ? 'rgba(34,197,94,0.1)'    :
-        $status === 'starting' ? 'rgba(167,139,250,0.12)' :
-        $status === 'offline'  ? 'rgba(124,58,237,0.08)'  : 'rgba(234,179,8,0.1)'};
+        $status === 'starting' ? 'rgba(14,165,233,0.12)' :
+        $status === 'offline'  ? 'rgba(255,255,255,0.08)'  : 'rgba(234,179,8,0.1)'};
     color: ${({ $status }) =>
         $status === 'running'  ? '#4ade80' :
-        $status === 'starting' ? '#c4b5fd' :
-        $status === 'offline'  ? '#4b5563' : '#facc15'};
+        $status === 'starting' ? '#38bdf8' :
+        $status === 'offline'  ? '#a1a1aa' : '#facc15'};
     border: 1px solid ${({ $status }) =>
         $status === 'running'  ? 'rgba(34,197,94,0.2)'    :
-        $status === 'starting' ? 'rgba(167,139,250,0.3)'  :
-        $status === 'offline'  ? 'rgba(124,58,237,0.15)'  : 'rgba(234,179,8,0.2)'};
+        $status === 'starting' ? 'rgba(14,165,233,0.3)'  :
+        $status === 'offline'  ? 'rgba(255,255,255,0.15)'  : 'rgba(234,179,8,0.2)'};
 
     .dot {
         width: 6px; height: 6px;
         border-radius: 50%;
         background: currentColor;
         box-shadow: 0 0 6px currentColor;
-        animation: srv-dot-pulse 2s ease-in-out infinite;
     }
 `;
 
 const StatsGrid = styled.div`
     ${tw`grid grid-cols-3`}
-    border-top: 1px solid rgba(124,58,237,0.06);
 `;
 
 const StatBox = styled.div`
     ${tw`flex flex-col px-5 py-4`}
     transition: background 0.2s;
-    &:not(:last-child) { border-right: 1px solid rgba(124,58,237,0.06); }
-    &:hover { background: rgba(124,58,237,0.04); }
+    &:not(:last-child) { border-right: 1px solid rgba(255,255,255,0.04); }
+    &:hover { background: rgba(255,255,255,0.02); }
 `;
 
 const StatLabel = styled.div`
     ${tw`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest mb-2`}
-    color: rgba(124,58,237,0.5);
-    svg { color: #6d28d9; }
+    color: rgba(255,255,255,0.5);
+    svg { color: #0ea5e9; }
 `;
 
 const StatValue = styled.div`
@@ -153,7 +122,7 @@ const StatValue = styled.div`
 
 const BarTrack = styled.div`
     width: 100%; height: 2px;
-    background: rgba(124,58,237,0.1);
+    background: rgba(255,255,255,0.08);
 `;
 
 const BarFill = styled(motion.div)<{ $color: string }>`
@@ -168,7 +137,7 @@ const OfflineState = styled(motion.div)`
 
 const HoverGlow = styled(motion.div)`
     position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 50% 110%, rgba(124,58,237,0.08) 0%, transparent 70%);
+    background: radial-gradient(ellipse at 50% 110%, rgba(14,165,233,0.15) 0%, transparent 70%);
     opacity: 0; pointer-events: none; z-index: 0;
 `;
 
@@ -192,8 +161,8 @@ export default memo(({ server, className }: { server: Server; className?: string
     const memPct  = stats ? toPercent(stats.memoryUsageInBytes, server.limits.memory * 1024 * 1024) : 0;
     const diskPct = stats ? toPercent(stats.diskUsageInBytes, server.limits.disk * 1024 * 1024) : 0;
 
-    // Color: low → violet, mid → amber, high → red
-    const barColor = (pct: number) => pct > 80 ? '#f87171' : pct > 60 ? '#fbbf24' : '#a78bfa';
+    // Color: low → sky blue, mid → amber, high → red
+    const barColor = (pct: number) => pct > 80 ? '#ef4444' : pct > 60 ? '#f59e0b' : '#0ea5e9';
 
     const allocation = server.allocations.find(a => a.isDefault);
     const address = allocation?.alias || ip(allocation?.ip || '');
@@ -209,11 +178,11 @@ export default memo(({ server, className }: { server: Server; className?: string
                 onHoverEnd={() => setHovered(false)}
                 whileHover={{
                     y: -3,
-                    boxShadow: '0 12px 40px -10px rgba(124,58,237,0.3)',
-                    borderColor: 'rgba(124,58,237,0.35)',
+                    boxShadow: '0 12px 40px -10px rgba(0,0,0,0.5)',
+                    borderColor: 'rgba(14, 165, 233, 0.3)',
                 }}
                 animate={status === 'starting' ? {
-                    boxShadow: ['0 0 0 rgba(167,139,250,0)', '0 0 24px rgba(167,139,250,0.25)', '0 0 0 rgba(167,139,250,0)']
+                    boxShadow: ['0 0 0 rgba(14,165,233,0)', '0 0 24px rgba(14,165,233,0.25)', '0 0 0 rgba(14,165,233,0)']
                 } : {}}
                 transition={{ type: 'spring', stiffness: 280, damping: 22 }}
             >
@@ -246,9 +215,9 @@ export default memo(({ server, className }: { server: Server; className?: string
                         >
                             <FontAwesomeIcon
                                 icon={status === 'starting' ? faBolt : faSignal}
-                                style={{ fontSize: 24, color: status === 'starting' ? '#7c3aed' : '#1f1b2e', marginBottom: 4 }}
+                                style={{ fontSize: 24, color: status === 'starting' ? '#0ea5e9' : '#333333', marginBottom: 4 }}
                             />
-                            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#2d2540', textTransform: 'uppercase' }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#e5e5e5', textTransform: 'uppercase' }}>
                                 {status === 'starting' ? 'Booting...' : 'Offline'}
                             </span>
                         </OfflineState>

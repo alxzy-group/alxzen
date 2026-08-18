@@ -15,178 +15,82 @@
 
 @section('content')
 <style>
-/* ─── KDE Plasma System Monitor Inspired ─── */
-.alx-tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 20px;
-    background: rgba(15,23,42,0.6);
-    border: 1px solid rgba(99,102,241,0.2);
-    border-radius: 0;
-    padding: 6px;
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-}
-.alx-tab {
-    padding: 8px 18px;
-    border-radius: 0;
-    font-size: 13px;
-    font-weight: 500;
-    color: #64748b;
-    text-decoration: none;
-    transition: all 0.2s;
-    border: 1px solid transparent;
-    flex-shrink: 0;
-}
-.alx-tab:hover { color: #a5b4fc; background: rgba(99,102,241,0.1); text-decoration: none; }
-.alx-tab.active {
-    background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.15));
-    border-color: rgba(99,102,241,0.4);
-    color: #a5b4fc;
-}
-
 /* Info card */
 .alx-card {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 1px solid rgba(99,102,241,0.2);
-    border-radius: 0;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    background: #171717;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    box-shadow: none;
     overflow: hidden;
     margin-bottom: 20px;
 }
 .alx-card-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 16px 22px;
-    border-bottom: 1px solid rgba(99,102,241,0.15);
-    background: rgba(99,102,241,0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: #171717;
 }
-.alx-card-title { font-size:14px; font-weight:600; color:#e2e8f0; display:flex; align-items:center; gap:8px; margin:0; }
-.alx-card-title i { color:#818cf8; }
+.alx-card-title { font-size:15px; font-weight:500; color:#e5e5e5; display:flex; align-items:center; gap:8px; margin:0; }
+.alx-card-title i { color:#a3a3a3; font-size:14px; }
 
 .alx-info-table { width:100%; border-collapse:collapse; }
-.alx-info-table tr { border-bottom:1px solid rgba(255,255,255,0.04); }
+.alx-info-table tr { border-bottom:1px solid rgba(255, 255, 255, 0.04); }
 .alx-info-table tr:last-child { border-bottom:none; }
 .alx-info-table td { padding:14px 22px; font-size:13px; vertical-align:middle; }
-.alx-info-table td:first-child { color:#64748b; font-weight:500; width:40%; }
-.alx-info-table td:last-child { color:#e2e8f0; }
+.alx-info-table td:first-child { color:#a3a3a3; font-weight:500; width:40%; }
+.alx-info-table td:last-child { color:#e5e5e5; }
 .alx-info-table td code {
-    background: rgba(15,23,42,0.8); border:1px solid rgba(99,102,241,0.2);
-    border-radius:4px; padding:2px 7px; font-size:11px; color:#7dd3fc;
+    background: #0a0a0a; border:1px solid rgba(255, 255, 255, 0.08);
+    border-radius:4px; padding:2px 7px; font-size:12px; color:#a3a3a3;
 }
-
-/* ─── KDE Plasma Task Manager Resource Cards ─── */
-.alx-resource-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    padding: 20px;
-}
-.alx-resource-card {
-    background: rgba(15,23,42,0.6);
-    border: 1px solid rgba(99,102,241,0.15);
-    border-radius: 0;
-    padding: 18px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.2s;
-}
-.alx-resource-card:hover { border-color: rgba(99,102,241,0.4); }
-.alx-resource-card::before {
-    content: '';
-    position: absolute; top:0; left:0; right:0; height:2px;
-    border-radius: 0 10px 0 0;
-}
-.alx-res-disk::before { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
-.alx-res-memory::before { background: linear-gradient(90deg, #06b6d4, #3b82f6); }
-.alx-res-servers::before { background: linear-gradient(90deg, #10b981, #34d399); }
-.alx-res-maint::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-
-.alx-resource-icon {
-    width: 38px; height: 38px; border-radius: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; margin-bottom: 12px;
-}
-.alx-res-disk .alx-resource-icon { background: rgba(99,102,241,0.15); color: #818cf8; }
-.alx-res-memory .alx-resource-icon { background: rgba(6,182,212,0.15); color: #22d3ee; }
-.alx-res-servers .alx-resource-icon { background: rgba(16,185,129,0.15); color: #34d399; }
-.alx-res-maint .alx-resource-icon { background: rgba(245,158,11,0.15); color: #fbbf24; }
-
-.alx-resource-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #475569; margin-bottom: 6px; }
-.alx-resource-value { font-size: 20px; font-weight: 700; color: #e2e8f0; margin-bottom: 4px; line-height: 1; }
-.alx-resource-sub { font-size: 11px; color: #64748b; margin-bottom: 14px; }
-
-/* KDE-style progress bar */
-.alx-progress-wrap {
-    height: 6px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 4px;
-}
-.alx-progress-bar {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.6s ease;
-    position: relative;
-}
-.alx-res-disk .alx-progress-bar { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
-.alx-res-memory .alx-progress-bar { background: linear-gradient(90deg, #06b6d4, #3b82f6); }
-.alx-progress-bar::after {
-    content: '';
-    position: absolute; top:0; left:0; right:0; bottom:0;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
-}
-@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-.alx-progress-label { font-size: 10px; color: #64748b; display: flex; justify-content: space-between; }
 
 /* danger zone */
 .alx-danger-card {
-    background: rgba(239,68,68,0.04);
-    border: 1px solid rgba(239,68,68,0.2);
-    border-radius: 0;
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 8px;
     overflow: hidden;
     margin-bottom: 20px;
 }
 .alx-danger-header {
-    padding: 14px 22px;
-    border-bottom: 1px solid rgba(239,68,68,0.15);
-    background: rgba(239,68,68,0.06);
-    font-size: 13px; font-weight: 600; color: #f87171;
+    padding: 16px 22px;
+    border-bottom: 1px solid rgba(239, 68, 68, 0.1);
+    background: rgba(239, 68, 68, 0.05);
+    font-size: 14px; font-weight: 500; color: #ef4444;
     display: flex; align-items: center; gap: 8px;
 }
-.alx-danger-body { padding: 16px 22px; font-size: 13px; color: #94a3b8; }
-.alx-danger-footer { padding: 12px 22px; border-top: 1px solid rgba(239,68,68,0.1); display: flex; justify-content: flex-end; }
+.alx-danger-body { padding: 16px 22px; font-size: 13px; color: #e5e5e5; line-height: 1.6; }
+.alx-danger-footer { padding: 14px 22px; border-top: 1px solid rgba(239, 68, 68, 0.1); display: flex; justify-content: flex-end; }
 .alx-btn-danger {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 16px; border-radius: 0; font-size: 12px; font-weight: 500;
-    background: rgba(239,68,68,0.15); color: #f87171;
-    border: 1px solid rgba(239,68,68,0.3); cursor: pointer;
+    padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    background: #ef4444; color: #fff;
+    border: 1px solid transparent; cursor: pointer;
     transition: all 0.2s; text-decoration: none;
 }
-.alx-btn-danger:hover { background: rgba(239,68,68,0.25); color: #fca5a5; }
+.alx-btn-danger:hover { background: #dc2626; color: #fff; }
 .alx-btn-danger:disabled, .alx-btn-danger[disabled] { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
 /* description */
 .alx-desc-card {
-    background: rgba(15,23,42,0.4);
-    border: 1px solid rgba(99,102,241,0.1);
-    border-radius: 0; padding: 18px 22px;
+    background: #171717;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px; padding: 18px 22px;
     margin-bottom: 20px;
 }
-.alx-desc-card pre { color: #94a3b8; font-size: 13px; margin: 0; white-space: pre-wrap; }
+.alx-desc-card pre { color: #e5e5e5; font-size: 13px; margin: 0; white-space: pre-wrap; background: transparent; border: none; padding: 0; font-family: 'Inter', sans-serif; }
 </style>
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="alx-tabs">
-            <a href="{{ route('admin.nodes.view', $node->id) }}" class="alx-tab active">About</a>
-            <a href="{{ route('admin.nodes.view.settings', $node->id) }}" class="alx-tab">Settings</a>
-            <a href="{{ route('admin.nodes.view.configuration', $node->id) }}" class="alx-tab">Configuration</a>
-            <a href="{{ route('admin.nodes.view.allocation', $node->id) }}" class="alx-tab">Allocation</a>
-            <a href="{{ route('admin.nodes.view.servers', $node->id) }}" class="alx-tab">Servers</a>
+        <div class="nav-tabs-custom nav-tabs-floating">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="{{ route('admin.nodes.view', $node->id) }}">About</a></li>
+                <li><a href="{{ route('admin.nodes.view.settings', $node->id) }}">Settings</a></li>
+                <li><a href="{{ route('admin.nodes.view.configuration', $node->id) }}">Configuration</a></li>
+                <li><a href="{{ route('admin.nodes.view.allocation', $node->id) }}">Allocation</a></li>
+                <li><a href="{{ route('admin.nodes.view.servers', $node->id) }}">Servers</a></li>
+            </ul>
         </div>
     </div>
 </div>
@@ -199,40 +103,27 @@
             </div>
             <div class="alx-card-body" style="padding: 30px 15px;">
                 <div style="display: flex; flex-wrap: nowrap; gap: 20px; overflow-x: auto; padding-bottom: 20px; -webkit-overflow-scrolling: touch;">
-                    {{-- CPU Chart --}}
-                    <div style="flex: 0 0 auto; width: 30%; min-width: 250px; text-align: center; margin: 0 auto;">
-                        <h4 style="color: #e2e8f0; font-weight: 600; margin-bottom: 20px;">CPU Usage (%)</h4>
-                        <div style="position: relative; width: 200px; height: 200px; margin: 0 auto;">
-                            <canvas id="chartCpu"></canvas>
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                                <div id="cpuActiveText" style="font-size: 24px; font-weight: 700; color: #fff;">--%</div>
-                                <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase;">Usage</div>
-                            </div>
-                        </div>
-                        <p id="cpuSubText" style="margin-top: 15px; font-size: 13px; color: #94a3b8;">-- of -- Cores Allocated</p>
-                    </div>
-
                     {{-- Memory Chart --}}
-                    <div style="flex: 0 0 auto; width: 30%; min-width: 250px; text-align: center; margin: 0 auto;">
+                    <div style="flex: 0 0 auto; width: 45%; min-width: 250px; text-align: center; margin: 0 auto;">
                         <h4 style="color: #e2e8f0; font-weight: 600; margin-bottom: 20px;">Memory Usage (GiB)</h4>
                         <div style="position: relative; width: 200px; height: 200px; margin: 0 auto;">
                             <canvas id="chartMem"></canvas>
                             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
                                 <div id="memActiveText" style="font-size: 20px; font-weight: 700; color: #fff;">-- GiB</div>
-                                <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase;">Active</div>
+                                <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase;">Allocated</div>
                             </div>
                         </div>
                         <p id="memSubText" style="margin-top: 15px; font-size: 13px; color: #94a3b8;">-- allocated of {{ number_format($node->memory / 1024, 1) }} GiB Total</p>
                     </div>
 
                     {{-- Disk Chart --}}
-                    <div style="flex: 0 0 auto; width: 30%; min-width: 250px; text-align: center; margin: 0 auto;">
+                    <div style="flex: 0 0 auto; width: 45%; min-width: 250px; text-align: center; margin: 0 auto;">
                         <h4 style="color: #e2e8f0; font-weight: 600; margin-bottom: 20px;">Disk Space Usage (GiB)</h4>
                         <div style="position: relative; width: 200px; height: 200px; margin: 0 auto;">
                             <canvas id="chartDisk"></canvas>
                             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
                                 <div id="diskActiveText" style="font-size: 20px; font-weight: 700; color: #fff;">-- GiB</div>
-                                <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase;">Active</div>
+                                <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase;">Allocated</div>
                             </div>
                         </div>
                         <p id="diskSubText" style="margin-top: 15px; font-size: 13px; color: #94a3b8;">-- allocated of {{ number_format($node->disk / 1024, 1) }} GiB Total</p>
@@ -240,10 +131,10 @@
                 </div>
 
                 {{-- Status Widget --}}
-                <div style="margin-top: 40px; padding: 20px; background: rgba(15,23,42,0.6); border: 1px solid rgba(99,102,241,0.2); border-radius: 0; text-align: center;">
-                    <h4 style="margin: 0; color: #94a3b8; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Remaining Physical Disk Space</h4>
-                    <div id="diskRemaining" style="font-size: 28px; font-weight: 700; color: #4ade80; margin-top: 8px;">-- GiB</div>
-                    <div style="font-size: 12px; color: #64748b; margin-top: 5px;">(Total Node Capacity minus Real-Time Active Usage)</div>
+                <div style="margin-top: 40px; padding: 20px; background: #171717; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; text-align: center;">
+                    <h4 style="margin: 0; color: #a3a3a3; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Remaining Physical Disk Space</h4>
+                    <div id="diskRemaining" style="font-size: 28px; font-weight: 500; color: #10b981; margin-top: 8px;">-- GiB</div>
+                    <div style="font-size: 12px; color: #737373; margin-top: 5px;">(Total Node Capacity minus Real-Time Active Usage)</div>
                 </div>
             </div>
         </div>
@@ -264,22 +155,22 @@
             <div style="overflow-x: auto;">
                 <table class="alx-info-table">
                     <tr>
-                        <td><i class="fa fa-code-fork" style="margin-right:6px;color:#818cf8"></i> Daemon Version</td>
+                        <td><i class="fa fa-code-fork" style="margin-right:6px;color:#a3a3a3"></i> Daemon Version</td>
                         <td>
                             <code data-attr="info-version"><i class="fa fa-refresh fa-spin fa-fw"></i></code>
                             <span style="color:#475569; font-size:12px"> — Latest: <code>{{ $version->getDaemon() }}</code></span>
                         </td>
                     </tr>
                     <tr>
-                        <td><i class="fa fa-linux" style="margin-right:6px;color:#818cf8"></i> OS</td>
+                        <td><i class="fa fa-linux" style="margin-right:6px;color:#a3a3a3"></i> OS</td>
                         <td data-attr="info-system"><i class="fa fa-refresh fa-spin fa-fw" style="color:#64748b"></i></td>
                     </tr>
                     <tr>
-                        <td><i class="fa fa-tasks" style="margin-right:6px;color:#818cf8"></i> CPU Threads</td>
+                        <td><i class="fa fa-tasks" style="margin-right:6px;color:#a3a3a3"></i> CPU Threads</td>
                         <td data-attr="info-cpus"><i class="fa fa-refresh fa-spin fa-fw" style="color:#64748b"></i></td>
                     </tr>
                     <tr>
-                        <td><i class="fa fa-globe" style="margin-right:6px;color:#818cf8"></i> Address</td>
+                        <td><i class="fa fa-globe" style="margin-right:6px;color:#a3a3a3"></i> Address</td>
                         <td><code>{{ $node->fqdn }}:{{ $node->daemonListen }}</code></td>
                     </tr>
                 </table>
@@ -306,7 +197,7 @@
             </div>
             <div class="alx-card-body" style="padding: 20px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-                    <div><i class="fa fa-server" style="color: #6366f1; margin-right: 8px;"></i> <strong>Total Servers</strong></div>
+                    <div><i class="fa fa-server" style="color: #a3a3a3; margin-right: 8px;"></i> <strong>Total Servers</strong></div>
                     <div style="font-size: 16px; font-weight: 600; color: #e2e8f0;">{{ $node->servers_count }}</div>
                 </div>
                 <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -405,20 +296,7 @@
     };
 
     // Initialize Charts with empty datasets
-    const chartCpu = new Chart(document.getElementById('chartCpu'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Active Usage', 'Free'],
-            datasets: [{
-                data: [0, 100],
-                backgroundColor: ['#6366f1', 'rgba(30,41,59,0.5)'],
-                borderWidth: 0,
-                borderRadius: 5
-            }]
-        },
-        options: commonOptions
-    });
-
+    // Removed CPU chart
     const chartMem = new Chart(document.getElementById('chartMem'), {
         type: 'doughnut',
         data: {
@@ -477,9 +355,6 @@
 
     function setStaticUsage() {
         // Just show allocation stats instead of real-time usage (since endpoint is not present)
-        $('#cpuActiveText').text('N/A');
-        $('#cpuSubText').text('CPU limits are managed per-server');
-
         $('#memActiveText').text(memAlloc.toFixed(1) + ' GiB');
         $('#memSubText').text(memAlloc.toFixed(1) + ' GiB Allocated of ' + nodeTotalMem.toFixed(1) + ' GiB Total');
         
@@ -491,9 +366,6 @@
         $('#diskRemaining').next().text('(Total Node Capacity minus Allocated Space)');
 
         // Update Charts
-        chartCpu.data.datasets[0].data = [0, 100];
-        chartCpu.update();
-
         chartMem.data.datasets[0].data = [0, 100];
         chartMem.data.datasets[1].data = [memAlloc, Math.max(0, nodeTotalMem - memAlloc)];
         chartMem.update();

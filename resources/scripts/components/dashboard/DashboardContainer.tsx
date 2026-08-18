@@ -45,10 +45,11 @@ const TitleBox = styled.div`
 `;
 
 const AccentLine = styled.div`
-    height: 2px;
+    height: 3px;
     width: 60px;
-    background: linear-gradient(90deg, #7c3aed, transparent);
+    background: linear-gradient(90deg, #0ea5e9, transparent);
     margin-bottom: 14px;
+    border-radius: 2px;
     animation: dash-line-expand 0.5s ease both 0.1s;
 `;
 
@@ -56,7 +57,7 @@ const Title = styled.h1`
     ${tw`text-5xl md:text-6xl font-black tracking-tighter text-white mb-1`}
     letter-spacing: -2px;
     span {
-        background: linear-gradient(90deg, #a78bfa, #7c3aed);
+        background: linear-gradient(90deg, #38bdf8, #0ea5e9);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -71,33 +72,34 @@ const SubTitle = styled.p`
 
 const FilterBar = styled(motion.div)`
     ${tw`flex items-center gap-4 px-5 py-3`}
-    background: rgba(124,58,237,0.06);
-    border: 1px solid rgba(124,58,237,0.18);
-    backdrop-filter: blur(8px);
+    background: #111111;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
 `;
 
 const FilterLabel = styled.span`
     ${tw`text-[11px] font-bold uppercase tracking-widest`}
-    color: #7c3aed;
+    color: #0ea5e9;
 `;
 
 const Grid = styled.div`
-    ${tw`grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20`}
+    ${tw`grid grid-cols-1 lg:grid-cols-2 gap-5 pb-20`}
 `;
 
 const SkeletonCard = styled.div`
     height: 170px;
-    background: linear-gradient(90deg, #0d0c14 25%, #13111f 50%, #0d0c14 75%);
+    background: linear-gradient(90deg, #111111 25%, #1a1a1a 50%, #111111 75%);
     background-size: 400px 100%;
     animation: dash-skeleton 1.4s infinite linear;
-    border: 1px solid rgba(124,58,237,0.08);
-    border-left: 2px solid rgba(124,58,237,0.15);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 16px;
 `;
 
 const EmptyState = styled(motion.div)`
     ${tw`col-span-2 flex flex-col items-center justify-center py-24 text-center gap-3`}
-    border: 1px dashed rgba(124,58,237,0.15);
-    background: rgba(124,58,237,0.02);
+    border: 1px dashed rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.02);
+    border-radius: 16px;
 `;
 
 export default () => {
@@ -184,11 +186,11 @@ export default () => {
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ duration: 0.4 }}
                                     >
-                                        <span style={{ fontSize: 36, opacity: 0.15 }}>◻</span>
-                                        <p style={{ color: '#2d2540', fontWeight: 700, fontSize: 13, letterSpacing: 1, textTransform: 'uppercase', margin: 0 }}>
+                                        <span style={{ fontSize: 36, opacity: 0.15, color: '#e5e5e5' }}>◻</span>
+                                        <p style={{ color: '#e5e5e5', fontWeight: 700, fontSize: 13, letterSpacing: 1, textTransform: 'uppercase', margin: 0 }}>
                                             No Servers
                                         </p>
-                                        <p style={{ color: '#1e1b2e', fontSize: 12, margin: 0 }}>
+                                        <p style={{ color: '#a3a3a3', fontSize: 12, margin: 0 }}>
                                             Create or assign a server to get started.
                                         </p>
                                     </EmptyState>
