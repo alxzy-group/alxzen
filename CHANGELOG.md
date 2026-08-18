@@ -1,6 +1,6 @@
 # Changelog
 
-## [v3.8] - 2026-08-18
+## [v3.12] - 2026-08-18
 ### Added
 - **Samsung S24 AMOLED Theme**: Global Admin and Client UI redesign featuring Deep Black (`#111111`) backgrounds, Sky Blue (`#0ea5e9`) accents, and 16px corner radius (squircle) cards.
 - **Client Particle Background**: Integrated `tsParticles` into the client frontend to provide an interactive, animated "DNA/Constellation" network background globally across the client area.
