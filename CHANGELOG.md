@@ -1,5 +1,14 @@
 # Changelog
 
+## [v3.8] - 2026-08-18
+### Added
+- **Samsung S24 AMOLED Theme**: Global Admin and Client UI redesign featuring Deep Black (`#111111`) backgrounds, Sky Blue (`#0ea5e9`) accents, and 16px corner radius (squircle) cards.
+- **Client Particle Background**: Integrated `tsParticles` into the client frontend to provide an interactive, animated "DNA/Constellation" network background globally across the client area.
+
+### Fixed
+- **Node Usage Dashboard**: Removed broken real-time CPU usage chart from the Node Overview page since Pterodactyl does not provide aggregate node CPU endpoints natively.
+- **Node Settings Tab UI**: Fixed inconsistent tab designs when navigating to Node Settings by enforcing global `.nav-tabs-custom` styling.
+- **Client React Frontend**: Removed outdated gaming/ROG aesthetic elements (purple glows, dot textures, scanlines) from the React dashboard components, replacing them with a modern minimal layout.
 ## [v3.7] - 2026-06-26
 ### Added
 - **Update Panel Installer**: Added a new option `[4] Update Panel` to `setup.sh` to allow users to update the panel directly from the installer menu.
@@ -1937,3 +1946,7 @@ After nearly a month in the works, version `v0.5.0` is finally here! 🎉
  -   U p d a t e d   N a v b a r   a n d   S e a r c h M o d a l   w i t h   s h a r p   e d g e s   a n d   r e d   a c c e n t s 
  -   B u i l t   a n d   u p d a t e d   a s s e t s   f o r   p r o d u c t i o n  
  
+## v3.11
+### Changed
+- Fixed admin panel protections: Allowed all admins to read/create users, servers, nodes, locations, etc., but restricted update/delete to Superadmin (ID 1).
+- Improved mobile UI responsiveness for Admin Users, Servers, and Nodes pages by adding horizontal scrolling to the header and search controls.

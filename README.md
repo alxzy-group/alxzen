@@ -8,7 +8,7 @@
 
 # Alxzen Panel
 
-**Alxzen** is a customized distribution of the Pterodactyl® game server management panel, built with a focus on automation, aesthetic dominance, and system integrity. Featuring the **Alxzen Dark Purple** interface and an integrated **Expiration Management** system.
+**Alxzen** is a customized distribution of the Pterodactyl® game server management panel, built with a focus on automation, aesthetic dominance, and system integrity. Featuring the **Samsung S24 AMOLED** interface and an integrated **Expiration Management** system.
 
 
 ---
@@ -17,7 +17,7 @@
 
 | Feature | Description |
 |---|---|
-| **🎨 Dark Purple UI** | Completely overhauled admin & user interface with deep blacks and electric purples |
+| **🎨 AMOLED S24 Theme** | Completely overhauled admin & user interface with deep blacks, sky blue accents, and squircle glassmorphism |
 | **⏰ Expiration Manager** | Direct admin control over server life-cycles with automated daily checks |
 | **🔒 Auto-Suspension** | Native integration with suspension engine for expired instances |
 | **🛡️ Root Protection v3.0** | Enhanced middleware ensuring core settings remain exclusive to primary admin |

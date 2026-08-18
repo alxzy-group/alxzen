@@ -15,64 +15,63 @@
 @section('content')
 <style>
 .alx-card {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 1px solid rgba(99,102,241,0.2);
-    border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    background: #171717;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    box-shadow: none;
     overflow: hidden;
 }
 .alx-card-header {
     display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-    padding: 18px 24px; border-bottom: 1px solid rgba(99,102,241,0.15);
-    background: rgba(99,102,241,0.05);
+    padding: 16px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: #171717;
 }
-.alx-card-title { font-size:15px; font-weight:600; color:#e2e8f0; display:flex; align-items:center; gap:8px; margin:0; }
-.alx-card-title i { color:#818cf8; }
+.alx-card-title { font-size:15px; font-weight:500; color:#e5e5e5; display:flex; align-items:center; gap:8px; margin:0; }
+.alx-card-title i { color:#a3a3a3; }
 .alx-search-group { display:flex; gap:8px; align-items:center; flex-wrap: wrap; }
 .alx-search-group .form-control {
-    background: rgba(15,23,42,0.8) !important; border: 1px solid rgba(99,102,241,0.3) !important;
-    border-radius: 8px !important; color:#cbd5e1 !important; font-size:13px; height:34px;
-    padding: 0 12px; min-width:180px; transition: border-color 0.2s;
+    background: #0a0a0a !important; border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 8px !important; color:#e5e5e5 !important; font-size:13px; height:34px;
+    padding: 0 12px; min-width:180px; transition: border-color 0.2s; box-shadow: none !important;
 }
-.alx-search-group .form-control:focus { border-color:#818cf8 !important; box-shadow:0 0 0 3px rgba(129,140,248,0.1) !important; outline:none; }
-.alx-search-group .form-control::placeholder { color:#64748b; }
-.alx-btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; font-size:12px; font-weight:500; border:none; cursor:pointer; transition:all 0.2s; text-decoration:none; white-space:nowrap; }
-.alx-btn-search { background:rgba(99,102,241,0.15); color:#818cf8; border:1px solid rgba(99,102,241,0.3); }
-.alx-btn-search:hover { background:rgba(99,102,241,0.25); color:#a5b4fc; }
+.alx-search-group .form-control:focus { border-color:#0ea5e9 !important; box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2) !important; outline:none; }
+.alx-search-group .form-control::placeholder { color:#737373; }
+.alx-btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; font-size:13px; font-weight:500; border:1px solid transparent; cursor:pointer; transition:all 0.2s; text-decoration:none; white-space:nowrap; box-shadow:none; }
+.alx-btn-search { background: #262626; color:#e5e5e5; border:1px solid rgba(255, 255, 255, 0.15); }
+.alx-btn-search:hover { background: #404040; }
 .alx-table { width:100%; border-collapse:collapse; min-width: 700px; }
-.alx-table thead tr { background:rgba(15,23,42,0.6); border-bottom:1px solid rgba(99,102,241,0.2); }
-.alx-table thead th { padding:12px 16px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.8px; color:#64748b; white-space:nowrap; }
-.alx-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.04); transition:background 0.15s; }
+.alx-table thead tr { background: #171717; border-bottom:1px solid rgba(255, 255, 255, 0.08); }
+.alx-table thead th { padding:12px 16px; font-size:12px; font-weight:500; text-transform:capitalize; color:#a3a3a3; white-space:nowrap; text-align:left; }
+.alx-table tbody tr { border-bottom:1px solid rgba(255, 255, 255, 0.04); transition:background 0.15s; }
 .alx-table tbody tr:last-child { border-bottom:none; }
-.alx-table tbody tr:hover { background:rgba(99,102,241,0.06); }
-.alx-table td { padding:12px 16px; font-size:13px; color:#94a3b8; vertical-align:middle; }
-.alx-table td a { color:#a5b4fc; text-decoration:none; font-weight:500; transition:color 0.15s; }
-.alx-table td a:hover { color:#c7d2fe; }
-.alx-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; white-space:nowrap; }
-.alx-badge-unlimited { background:rgba(100,116,139,0.15); color:#94a3b8; border:1px solid rgba(100,116,139,0.25); }
-.alx-badge-expired { background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3); animation: pulse-red 2s infinite; }
-.alx-badge-active { background:rgba(34,197,94,0.12); color:#4ade80; border:1px solid rgba(34,197,94,0.25); }
-.alx-badge-soon { background:rgba(234,179,8,0.12); color:#facc15; border:1px solid rgba(234,179,8,0.25); }
-@keyframes pulse-red { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.alx-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+.alx-table td { padding:12px 16px; font-size:13px; color:#e5e5e5; vertical-align:middle; }
+.alx-table td a { color:#a3a3a3; text-decoration:none; font-weight:500; transition:color 0.15s; }
+.alx-table td a:hover { color:#e5e5e5; }
+.alx-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:500; white-space:nowrap; }
+.alx-badge-unlimited { background:rgba(255, 255, 255, 0.1); color:#a3a3a3; border:1px solid rgba(255, 255, 255, 0.15); }
+.alx-badge-expired { background:rgba(239, 68, 68, 0.1); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.2); }
+.alx-badge-active { background:rgba(16, 185, 129, 0.1); color:#10b981; border:1px solid rgba(16, 185, 129, 0.2); }
+.alx-badge-soon { background:rgba(245, 158, 11, 0.1); color:#f59e0b; border:1px solid rgba(245, 158, 11, 0.2); }
 .alx-action-group { display:flex; align-items:center; gap:6px; }
 .alx-date-input {
-    background: rgba(15,23,42,0.8) !important; border: 1px solid rgba(99,102,241,0.3) !important;
-    border-radius:8px !important; color:#cbd5e1 !important; font-size:12px; height:32px;
-    padding:0 10px; min-width:130px; transition:border-color 0.2s;
+    background: #0a0a0a !important; border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius:8px !important; color:#e5e5e5 !important; font-size:13px; height:32px;
+    padding:0 10px; min-width:130px; transition:border-color 0.2s; box-shadow: none !important;
 }
-.alx-date-input:focus { border-color:#818cf8 !important; outline:none; }
-.alx-btn-set { background:rgba(99,102,241,0.2); color:#818cf8; border:1px solid rgba(99,102,241,0.35); height:32px; padding:0 10px; border-radius:8px; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
-.alx-btn-set:hover { background:rgba(99,102,241,0.35); color:#a5b4fc; }
-.alx-btn-add30 { background:rgba(34,197,94,0.12); color:#4ade80; border:1px solid rgba(34,197,94,0.25); height:32px; padding:0 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
-.alx-btn-add30:hover { background:rgba(34,197,94,0.25); }
-.alx-btn-delete-all { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; border: none; }
-.alx-btn-delete-all:hover { background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(239,68,68,0.4); }
-.alx-pagination { display:flex; justify-content:center; padding:16px 24px; border-top:1px solid rgba(99,102,241,0.15); }
-.alx-server-name { font-weight:600; color:#e2e8f0; }
-.alx-username { color:#a5b4fc; font-size:13px; }
-.alx-email { color:#64748b; font-size:11px; display:block; margin-top:2px; }
-.alx-date-val { color:#e2e8f0; font-weight:500; font-size:13px; }
-.alx-date-time { color:#64748b; font-size:11px; display:block; margin-top:1px; }
+.alx-date-input:focus { border-color:#0ea5e9 !important; outline:none; }
+.alx-btn-set { background:rgba(255, 255, 255, 0.1); color:#ffffff; border:1px solid rgba(255, 255, 255, 0.2); height:32px; padding:0 10px; border-radius:8px; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+.alx-btn-set:hover { background:rgba(255, 255, 255, 0.2); color:#ffffff; }
+.alx-btn-add30 { background:rgba(16, 185, 129, 0.15); color:#34d399; border:1px solid rgba(16, 185, 129, 0.3); height:32px; padding:0 10px; border-radius:8px; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+.alx-btn-add30:hover { background:rgba(16, 185, 129, 0.25); }
+.alx-btn-delete-all { background: #ef4444; color: #fff; border: 1px solid transparent; }
+.alx-btn-delete-all:hover { background: #dc2626; color: #fff; }
+.alx-pagination { display:flex; justify-content:center; padding:16px 24px; border-top:1px solid rgba(255, 255, 255, 0.08); }
+.alx-server-name { font-weight:500; color:#e5e5e5; }
+.alx-username { color:#a3a3a3; font-size:13px; }
+.alx-email { color:#737373; font-size:11px; display:block; margin-top:2px; }
+.alx-date-val { color:#e5e5e5; font-weight:500; font-size:13px; }
+.alx-date-time { color:#737373; font-size:11px; display:block; margin-top:1px; }
 </style>
 
 <div class="row">
@@ -109,7 +108,7 @@
                             <tr>
                                 <td>
                                     <a href="{{ route('admin.servers.view', $server->id) }}" class="alx-server-name">
-                                        <i class="fa fa-server" style="color:#6366f1;margin-right:6px;font-size:11px;"></i>{{ $server->name }}
+                                        <i class="fa fa-server" style="color:#a3a3a3;margin-right:6px;font-size:11px;"></i>{{ $server->name }}
                                     </a>
                                 </td>
 

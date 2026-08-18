@@ -14,114 +14,67 @@
 
 @section('content')
 <style>
-/* Alxzen Admin Overview Animations */
-@keyframes alx-fade-in-up {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes alx-glow-pulse {
-    0%, 100% { box-shadow: 0 0 8px rgba(124,58,237,0.2); }
-    50%       { box-shadow: 0 0 24px rgba(124,58,237,0.6); }
-}
-@keyframes alx-scanline {
-    0%   { background-position: 0 0; }
-    100% { background-position: 0 100%; }
-}
-@keyframes alx-count-up {
-    from { opacity: 0; transform: scale(0.8); }
-    to   { opacity: 1; transform: scale(1); }
-}
-@keyframes alx-shimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position: 200% center; }
-}
-@keyframes alx-border-flow {
-    0%, 100% { border-color: rgba(124,58,237,0.15); }
-    50%       { border-color: rgba(124,58,237,0.5); }
-}
+/* Taste Skill Minimal Overview - Samsung S24 Aesthetic */
 .alx-overview-card {
-    background: linear-gradient(145deg, #141414 0%, #0c0c0c 100%);
-    border: 1px solid rgba(124,58,237,0.15);
-    border-radius: 0;
-    border-left: 3px solid #7c3aed;
+    background: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
     overflow: hidden;
-    margin-bottom: 20px;
-    animation: alx-fade-in-up 0.5s ease forwards, alx-border-flow 4s ease-in-out infinite;
-    position: relative;
+    margin-bottom: 24px;
 }
-.alx-overview-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(255,255,255,0.01) 2px,
-        rgba(255,255,255,0.01) 4px
-    );
-    pointer-events: none;
-    z-index: 0;
-}
-.alx-overview-card.delay-1 { animation-delay: 0.1s; }
-.alx-overview-card.delay-2 { animation-delay: 0.2s; }
-.alx-overview-card > * { position: relative; z-index: 1; }
 .alx-card-header-inner {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 20px;
-    border-bottom: 1px solid rgba(124,58,237,0.1);
-    background: rgba(124,58,237,0.04);
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: #111111;
 }
 .alx-card-header-inner h3 {
     margin: 0;
-    font-size: 13px;
-    font-weight: 700;
-    color: #e2e8f0;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.01em;
 }
 .alx-card-header-inner h3 i {
-    color: #7c3aed;
+    color: #0ea5e9; /* Sky Blue accent */
     margin-right: 6px;
+    font-size: 14px;
 }
 .alx-card-body { padding: 20px; }
 .alx-card-body p, .alx-card-body li {
-    color: #94a3b8;
+    color: #e5e5e5;
     font-size: 13px;
     line-height: 1.7;
     margin: 0 0 8px 0;
 }
 .alx-card-body code {
-    background: rgba(124,58,237,0.1);
-    border: 1px solid rgba(124,58,237,0.2);
-    border-radius: 3px;
-    padding: 2px 7px;
-    font-size: 11px;
-    color: #fca5a5;
-    font-family: 'JetBrains Mono', monospace;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 2px 6px;
+    font-size: 12px;
+    color: #e5e5e5;
 }
-.alx-card-body strong { color: #cbd5e1; }
+.alx-card-body strong { color: #ffffff; font-weight: 500; }
 .alx-label-red {
-    background: rgba(124,58,237,0.15);
-    border: 1px solid rgba(124,58,237,0.4);
-    color: #fca5a5;
-    border-radius: 0;
-    padding: 2px 10px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+    border-radius: 6px;
+    padding: 2px 8px;
     font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    font-weight: 600;
 }
 .alx-label-green {
-    background: rgba(34,197,94,0.12);
-    border: 1px solid rgba(34,197,94,0.35);
-    color: #4ade80;
-    border-radius: 0;
-    padding: 2px 10px;
+    background: rgba(14, 165, 233, 0.15); /* Sky Blue instead of green */
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    color: #38bdf8;
+    border-radius: 6px;
+    padding: 2px 8px;
     font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    font-weight: 600;
 }
 .alx-btn-row {
     display: flex;
@@ -134,70 +87,53 @@
     align-items: center;
     gap: 8px;
     padding: 10px 22px;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: none;
-    border-radius: 0;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 12px; /* Squarish but soft like Samsung */
     cursor: pointer;
     text-decoration: none !important;
-    transition: all 0.25s cubic-bezier(0.25,0.8,0.25,1);
-    position: relative;
-    overflow: hidden;
-}
-.alx-link-btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.08) 50%, transparent 70%);
-    background-size: 200% 100%;
-    animation: alx-shimmer 3s infinite;
-}
-.alx-link-btn:hover {
-    transform: translateY(-2px);
-    text-decoration: none !important;
+    transition: all 0.2s;
+    border: 1px solid transparent;
 }
 .alx-link-btn-orange {
-    background: linear-gradient(135deg, #f97316, #ea580c);
+    background: #0ea5e9; /* Sky Blue */
     color: #fff;
-    box-shadow: 0 4px 15px rgba(249,115,22,0.3);
 }
 .alx-link-btn-orange:hover {
-    box-shadow: 0 8px 25px rgba(249,115,22,0.5);
+    background: #0284c7;
     color: #fff;
+    transform: translateY(-1px);
 }
 .alx-link-btn-gray {
-    background: linear-gradient(135deg, #374151, #1f2937);
-    color: #d1d5db;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    background: #262626;
+    color: #e5e5e5;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 .alx-link-btn-gray:hover {
-    background: linear-gradient(135deg, #4b5563, #374151);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    background: #404040;
     color: #fff;
+    transform: translateY(-1px);
 }
 .alx-link-btn-green {
-    background: linear-gradient(135deg, #16a34a, #15803d);
+    background: #ef4444; /* Red */
     color: #fff;
-    box-shadow: 0 4px 15px rgba(22,163,74,0.3);
 }
 .alx-link-btn-green:hover {
-    box-shadow: 0 8px 25px rgba(22,163,74,0.5);
+    background: #dc2626;
     color: #fff;
+    transform: translateY(-1px);
 }
 .alx-stat-pill {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    background: rgba(124,58,237,0.07);
-    border: 1px solid rgba(124,58,237,0.2);
-    border-radius: 0;
-    padding: 3px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 3px 8px;
     font-size: 11px;
-    color: #94a3b8;
-    animation: alx-count-up 0.6s ease forwards;
+    color: #e5e5e5;
+    font-weight: 600;
 }
 </style>
 

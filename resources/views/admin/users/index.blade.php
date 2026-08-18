@@ -15,10 +15,10 @@
 @section('content')
 <style>
 .alx-card {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    background: #171717;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    box-shadow: none;
     overflow: hidden;
 }
 .alx-card-header {
@@ -28,75 +28,71 @@
     flex-wrap: nowrap;
     overflow-x: auto;
     gap: 12px;
-    padding: 18px 24px;
-    border-bottom: 1px solid rgba(99, 102, 241, 0.15);
-    background: rgba(99, 102, 241, 0.05);
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: #171717;
 }
 .alx-card-title {
-    font-size: 15px; font-weight: 600; color: #e2e8f0;
-    letter-spacing: 0.3px; display: flex; align-items: center; gap: 8px; margin: 0;
+    font-size: 15px; font-weight: 500; color: #e5e5e5;
+    display: flex; align-items: center; gap: 8px; margin: 0;
 }
-.alx-card-title i { color: #818cf8; font-size: 14px; }
+.alx-card-title i { color: #a3a3a3; font-size: 14px; }
 .alx-search-group { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
 .alx-search-group .form-control {
-    background: rgba(15,23,42,0.8) !important;
-    border: 1px solid rgba(99,102,241,0.3) !important;
-    border-radius: 8px !important;
-    color: #cbd5e1 !important;
-    font-size: 13px; height: 34px; padding: 0 12px; width: 200px; transition: border-color 0.2s;
+    background: #000000 !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; border-radius: 12px !important; color: #e5e5e5 !important;
+    font-size: 13px; height: 34px; padding: 0 12px; width: 200px; transition: border-color 0.2s; box-shadow: none !important;
 }
 .alx-search-group .form-control:focus {
-    border-color: #818cf8 !important; box-shadow: 0 0 0 3px rgba(129,140,248,0.1) !important; outline: none;
+    border-color: #0ea5e9 !important; box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2) !important; outline: none;
 }
-.alx-search-group .form-control::placeholder { color: #64748b; }
+.alx-search-group .form-control::placeholder { color: #737373; }
 .alx-btn {
     display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px;
-    border-radius: 8px; font-size: 12px; font-weight: 500; border: none; cursor: pointer;
-    transition: all 0.2s; text-decoration: none;
+    border-radius: 8px; font-size: 13px; font-weight: 500; border: 1px solid transparent; cursor: pointer;
+    transition: all 0.2s; text-decoration: none; box-shadow: none; text-transform: none;
 }
-.alx-btn-search { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
-.alx-btn-search:hover { background: rgba(99,102,241,0.25); color: #a5b4fc; }
-.alx-btn-create { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
-.alx-btn-create:hover { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,102,241,0.4); }
+.alx-btn-search { background: #262626; color: #e5e5e5; border: 1px solid rgba(255, 255, 255, 0.15); }
+.alx-btn-search:hover { background: #404040; }
+.alx-btn-create { background: #0ea5e9; color: #fff; border-radius: 12px; }
+.alx-btn-create:hover { background: #0284c7; }
 .alx-table { width: 100%; border-collapse: collapse; }
-.alx-table thead tr { background: rgba(15,23,42,0.6); border-bottom: 1px solid rgba(99,102,241,0.2); }
+.alx-table thead tr { background: #171717; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
 .alx-table thead th {
-    padding: 12px 20px; font-size: 11px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.8px; color: #64748b;
+    padding: 12px 16px; font-size: 12px; font-weight: 500;
+    text-transform: capitalize; color: #a3a3a3; text-align: left;
 }
-.alx-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+.alx-table tbody tr { border-bottom: 1px solid rgba(255, 255, 255, 0.04); transition: background 0.15s; }
 .alx-table tbody tr:last-child { border-bottom: none; }
-.alx-table tbody tr:hover { background: rgba(99,102,241,0.06); }
-.alx-table td { padding: 13px 20px; font-size: 13px; color: #94a3b8; vertical-align: middle; }
-.alx-table td a { color: #a5b4fc; text-decoration: none; font-weight: 500; transition: color 0.15s; }
-.alx-table td a:hover { color: #c7d2fe; }
+.alx-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+.alx-table td { padding: 12px 16px; font-size: 13px; color: #e5e5e5; vertical-align: middle; }
+.alx-table td a { color: #a3a3a3; text-decoration: none; font-weight: 500; transition: color 0.15s; }
+.alx-table td a:hover { color: #e5e5e5; }
 .alx-table td code {
-    background: rgba(15,23,42,0.8); border: 1px solid rgba(99,102,241,0.2);
-    border-radius: 4px; padding: 2px 6px; font-size: 11px; color: #7dd3fc;
+    background: #0a0a0a; border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px; padding: 2px 6px; font-size: 12px; color: #a3a3a3;
 }
 .alx-avatar {
     width: 32px; height: 32px; border-radius: 50%;
-    border: 2px solid rgba(99,102,241,0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     object-fit: cover;
 }
 .alx-badge-admin {
     display: inline-flex; align-items: center; gap: 4px;
-    padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600;
-    background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3);
+    padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500;
+    background: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.2);
     margin-left: 6px;
 }
 .alx-stat-pill {
     display: inline-flex; align-items: center; justify-content: center;
     min-width: 28px; height: 22px; padding: 0 8px;
-    border-radius: 12px; font-size: 11px; font-weight: 600;
-    background: rgba(99,102,241,0.12); color: #818cf8;
-    border: 1px solid rgba(99,102,241,0.2);
-    text-decoration: none !important; transition: all 0.15s;
+    border-radius: 4px; font-size: 12px; font-weight: 500;
+    background: rgba(255, 255, 255, 0.1); color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
-.alx-stat-pill:hover { background: rgba(99,102,241,0.25); color: #a5b4fc; }
-.alx-2fa-on { color: #4ade80; }
-.alx-2fa-off { color: #f87171; }
-.alx-pagination { display: flex; justify-content: center; padding: 16px 24px; border-top: 1px solid rgba(99,102,241,0.15); }
+.alx-stat-pill:hover { background: rgba(255, 255, 255, 0.2); color: #ffffff; }
+.alx-2fa-on { color: #10b981; }
+.alx-2fa-off { color: #ef4444; }
+.alx-pagination { display: flex; justify-content: center; padding: 16px 24px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
 </style>
 
 <div class="row">
