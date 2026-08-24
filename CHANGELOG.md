@@ -1,5 +1,10 @@
 # Changelog
 
+## [v3.13] - 2026-08-24
+- Fixed Server Sidebar Navigation styling (AMOLED S24).
+- Moved AnnounceBar to global server view.
+- Cleared announcement reads.
+
 ## [v3.12] - 2026-08-18
 ### Added
 - **Samsung S24 AMOLED Theme**: Global Admin and Client UI redesign featuring Deep Black (`#111111`) backgrounds, Sky Blue (`#0ea5e9`) accents, and 16px corner radius (squircle) cards.
