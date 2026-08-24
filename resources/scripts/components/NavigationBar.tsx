@@ -17,15 +17,15 @@ import http from '@/api/http';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import Avatar from '@/components/Avatar';
 
-// ─── Design Tokens (all purple) ──────────────────────────────────────────────
-// Primary: #7c3aed (violet-700) → #a78bfa (violet-400) → #c4b5fd (violet-300)
-// BG Dark: #09090f (near black with violet tint)
-// Surface: rgba(124,58,237,0.06) border rgba(124,58,237,0.18)
+// ─── Design Tokens (S24 AMOLED) ──────────────────────────────────────────────
+// Primary: #0ea5e9 (sky-500) → #38bdf8 (sky-400) → #7dd3fc (sky-300)
+// BG Dark: #111111 (AMOLED Black)
+// Surface: rgba(14,165,233,0.06) border rgba(14,165,233,0.18)
 
 const NavContainer = styled.div`
     ${tw`fixed top-0 left-0 right-0 z-50 h-20`}
-    background: rgba(9, 9, 15, 0.88);
-    border-bottom: 1px solid rgba(124, 58, 237, 0.15);
+    background: rgba(17, 17, 17, 0.88);
+    border-bottom: 1px solid rgba(14, 165, 233, 0.15);
     backdrop-filter: blur(20px);
     transition: all 0.3s ease;
 `;
@@ -45,7 +45,7 @@ const RightSection = styled.div`
 const Logo = styled(Link)`
     ${tw`text-xl md:text-2xl font-black tracking-tighter text-white no-underline block`}
     span {
-        background: linear-gradient(90deg, #a78bfa, #7c3aed);
+        background: linear-gradient(90deg, #38bdf8, #0ea5e9);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -62,16 +62,16 @@ const SidebarOverlay = styled.div<{ $open: boolean }>`
 
 const Sidebar = styled.div<{ $open: boolean }>`
     ${tw`fixed top-0 left-0 bottom-0 w-[300px] z-[70] flex flex-col`}
-    background: linear-gradient(180deg, #09090f 0%, #0c0b14 100%);
-    border-right: 1px solid rgba(124, 58, 237, 0.2);
-    box-shadow: ${props => props.$open ? '10px 0 40px rgba(124, 58, 237, 0.15)' : 'none'};
+    background: linear-gradient(180deg, #111111 0%, #1a1a1a 100%);
+    border-right: 1px solid rgba(14, 165, 233, 0.2);
+    box-shadow: ${props => props.$open ? '10px 0 40px rgba(14, 165, 233, 0.15)' : 'none'};
     transform: translateX(${props => props.$open ? '0%' : '-100%'});
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
 `;
 
 const SidebarHeader = styled.div`
     ${tw`flex items-center justify-between p-6`}
-    border-bottom: 1px solid rgba(124, 58, 237, 0.12);
+    border-bottom: 1px solid rgba(14, 165, 233, 0.12);
 `;
 
 const SidebarContent = styled.div`
@@ -81,38 +81,38 @@ const SidebarContent = styled.div`
 const NavItem = styled(NavLink)`
     ${tw`flex items-center gap-3 px-4 py-2.5 text-sm text-gray-400 font-medium transition-all duration-200`}
     border-left: 2px solid transparent;
-    border-radius: 0;
+    border-radius: 12px; /* S24 squircle */
+    margin-bottom: 2px;
 
     &:hover {
-        color: #c4b5fd;
-        background: rgba(124, 58, 237, 0.08);
-        border-left-color: rgba(124, 58, 237, 0.4);
+        color: #7dd3fc;
+        background: rgba(14, 165, 233, 0.08);
     }
 
     &.active {
-        color: #a78bfa;
-        background: rgba(124, 58, 237, 0.12);
-        border-left-color: #7c3aed;
-        box-shadow: inset 20px 0 20px -20px rgba(124, 58, 237, 0.3);
+        color: #38bdf8;
+        background: rgba(14, 165, 233, 0.12);
+        border-left-color: #0ea5e9;
+        box-shadow: inset 20px 0 20px -20px rgba(14, 165, 233, 0.3);
     }
 `;
 
 const SectionTitle = styled.div`
     ${tw`text-[10px] font-black uppercase tracking-widest mt-5 mb-2 px-4`}
-    color: rgba(124, 58, 237, 0.5);
+    color: rgba(14, 165, 233, 0.5);
 `;
 
 const ServerSectionButton = styled.button<{ $open: boolean }>`
     ${tw`flex items-center justify-between w-full mt-4 mb-1 px-4 py-2.5 text-xs font-bold uppercase tracking-widest transition-all duration-200 outline-none`}
-    color: ${props => props.$open ? '#a78bfa' : '#6b7280'};
-    background: ${props => props.$open ? 'rgba(124,58,237,0.08)' : 'transparent'};
+    color: ${props => props.$open ? '#38bdf8' : '#6b7280'};
+    background: ${props => props.$open ? 'rgba(14, 165, 233, 0.08)' : 'transparent'};
     border: none;
-    border-left: 2px solid ${props => props.$open ? '#7c3aed' : 'transparent'};
-    border-radius: 0;
+    border-left: 2px solid ${props => props.$open ? '#0ea5e9' : 'transparent'};
+    border-radius: 12px;
 
     &:hover {
-        color: #a78bfa;
-        background: rgba(124, 58, 237, 0.06);
+        color: #38bdf8;
+        background: rgba(14, 165, 233, 0.06);
     }
 
     .chevron {
@@ -130,7 +130,7 @@ const SubMenu = styled.div<{ $open: boolean }>`
     > div {
         overflow: hidden;
         padding-left: 0.75rem;
-        border-left: 1px solid rgba(124, 58, 237, 0.12);
+        border-left: 1px solid rgba(14, 165, 233, 0.12);
         margin-left: 1rem;
         display: flex;
         flex-direction: column;
@@ -140,21 +140,21 @@ const SubMenu = styled.div<{ $open: boolean }>`
 
 const UserFooter = styled.div`
     ${tw`p-5`}
-    border-top: 1px solid rgba(124, 58, 237, 0.1);
-    background: rgba(124, 58, 237, 0.03);
+    border-top: 1px solid rgba(14, 165, 233, 0.1);
+    background: rgba(14, 165, 233, 0.03);
 `;
 
 const MenuButton = styled.button`
     ${tw`w-10 h-10 flex items-center justify-center text-gray-400 transition-all duration-200`}
-    background: rgba(124, 58, 237, 0.06);
-    border: 1px solid rgba(124, 58, 237, 0.12);
-    border-radius: 0;
+    background: rgba(14, 165, 233, 0.06);
+    border: 1px solid rgba(14, 165, 233, 0.12);
+    border-radius: 12px;
 
     &:hover {
-        color: #a78bfa;
-        background: rgba(124, 58, 237, 0.15);
-        border-color: rgba(124, 58, 237, 0.4);
-        box-shadow: 0 0 16px rgba(124, 58, 237, 0.25);
+        color: #38bdf8;
+        background: rgba(14, 165, 233, 0.15);
+        border-color: rgba(14, 165, 233, 0.4);
+        box-shadow: 0 0 16px rgba(14, 165, 233, 0.25);
     }
 `;
 
@@ -194,7 +194,7 @@ export default () => {
 
                     <RightSection>
                         <SearchContainer />
-                        <div style={{ width: 40, height: 40, overflow: 'hidden', border: '1px solid rgba(124,58,237,0.25)', boxShadow: '0 0 12px rgba(124,58,237,0.15)' }}>
+                        <div style={{ width: 40, height: 40, overflow: 'hidden', border: '1px solid rgba(14,165,233,0.25)', boxShadow: '0 0 12px rgba(14,165,233,0.15)' }}>
                             <Avatar.User />
                         </div>
                     </RightSection>
@@ -207,10 +207,10 @@ export default () => {
             <Sidebar $open={isOpen}>
                 <SidebarHeader>
                     <div style={{ fontSize: 18, fontWeight: 900, color: '#fff', letterSpacing: '-0.5px' }}>
-                        Main<span style={{ background: 'linear-gradient(90deg,#a78bfa,#7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Menu</span>
+                        Main<span style={{ background: 'linear-gradient(90deg,#38bdf8,#0ea5e9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Menu</span>
                     </div>
                     <button onClick={() => setIsOpen(false)} style={{ color: '#4b5563', transition: 'color 0.2s' }}
-                        onMouseEnter={e => (e.currentTarget.style.color = '#a78bfa')}
+                        onMouseEnter={e => (e.currentTarget.style.color = '#38bdf8')}
                         onMouseLeave={e => (e.currentTarget.style.color = '#4b5563')}
                     >
                         <FontAwesomeIcon icon={faTimes} />
@@ -262,13 +262,14 @@ export default () => {
 
                     {rootAdmin && (
                         <>
-                            <div style={{ margin: '8px 0', borderTop: '1px solid rgba(124,58,237,0.1)' }} />
+                            <div style={{ margin: '8px 0', borderTop: '1px solid rgba(14,165,233,0.1)' }} />
                             <a href={'/admin'} style={{
                                 display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px',
-                                color: '#a78bfa', fontWeight: 700, fontSize: 13, textDecoration: 'none',
-                                borderLeft: '2px solid rgba(124,58,237,0.4)',
-                                background: 'rgba(124,58,237,0.06)',
-                                transition: 'all 0.2s'
+                                color: '#38bdf8', fontWeight: 700, fontSize: 13, textDecoration: 'none',
+                                borderLeft: '2px solid rgba(14,165,233,0.4)',
+                                background: 'rgba(14,165,233,0.06)',
+                                transition: 'all 0.2s',
+                                borderRadius: '12px'
                             }}>
                                 <FontAwesomeIcon icon={faCogs} style={{ width: 15 }} /> Admin Panel
                             </a>
@@ -278,17 +279,17 @@ export default () => {
 
                 <UserFooter>
                     <div css={tw`flex items-center gap-3`}>
-                        <div style={{ width: 36, height: 36, overflow: 'hidden', border: '1px solid rgba(124,58,237,0.3)', flexShrink: 0 }}>
+                        <div style={{ width: 36, height: 36, overflow: 'hidden', border: '1px solid rgba(14,165,233,0.3)', flexShrink: 0 }}>
                             <Avatar.User />
                         </div>
                         <div css={tw`flex-1 min-w-0`}>
                             <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{user.username}</div>
-                            <div style={{ fontSize: 10, color: '#6d28d9', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                            <div style={{ fontSize: 10, color: '#0ea5e9', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                                 {user.rootAdmin ? 'Administrator' : 'User'}
                             </div>
                         </div>
                         <button onClick={onTriggerLogout} style={{ color: '#374151', transition: 'color 0.2s' }}
-                            onMouseEnter={e => (e.currentTarget.style.color = '#a78bfa')}
+                            onMouseEnter={e => (e.currentTarget.style.color = '#38bdf8')}
                             onMouseLeave={e => (e.currentTarget.style.color = '#374151')}
                         >
                             <FontAwesomeIcon icon={faSignOutAlt} />

@@ -6,11 +6,14 @@ interface Props extends PageContentBlockProps {
     title: string;
 }
 
+import AnnounceBar from '@/components/elements/AnnounceBar';
+
 const ServerContentBlock: React.FC<Props> = ({ title, children, ...props }) => {
     const name = ServerContext.useStoreState((state) => state.server.data!.name);
 
     return (
         <PageContentBlock title={`${name} | ${title}`} {...props}>
+            <AnnounceBar displayLocation="console" />
             {children}
         </PageContentBlock>
     );

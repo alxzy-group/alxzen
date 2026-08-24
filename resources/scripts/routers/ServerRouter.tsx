@@ -19,6 +19,7 @@ import { useLocation } from 'react-router';
 import ConflictStateRenderer from '@/components/server/ConflictStateRenderer';
 import PermissionRoute from '@/components/elements/PermissionRoute';
 import routes from '@/routers/routes';
+import AnnounceBar from '@/components/elements/AnnounceBar';
 
 export default () => {
     const match = useRouteMatch<{ id: string }>();
