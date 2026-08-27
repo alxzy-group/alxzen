@@ -1,0 +1,13 @@
+{
+  "name": "multiplayer",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "get-port": "^7.2.0",
+    "socket.io": "^4.8.3"
+  }
+}

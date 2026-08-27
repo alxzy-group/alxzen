@@ -58,4 +58,27 @@ class ServerManagementController extends ApplicationApiController
 
         return $this->returnNoContent();
     }
+
+    /**
+     * Extend server expiration on the Panel.
+     *
+     * @throws \Throwable
+     */
+    public function extend(ServerWriteRequest $request, Server $server): Response
+    {
+        $days = (int) $request->input('days', 30);
+        if ($days <= 0) $days = 30;
+
+        if ($server->expires_at && $server->expires_at->isFuture()) {
+            $newDate = $server->expires_at->addDays($days);
+        } else {
+            $newDate = \Carbon\Carbon::now()->addDays($days);
+        }
+
+        $server->update([
+            'expires_at' => $newDate,
+        ]);
+
+        return $this->returnNoContent();
+    }
 }

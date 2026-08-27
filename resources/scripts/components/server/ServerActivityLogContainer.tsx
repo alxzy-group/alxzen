@@ -35,7 +35,7 @@ export default () => {
         <ServerContentBlock title={'Activity Log'}>
             <FlashMessageRender byKey={'server:activity'} />
             {(filters.filters?.event || filters.filters?.ip) && (
-                <div className={'flex justify-end mb-2'}>
+                <div className={'flex justify-end mb-4'}>
                     <Link
                         to={'#'}
                         className={classNames(btnStyles.button, btnStyles.text, 'w-full sm:w-auto')}
@@ -48,10 +48,12 @@ export default () => {
             {!data && isValidating ? (
                 <Spinner centered />
             ) : !data?.items.length ? (
-                <p className={'text-sm text-center text-gray-400'}>No activity logs available for this server.</p>
+                <div className={'rounded-xl border border-white/5 bg-[#111]/80 p-8 text-center'}>
+                    <p className={'text-sm text-gray-400'}>No activity logs available for this server.</p>
+                </div>
             ) : (
-                <div className={'bg-gray-700'}>
-                    {data?.items.map((activity) => (
+                <div className={'rounded-xl border border-white/5 bg-[#111]/80 overflow-hidden'}>
+                    {data?.items.map((activity, index) => (
                         <ActivityLogEntry key={activity.id} activity={activity}>
                             <span />
                         </ActivityLogEntry>
@@ -59,10 +61,12 @@ export default () => {
                 </div>
             )}
             {data && (
-                <PaginationFooter
-                    pagination={data.pagination}
-                    onPageSelect={(page) => setFilters((value) => ({ ...value, page }))}
-                />
+                <div className={'mt-4'}>
+                    <PaginationFooter
+                        pagination={data.pagination}
+                        onPageSelect={(page) => setFilters((value) => ({ ...value, page }))}
+                    />
+                </div>
             )}
         </ServerContentBlock>
     );

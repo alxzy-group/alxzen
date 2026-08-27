@@ -52,7 +52,7 @@ export default ({ displayLocation }: Props) => {
 
     const handleDismiss = (id: number) => {
         setVisible((s) => s.filter((a) => a.id !== id));
-        markAnnouncementRead(id).catch(console.error);
+        // markAnnouncementRead(id).catch(console.error);
     };
 
     if (visible.length === 0) return null;

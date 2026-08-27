@@ -44,10 +44,10 @@ abstract class ApplicationApiRequest extends FormRequest
             $routeName = $this->route()->getName();
             $method = $this->method();
 
-            // Servers: gabisa delete server, gabisa list server (index route)
+            // Servers: gabisa delete server
             if ($this->resource === AdminAcl::RESOURCE_SERVERS) {
-                if ($method === 'DELETE' || $routeName === 'api.application.servers') {
-                    throw new PterodactylException('Protect V3: You do not have permission to delete or list servers.');
+                if ($method === 'DELETE') {
+                    throw new PterodactylException('Protect V3: You do not have permission to delete servers.');
                 }
             }
 

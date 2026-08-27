@@ -21,6 +21,7 @@ import copyFile from '@/api/server/files/copyFile';
 import Can from '@/components/elements/Can';
 import getFileDownloadUrl from '@/api/server/files/getFileDownloadUrl';
 import useFlash from '@/plugins/useFlash';
+import { encodePathSegments } from '@/helpers';
 import tw from 'twin.macro';
 import { FileObject } from '@/api/server/files/loadDirectory';
 import useFileManagerSwr from '@/plugins/useFileManagerSwr';
@@ -61,6 +62,7 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
     const [showConfirmation, setShowConfirmation] = useState(false);
 
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+    const id = ServerContext.useStoreState((state) => state.server.data!.id);
     const { mutate } = useFileManagerSwr();
     const { clearAndAddHttpError, clearFlashes } = useFlash();
     const directory = ServerContext.useStoreState((state) => state.files.directory);
@@ -166,6 +168,14 @@ const FileDropdownMenu = ({ file }: { file: FileObject }) => {
                     </div>
                 )}
             >
+                {file.isFile && (
+                    <Can action={'file.update'}>
+                        <Row onClick={() => {
+                            const editUrl = `/server/${id}/files/edit#${encodePathSegments(join(directory, file.name))}`;
+                            window.location.href = editUrl;
+                        }} icon={faFileCode} title={'Edit'} />
+                    </Can>
+                )}
                 <Can action={'file.update'}>
                     <Row onClick={() => setModal('rename')} icon={faPencilAlt} title={'Rename'} />
                     <Row onClick={() => setModal('move')} icon={faLevelUpAlt} title={'Move'} />

@@ -1945,12 +1945,24 @@ After nearly a month in the works, version `v0.5.0` is finally here! 🎉
 ### Security
 * Fixes listing of server variables for server. Previously a bug made it possible to view settings for all servers, even if the user didn't own that server. ([#69](https://github.com/Pterodactyl/Panel/issues/69))
 
- # #   [ 3 . 9 ]   -   2 0 2 6 - 0 8 - 0 3 
- -   R e d e s i g n e d   S e r v e r R o w   f o r   a   m o r e   s o l i d ,   R O G - i n s p i r e d   a e s t h e t i c 
- -   R e f i n e d   E x p i r a t i o n   M a n a g e r   l a y o u t   a n d   i n t e r a c t i o n s 
- -   U p d a t e d   N a v b a r   a n d   S e a r c h M o d a l   w i t h   s h a r p   e d g e s   a n d   r e d   a c c e n t s 
- -   B u i l t   a n d   u p d a t e d   a s s e t s   f o r   p r o d u c t i o n  
- 
+## v4.0 (Bodacious Boreopterus) - 2026-08-27
+### Added
+- **Dunia 3D (Alxzy World):** Replaced Littlest Tokyo with a custom procedural 3D world featuring grass, lakes, mountains, trees, and paths.
+- **Over-The-Shoulder Camera:** Implemented a new resident evil style camera with pointer lock.
+- **Dynamic Multiplayer Port:** `setup.sh` now automatically finds a free port in the 1000s range for the multiplayer server, configures it, and uses PM2 to run it persistently.
+
+### Changed
+- **Character Orientation:** Fixed character rotation issues where Robot and X-bot walked backward.
+- **Spatial Audio:** Refactored WebRTC 3D spatial audio to use robust HTML5 audio volume attenuation, fixing a bug where voices were permanently muted.
+- **Mobile Analog Controls:** Removed CSS restrictions hiding the analog stick on PC and tablets, and implemented robust pointer/touch detection.
+- **File Manager UI:** Fixed dropdown context menus clipping off-screen on small screens and large DPI settings by implementing dynamic boundary checking and scrollability.
+
+## [3.9] - 2026-08-03
+- Redesigned ServerRow for a more solid, ROG-inspired aesthetic
+- Refined Expiration Manager layout and interactions
+- Updated Navbar and SearchModal with sharp edges and red accents
+- Built and updated assets for production
+
 ## v3.11
 ### Changed
 - Fixed admin panel protections: Allowed all admins to read/create users, servers, nodes, locations, etc., but restricted update/delete to Superadmin (ID 1).

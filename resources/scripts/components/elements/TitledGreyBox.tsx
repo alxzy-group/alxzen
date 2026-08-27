@@ -11,20 +11,38 @@ interface Props {
     children: React.ReactNode;
 }
 
+import styled from 'styled-components/macro';
+
+const Wrapper = styled.div`
+    ${tw`rounded-2xl shadow-xl transition-all duration-300 relative overflow-hidden`}
+    background-color: rgba(17, 17, 17, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+
+    & > .title {
+        ${tw`px-6 py-4 border-b text-sm font-bold tracking-widest uppercase text-gray-400`}
+        border-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    & > .content {
+        ${tw`p-6`}
+    }
+`;
+
 const TitledGreyBox = ({ icon, title, children, className }: Props) => (
-    <div css={tw`rounded shadow-md bg-neutral-700`} className={className}>
-        <div css={tw`bg-neutral-900 rounded-t p-3 border-b border-black`}>
+    <Wrapper className={className}>
+        <div className="title">
             {typeof title === 'string' ? (
-                <p css={tw`text-sm uppercase`}>
+                <>
                     {icon && <FontAwesomeIcon icon={icon} css={tw`mr-2 text-neutral-300`} />}
                     {title}
-                </p>
+                </>
             ) : (
                 title
             )}
         </div>
-        <div css={tw`p-3`}>{children}</div>
-    </div>
+        <div className="content">{children}</div>
+    </Wrapper>
 );
 
 export default memo(TitledGreyBox, isEqual);

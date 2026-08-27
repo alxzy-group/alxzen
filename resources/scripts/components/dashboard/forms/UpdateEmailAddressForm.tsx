@@ -66,7 +66,12 @@ export default () => {
                             />
                         </div>
                         <div css={tw`mt-6`}>
-                            <Button disabled={isSubmitting || !isValid}>Update Email</Button>
+                            <Button 
+                                disabled={isSubmitting || !isValid}
+                                css={tw`w-full bg-indigo-500 hover:bg-indigo-400 border-none rounded-xl text-white font-semibold py-3 shadow-[0_4px_14px_0_rgba(99,102,241,0.39)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.23)] transition-all`}
+                            >
+                                Update Email
+                            </Button>
                         </div>
                     </Form>
                 </React.Fragment>

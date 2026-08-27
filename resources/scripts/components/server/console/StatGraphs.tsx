@@ -71,16 +71,17 @@ export default () => {
             return {
                 ...opts,
                 label: !index ? 'Inbound' : 'Outbound',
-                borderColor: !index ? theme('colors.indigo.400') : theme('colors.purple.400'),
+                borderColor: !index ? '#0ea5e9' : '#3b82f6', // Sky Blue vs Blue
                 backgroundColor: (context: any) => {
                     const ctx = context.chart.ctx;
                     const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                    gradient.addColorStop(0, hexToRgba(!index ? theme('colors.indigo.500') : theme('colors.purple.500'), 0.4));
-                    gradient.addColorStop(1, hexToRgba(!index ? theme('colors.indigo.500') : theme('colors.purple.500'), 0.0));
+                    gradient.addColorStop(0, !index ? 'rgba(14, 165, 233, 0.4)' : 'rgba(59, 130, 246, 0.4)');
+                    gradient.addColorStop(1, !index ? 'rgba(14, 165, 233, 0.0)' : 'rgba(59, 130, 246, 0.0)');
                     return gradient;
                 },
                 borderWidth: 2,
                 tension: 0.4,
+                fill: true,
             };
         },
     });

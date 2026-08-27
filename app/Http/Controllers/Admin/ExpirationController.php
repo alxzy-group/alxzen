@@ -10,13 +10,18 @@ use Pterodactyl\Services\Servers\SuspensionService; // Tambahkan ini
 
 class ExpirationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $servers = Server::query()
+        $query = Server::query()
             ->select('id', 'name', 'expires_at', 'uuidShort', 'status', 'owner_id', 'node_id', 'allocation_id')
-            ->with(['user', 'node', 'allocation'])
-            ->orderBy('expires_at', 'asc') // Urutkan dari yang mau expired duluan
-            ->paginate(50);
+            ->with(['user', 'node', 'allocation']);
+
+        if ($request->filled('filter.*')) {
+            $query->where('name', 'LIKE', '%' . $request->input('filter.*') . '%');
+        }
+
+        $servers = $query->orderBy('expires_at', 'asc') // Urutkan dari yang mau expired duluan
+            ->paginate(config('pterodactyl.paginate.admin.servers', 25));
 
         return view('admin.expiration.index', compact('servers'));
     }

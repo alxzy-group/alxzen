@@ -41,6 +41,9 @@ DB_PASS=""
 
 # ─── Helper Functions ────────────────────────────────────────────────────────
 
+# Global Variables for Multiplayer
+MULTIPLAYER_PORT=3002
+
 print_header() {
     clear
     echo ""
@@ -373,6 +376,40 @@ SYSTEMD_UNIT
     print_ok "Queue worker service installed and started."
 }
 
+setup_multiplayer_server() {
+    print_step "Setting up Dunia Alxzy Multiplayer Server"
+    
+    # Install PM2 if not installed
+    if ! command -v pm2 &> /dev/null; then
+        npm install -g pm2
+    fi
+
+    # Find open port between 1000 and 9999
+    while true; do
+        MULTIPLAYER_PORT=$(shuf -i 2000-9999 -n 1)
+        if ! ss -tuln | grep -q ":${MULTIPLAYER_PORT} "; then
+            break
+        fi
+    done
+    print_info "Assigned Dunia Alxzy Multiplayer Port: ${MULTIPLAYER_PORT}"
+    
+    # Save port to env file for server.js
+    echo "PORT=${MULTIPLAYER_PORT}" > "$PANEL_DIR/multiplayer/.env"
+    
+    cd "$PANEL_DIR/multiplayer" || true
+    
+    # Ensure dependencies are installed
+    if [ -f package.json ]; then
+        npm install --silent
+    fi
+    
+    # Start or restart with PM2
+    pm2 start server.js --name "dunia-alxzy" --env .env || pm2 restart dunia-alxzy
+    pm2 save
+    
+    print_ok "Multiplayer server started on port ${MULTIPLAYER_PORT} with PM2."
+}
+
 configure_nginx_panel() {
     print_step "Configuring Nginx Web Server"
 
@@ -439,6 +476,17 @@ server {
         fastcgi_read_timeout 300;
     }
 
+    # Proxy for Dunia Alxzy Multiplayer Server
+    location /socket.io/ {
+        proxy_pass http://127.0.0.1:${MULTIPLAYER_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    }
+
     location ~ /\.ht {
         deny all;
     }
@@ -489,6 +537,17 @@ server {
         fastcgi_connect_timeout 300;
         fastcgi_send_timeout 300;
         fastcgi_read_timeout 300;
+    }
+
+    # Proxy for Dunia Alxzy Multiplayer Server
+    location /socket.io/ {
+        proxy_pass http://127.0.0.1:${MULTIPLAYER_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     }
 
     location ~ /\.ht {
@@ -892,6 +951,7 @@ install_panel() {
         configure_ssl
     fi
 
+    setup_multiplayer_server
     configure_nginx_panel
 
     if [ "$CONFIGURE_UFW" = true ]; then

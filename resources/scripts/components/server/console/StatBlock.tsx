@@ -16,66 +16,46 @@ interface StatBlockProps {
 }
 
 const StatContainer = styled.div`
-    ${tw`relative flex flex-col justify-center rounded-none p-5 overflow-hidden transition-all duration-300`}
-    background-color: rgba(255, 255, 255, 0.03);
+    ${tw`relative flex items-center justify-between rounded-full px-4 py-2 overflow-hidden transition-all duration-300 gap-3`}
+    background-color: rgba(17, 17, 17, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(12px);
-    
+    z-index: 1;
+
     &:hover {
-        background-color: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(229, 9, 20, 0.5);
-        transform: translateY(-2px);
-        box-shadow: 0 10px 30px -10px rgba(229, 9, 20, 0.25);
+        background-color: rgba(17, 17, 17, 1);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        box-shadow: 0 4px 15px rgba(56, 189, 248, 0.15);
     }
 `;
 
-const IconWrapper = styled.div<{ $color?: string }>`
-    ${tw`absolute right-[-10px] top-[-10px] opacity-[0.15] transition-all duration-300`}
-    svg {
-        ${tw`w-24 h-24`}
-        ${props => {
-            if (props.$color?.includes('red')) return tw`text-red-500`;
-            if (props.$color?.includes('yellow')) return tw`text-yellow-500`;
-            if (props.$color?.includes('green')) return tw`text-green-500`;
-            return tw`text-red-600`;
-        }}
-    }
-    
-    ${StatContainer}:hover & {
-        ${tw`opacity-30 right-[0px] top-[0px]`}
-        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
-    }
+const IconWrapper = styled.div`
+    ${tw`flex items-center justify-center text-[#38bdf8] text-lg`}
+    filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.5));
 `;
 
 const ContentWrapper = styled.div`
-    ${tw`relative z-10 flex flex-col`}
+    ${tw`flex flex-col`}
 `;
 
-const Title = styled.p`
-    ${tw`text-[11px] font-black uppercase tracking-widest text-gray-400 mb-1`}
-`;
-
-const Value = styled.div`
-    ${tw`font-bold text-gray-50 flex items-baseline`}
-    text-shadow: 0 0 20px rgba(255,255,255,0.2);
-`;
-
-export default ({ title, copyOnClick, icon, color, className, children }: StatBlockProps) => {
-    const { fontSize, ref } = useFitText({ minFontSize: 12, maxFontSize: 200 });
-
+export default ({ title, copyOnClick, children, icon, className }: StatBlockProps) => {
     return (
-        <CopyOnClick text={copyOnClick}>
-            <StatContainer className={className}>
-                <IconWrapper $color={color}>
-                    <FontAwesomeIcon icon={icon} />
-                </IconWrapper>
-                <ContentWrapper>
-                    <Title>{title}</Title>
-                    <Value ref={ref} className={'h-[2rem] truncate'} style={{ fontSize }}>
-                        {children}
-                    </Value>
-                </ContentWrapper>
-            </StatContainer>
-        </CopyOnClick>
+        <StatContainer className={className}>
+            <IconWrapper>
+                <FontAwesomeIcon icon={icon} />
+            </IconWrapper>
+            <ContentWrapper>
+                <p css={tw`text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-tight`}>{title}</p>
+                <div css={tw`text-sm font-semibold text-gray-100 leading-tight`}>
+                    {copyOnClick ? (
+                        <CopyOnClick text={copyOnClick}>
+                            <p>{children}</p>
+                        </CopyOnClick>
+                    ) : (
+                        <>{children}</>
+                    )}
+                </div>
+            </ContentWrapper>
+        </StatContainer>
     );
 };

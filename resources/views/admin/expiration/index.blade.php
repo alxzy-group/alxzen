@@ -66,7 +66,10 @@
 .alx-btn-add30:hover { background:rgba(16, 185, 129, 0.25); }
 .alx-btn-delete-all { background: #ef4444; color: #fff; border: 1px solid transparent; }
 .alx-btn-delete-all:hover { background: #dc2626; color: #fff; }
-.alx-pagination { display:flex; justify-content:center; padding:16px 24px; border-top:1px solid rgba(255, 255, 255, 0.08); }
+.alx-admin-pager { display:flex; justify-content:center; padding:16px 24px; border-top:1px solid rgba(255, 255, 255, 0.08); background: #171717; }
+.alx-admin-pager .pagination { margin: 0; }
+.alx-admin-pager .pagination > li > a, .alx-admin-pager .pagination > li > span { background: #0a0a0a !important; border-color: rgba(255, 255, 255, 0.08) !important; color: #a3a3a3 !important; border-radius: 4px !important; margin: 0 2px; }
+.alx-admin-pager .pagination > .active > a, .alx-admin-pager .pagination > .active > span { background: #0ea5e9 !important; border-color: #0ea5e9 !important; color: #fff !important; }
 .alx-server-name { font-weight:500; color:#e5e5e5; }
 .alx-username { color:#a3a3a3; font-size:13px; }
 .alx-email { color:#737373; font-size:11px; display:block; margin-top:2px; }
@@ -163,8 +166,8 @@
             </div>
 
             @if($servers->hasPages())
-                <div class="alx-pagination">
-                    <div class="col-md-12 text-center">{!! $servers->render() !!}</div>
+                <div class="alx-admin-pager">
+                    {!! $servers->appends(['filter' => Request::input('filter')])->render() !!}
                 </div>
             @endif
         </div>
