@@ -384,17 +384,21 @@ setup_multiplayer_server() {
         npm install -g pm2
     fi
 
-    # Find open port between 1000 and 9999
-    while true; do
-        MULTIPLAYER_PORT=$(shuf -i 2000-9999 -n 1)
-        if ! ss -tuln | grep -q ":${MULTIPLAYER_PORT} "; then
-            break
-        fi
-    done
-    print_info "Assigned Dunia Alxzy Multiplayer Port: ${MULTIPLAYER_PORT}"
-    
-    # Save port to env file for server.js
-    echo "PORT=${MULTIPLAYER_PORT}" > "$PANEL_DIR/multiplayer/.env"
+    # Find open port if not already set
+    if [ -f "$PANEL_DIR/multiplayer/.env" ] && grep -q "PORT=" "$PANEL_DIR/multiplayer/.env"; then
+        MULTIPLAYER_PORT=$(grep "PORT=" "$PANEL_DIR/multiplayer/.env" | cut -d'=' -f2)
+        print_info "Reusing existing Dunia Alxzy Multiplayer Port: ${MULTIPLAYER_PORT}"
+    else
+        while true; do
+            MULTIPLAYER_PORT=$(shuf -i 2000-9999 -n 1)
+            if ! ss -tuln | grep -q ":${MULTIPLAYER_PORT} "; then
+                break
+            fi
+        done
+        print_info "Assigned new Dunia Alxzy Multiplayer Port: ${MULTIPLAYER_PORT}"
+        # Save port to env file for server.js
+        echo "PORT=${MULTIPLAYER_PORT}" > "$PANEL_DIR/multiplayer/.env"
+    fi
     
     cd "$PANEL_DIR/multiplayer" || true
     
@@ -901,6 +905,9 @@ update_panel() {
 
     # Bring panel back online
     php artisan up
+    
+    # Update and restart multiplayer server
+    setup_multiplayer_server
     
     echo ""
     print_ok "${GREEN}${BOLD}Panel updated successfully to latest version!${NC}"
