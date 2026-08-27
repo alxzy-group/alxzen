@@ -1,9 +1,9 @@
 #!/bin/bash
-TOKEN="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"
+TOKEN="${GITHUB_TOKEN}"
 REPO="alxzy-group/alxzen"
-TAG="v3.13"
-NAME="v3.13 - UI Bugfixes & Global Announcements"
-BODY="Fixed Server Sidebar Navigation styling, moved AnnounceBar to global server view, and cleared announcement reads."
+TAG="v4.0.1"
+NAME="v4.0.1 - Theme Background Fix & Update Panel Fix"
+BODY="Fixed Advanced Theme Settings not applying correctly. Fixed option 4 (Update Panel) in setup.sh to also update multiplayer server."
 
 echo "Checking for existing release..."
 RESPONSE=$(curl -s -H "Authorization: Bearer $TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/$REPO/releases/tags/$TAG)
@@ -27,6 +27,11 @@ if [ -z "$RELEASE_ID" ] || [ "$RELEASE_ID" = "null" ]; then
 fi
 
 echo "Release created with ID: $RELEASE_ID"
+
+echo "Creating panel.tar.gz..."
+# Tar the directory excluding unnecessary files
+tar -czf panel.tar.gz --exclude="node_modules" --exclude=".git" --exclude="panel.tar.gz" .
+
 echo "Uploading asset..."
 
 curl -L \
