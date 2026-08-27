@@ -114,6 +114,34 @@
                             </div>
                         </div>
                     </div>
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Panel Theme Settings</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Background Type</label>
+                                <div>
+                                    <select class="form-control" name="app:theme:type">
+                                        <option value="network" @if(old('app:theme:type', config('app.theme.type')) == 'network') selected @endif>Particle Network (Interactive)</option>
+                                        <option value="dna" @if(old('app:theme:type', config('app.theme.type')) == 'dna') selected @endif>DNA Particles</option>
+                                        <option value="bubbles" @if(old('app:theme:type', config('app.theme.type')) == 'bubbles') selected @endif>Bubbles</option>
+                                        <option value="image" @if(old('app:theme:type', config('app.theme.type')) == 'image') selected @endif>Custom Image URL</option>
+                                        <option value="video" @if(old('app:theme:type', config('app.theme.type')) == 'video') selected @endif>Custom Video URL</option>
+                                    </select>
+                                    <p class="text-muted small">Select the global background animation or media to use on the client panel.</p>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Custom Background URL</label>
+                                <div>
+                                    <input type="text" class="form-control" name="app:theme:data" value="{{ old('app:theme:data', config('app.theme.data')) }}">
+                                    <p class="text-muted small">If Custom Image or Video is selected, enter the direct URL here (e.g., https://example.com/bg.mp4).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="box box-primary">
                     <div class="box-footer">

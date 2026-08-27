@@ -46,48 +46,48 @@
             {!! $asset->js('main.js') !!}
         @show
 
-        <div id="tsparticles" style="position: fixed; inset: 0; z-index: -1; pointer-events: none;"></div>
+        <div id="tsparticles-bg" style="position: fixed; inset: 0; z-index: -1;"></div>
         <script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2.0.6/tsparticles.slim.bundle.min.js"></script>
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                tsParticles.load("tsparticles", {
-                    background: {
-                        color: { value: "#000000" }
+                var themeType = (window.SiteConfiguration && window.SiteConfiguration.theme && window.SiteConfiguration.theme.type) || 'network';
+                
+                var configs = {
+                    network: {
+                        background: { color: { value: "#09090b" } },
+                        fpsLimit: 60,
+                        interactivity: {
+                            events: { onHover: { enable: true, mode: "grab" }, resize: true },
+                            modes: { grab: { distance: 200, links: { opacity: 0.8, color: "#0ea5e9" } } }
+                        },
+                        particles: {
+                            color: { value: "#0ea5e9" },
+                            links: { color: "#0ea5e9", distance: 160, enable: true, opacity: 0.35, width: 1.5 },
+                            move: { enable: true, speed: 1, direction: "none", outModes: { default: "bounce" } },
+                            number: { density: { enable: true, area: 600 }, value: 80 },
+                            opacity: { value: 0.6 },
+                            size: { value: { min: 1.5, max: 3.5 } }
+                        },
+                        detectRetina: true
                     },
-                    fpsLimit: 60,
-                    interactivity: {
-                        events: {
-                            onHover: { enable: true, mode: "grab" },
-                            resize: true
+                    bubbles: {
+                        background: { color: { value: "#09090b" } },
+                        fpsLimit: 60,
+                        interactivity: { events: { resize: true } },
+                        particles: {
+                            color: { value: "#38bdf8" },
+                            move: { enable: true, speed: 1.5, direction: "top", outModes: { default: "out" } },
+                            number: { density: { enable: true, area: 600 }, value: 60 },
+                            opacity: { value: { min: 0.15, max: 0.6 } },
+                            size: { value: { min: 3, max: 14 } }
                         },
-                        modes: {
-                            grab: { distance: 140, links: { opacity: 0.5, color: "#0ea5e9" } }
-                        }
-                    },
-                    particles: {
-                        color: { value: "#0ea5e9" },
-                        links: {
-                            color: "#0ea5e9",
-                            distance: 150,
-                            enable: true,
-                            opacity: 0.15,
-                            width: 1
-                        },
-                        move: {
-                            enable: true,
-                            speed: 0.8,
-                            direction: "none",
-                            outModes: { default: "bounce" }
-                        },
-                        number: {
-                            density: { enable: true, area: 800 },
-                            value: 50
-                        },
-                        opacity: { value: 0.3 },
-                        size: { value: { min: 1, max: 2 } }
-                    },
-                    detectRetina: true
-                });
+                        detectRetina: true
+                    }
+                };
+
+                if (configs[themeType] && typeof tsParticles !== 'undefined') {
+                    tsParticles.load("tsparticles-bg", configs[themeType]);
+                }
             });
         </script>
     </body>

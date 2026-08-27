@@ -15,6 +15,7 @@ import { ServerContext } from '@/state/server';
 import '@/assets/tailwind.css';
 import Spinner from '@/components/elements/Spinner';
 import { createGlobalStyle } from 'styled-components';
+import BackgroundEngine from '@/components/elements/BackgroundEngine';
 
 const GlobalScrollbar = createGlobalStyle`
     body {
@@ -84,6 +85,7 @@ const App = () => {
         <>
             <GlobalStylesheet />
             <GlobalScrollbar />
+            <BackgroundEngine />
             
             <StoreProvider store={store}>
                 <ProgressBar />

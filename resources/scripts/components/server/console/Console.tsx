@@ -200,8 +200,8 @@ export default () => {
     }, [connected, instance]);
 
     return (
-        <div className={classNames(styles.terminal, 'relative rounded-lg overflow-hidden transition-all duration-500', {
-            'ring-1 ring-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.15)]': status === 'running',
+        <div className={classNames(styles.terminal, 'relative rounded-2xl overflow-hidden transition-all duration-500', {
+            'ring-1 ring-sky-500/50 shadow-[0_0_20px_rgba(14,165,233,0.15)]': status === 'running',
             'ring-1 ring-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.15)] animate-pulse': status === 'starting',
             'ring-1 ring-white/5': status === 'offline' || status === 'stopping',
         })}>

@@ -28,6 +28,10 @@ class AssetComposer
                 'enabled' => config('recaptcha.enabled', false),
                 'siteKey' => config('recaptcha.website_key') ?? '',
             ],
+            'theme' => [
+                'type' => config('app.theme.type', 'network'),
+                'data' => config('app.theme.data', ''),
+            ],
         ]);
     }
 }

@@ -37,9 +37,19 @@ export default () => {
             </p>
             <div css={tw`mt-6`}>
                 {isEnabled ? (
-                    <Button.Danger onClick={() => setVisible('disable')}>Disable Two-Step</Button.Danger>
+                    <Button.Danger 
+                        onClick={() => setVisible('disable')}
+                        css={tw`w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/50 rounded-xl font-semibold py-3 transition-all`}
+                    >
+                        Disable Two-Step
+                    </Button.Danger>
                 ) : (
-                    <Button onClick={() => setVisible('enable')}>Enable Two-Step</Button>
+                    <Button 
+                        onClick={() => setVisible('enable')}
+                        css={tw`w-full bg-indigo-500 hover:bg-indigo-400 border-none rounded-xl text-white font-semibold py-3 shadow-[0_4px_14px_0_rgba(99,102,241,0.39)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.23)] transition-all`}
+                    >
+                        Enable Two-Step
+                    </Button>
                 )}
             </div>
         </div>

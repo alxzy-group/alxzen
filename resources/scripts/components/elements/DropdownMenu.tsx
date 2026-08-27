@@ -40,7 +40,38 @@ class DropdownMenu extends React.PureComponent<Props, State> {
         if (this.state.visible && !prevState.visible && menu) {
             document.addEventListener('click', this.windowListener);
             document.addEventListener('contextmenu', this.contextMenuListener);
-            menu.style.left = `${Math.round(this.state.posX - menu.clientWidth)}px`;
+            
+            // Use fixed positioning relative to viewport
+            const rect = menu.getBoundingClientRect();
+            const menuWidth = menu.offsetWidth || 192; // 12rem fallback
+            const menuHeight = menu.offsetHeight;
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Calculate where menu should go: try to align right edge to click position
+            let left = this.state.posX - menuWidth;
+            
+            // Clamp horizontal bounds with 8px margin
+            if (left < 8) left = 8;
+            if (left + menuWidth > viewportWidth - 8) left = viewportWidth - menuWidth - 8;
+            
+            // Clamp vertical bounds with 8px margin
+            let top = rect.top;
+            if (top + menuHeight > viewportHeight - 8) {
+                // If it goes off the bottom, shift it up
+                top = viewportHeight - menuHeight - 8;
+            }
+            if (top < 8) {
+                // If it's taller than the screen, pin to top and enable scroll
+                top = 8;
+                menu.style.maxHeight = `${viewportHeight - 16}px`;
+                menu.style.overflowY = 'auto';
+            }
+            
+            // Apply positioning
+            menu.style.position = 'fixed';
+            menu.style.left = `${left}px`;
+            menu.style.top = `${top}px`;
         }
 
         if (!this.state.visible && prevState.visible) {
@@ -55,6 +86,7 @@ class DropdownMenu extends React.PureComponent<Props, State> {
 
     onClickHandler = (e: React.MouseEvent<any, MouseEvent>) => {
         e.preventDefault();
+        e.stopPropagation();
         this.triggerMenu(e.clientX);
     };
 
@@ -94,7 +126,7 @@ class DropdownMenu extends React.PureComponent<Props, State> {
                             this.setState({ visible: false });
                         }}
                         style={{ width: '12rem' }}
-                        css={tw`absolute bg-gray-800 p-2 rounded border border-gray-700 shadow-xl text-gray-300 z-50`}
+                        css={tw`bg-gray-800 p-2 rounded-lg border border-gray-700 shadow-xl text-gray-300 z-[9999]`}
                     >
                         {this.props.children}
                     </div>

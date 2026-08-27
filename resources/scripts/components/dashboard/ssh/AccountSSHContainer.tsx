@@ -41,9 +41,10 @@ export default () => {
                         data.map((key, index) => (
                             <GreyRowBox
                                 key={key.fingerprint}
-                                css={[tw`bg-neutral-600 flex space-x-4 items-center`, index > 0 && tw`mt-2`]}
+                                css={[tw`flex space-x-4 items-center border border-transparent hover:border-white/10 transition-colors duration-200`, index > 0 && tw`mt-2`]}
+                                style={{ backgroundColor: '#111111' }}
                             >
-                                <FontAwesomeIcon icon={faKey} css={tw`text-neutral-300`} />
+                                <FontAwesomeIcon icon={faKey} css={tw`text-neutral-400`} />
                                 <div css={tw`flex-1`}>
                                     <p css={tw`text-sm break-words font-medium`}>{key.name}</p>
                                     <p css={tw`text-xs mt-1 font-mono truncate`}>SHA256:{key.fingerprint}</p>

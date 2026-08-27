@@ -85,7 +85,7 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                             size={'xlarge'}
                             isLoading={isSubmitting}
                             disabled={isSubmitting}
-                            css={tw`w-full bg-indigo-600 hover:bg-indigo-500 border-none shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] transition-all`}
+                            css={tw`w-full bg-indigo-500 hover:bg-indigo-400 border-none rounded-xl text-white font-semibold py-4 shadow-[0_4px_14px_0_rgba(99,102,241,0.39)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.23)] hover:-translate-y-1 transition-all duration-200`}
                         >
                             Sign In
                         </Button>
@@ -108,7 +108,7 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                     <div css={tw`mt-6 text-center`}>
                         <Link
                             to={'/auth/password'}
-                            css={tw`text-xs text-neutral-500 tracking-wide no-underline uppercase hover:text-neutral-600`}
+                            css={tw`text-sm text-gray-400 font-medium no-underline hover:text-white transition-colors`}
                         >
                             Forgot password?
                         </Link>

@@ -11,121 +11,116 @@ type Props = React.DetailedHTMLProps<React.FormHTMLAttributes<HTMLFormElement>, 
     title?: string;
 };
 
-const SplitLayout = styled.div`
-    ${tw`min-h-screen flex w-full bg-[#050505] overflow-hidden text-gray-100`}
-`;
+const Wrapper = styled.div`
+    ${tw`min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden`}
+    background: #09090b;
 
-const LeftPanel = styled.div`
-    ${tw`hidden lg:flex lg:flex-1 relative flex-col justify-center items-start p-20`}
-    background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.25), transparent 50%),
-                radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.2), transparent 50%),
-                #0a0a0c;
-    border-right: 1px solid rgba(255,255,255,0.05);
+    /* Grid background pattern */
+    &::before {
+        content: '';
+        ${tw`absolute inset-0 pointer-events-none opacity-[0.03]`}
+        background-image: linear-gradient(#ffffff 1px, transparent 1px),
+                          linear-gradient(90deg, #ffffff 1px, transparent 1px);
+        background-size: 40px 40px;
+        mask-image: radial-gradient(circle at center, black, transparent 80%);
+    }
 
+    /* Ambient glowing orbs */
     &::after {
         content: '';
-        ${tw`absolute inset-0 opacity-[0.03] pointer-events-none`}
-        background-image: linear-gradient(#fff 1px, transparent 1px),
-                          linear-gradient(90deg, #fff 1px, transparent 1px);
-        background-size: 30px 30px;
+        ${tw`absolute inset-0 pointer-events-none`}
+        background: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15), transparent 40%),
+                    radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.1), transparent 40%);
+        z-index: 0;
     }
 `;
 
-const RightPanel = styled.div`
-    ${tw`flex-1 lg:flex-none lg:w-[35rem] flex flex-col justify-center items-center p-8 md:p-16 relative`}
-    background: #09090b;
+const GlassCard = styled(motion.div)`
+    ${tw`relative z-10 w-full max-w-md p-8 sm:p-10 rounded-2xl flex flex-col`}
+    background: rgba(20, 20, 22, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 `;
 
-const BrandTitle = styled(motion.h1)`
-    ${tw`text-5xl lg:text-7xl font-black tracking-tighter text-white mb-6 leading-tight relative z-10`}
+const HeaderSection = styled.div`
+    ${tw`flex flex-col items-center mb-8 text-center`}
+`;
+
+const BrandTitle = styled.h1`
+    ${tw`text-3xl font-bold tracking-tight text-white mb-2`}
     span {
         ${tw`text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500`}
     }
 `;
 
-const BrandSlogan = styled(motion.p)`
-    ${tw`text-xl text-gray-400 font-medium max-w-lg relative z-10 leading-relaxed`}
-`;
-
-const FormWrapper = styled(motion.div)`
-    ${tw`w-full max-w-sm`}
+const Subtitle = styled.p`
+    ${tw`text-sm text-gray-400 font-medium`}
 `;
 
 const LoginFormContainer = forwardRef<HTMLFormElement, Props>(({ title, ...props }, ref) => {
     const name = useStoreState((state: ApplicationStore) => state.settings.data?.name ?? 'AlxZen Panel');
     const logo = useStoreState((state: ApplicationStore) => state.settings.data?.logo ?? '');
 
-    // Split name: last word becomes the highlighted span, rest is plain text
     const nameParts = name.trim().split(' ');
     const highlight = nameParts.length > 1 ? nameParts.pop() : undefined;
     const mainText = nameParts.join(' ');
 
     return (
-        <SplitLayout>
-            <LeftPanel>
-                <BrandTitle
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: 'easeOut' }}
-                >
-                    {highlight ? (
-                        <>{mainText} <span>{highlight}</span></>
+        <Wrapper>
+            <GlassCard
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+                <HeaderSection>
+                    {logo ? (
+                        <img
+                            src={logo}
+                            css={tw`h-14 w-auto object-contain mb-5`}
+                            alt={`${name} Logo`}
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                        />
                     ) : (
-                        <span>{mainText}</span>
+                        <div css={tw`w-14 h-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-5 border border-indigo-500/30`}>
+                            <img src={'/assets/svgs/pterodactyl.svg'} css={tw`w-8 h-8`} alt={'Logo'} />
+                        </div>
                     )}
-                </BrandTitle>
-                <BrandSlogan
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-                >
-                    Elevate Your Infrastructure. Deploy, manage, and scale your game servers with enterprise-grade control.
-                </BrandSlogan>
-            </LeftPanel>
-
-            <RightPanel>
-                <FormWrapper
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, ease: 'easeOut' }}
-                >
-                    <div css={tw`mb-10 text-center lg:text-left`}>
-                        {logo ? (
-                            <img
-                                src={logo}
-                                css={tw`block h-12 mb-6 mx-auto lg:mx-0 object-contain`}
-                                alt={`${name} Logo`}
-                                onError={(e) => {
-                                    (e.target as HTMLImageElement).style.display = 'none';
-                                }}
-                            />
+                    
+                    <BrandTitle>
+                        {highlight ? (
+                            <>{mainText} <span>{highlight}</span></>
                         ) : (
-                            <img src={'/assets/svgs/pterodactyl.svg'} css={tw`block w-16 mb-6 mx-auto lg:mx-0`} alt={'Logo'} />
+                            <span>{mainText}</span>
                         )}
-                        {title && <h2 css={tw`text-3xl font-bold tracking-tight text-white`}>{title}</h2>}
-                        <p css={tw`text-gray-400 mt-2 text-sm`}>Welcome back! Please enter your details.</p>
-                    </div>
+                    </BrandTitle>
+                    
+                    <Subtitle>{title || 'Sign in to continue'}</Subtitle>
+                </HeaderSection>
 
-                    <FlashMessageRender css={tw`mb-6`} />
+                <FlashMessageRender css={tw`mb-6`} />
 
-                    <Form {...props} ref={ref}>
-                        {props.children}
-                    </Form>
+                <Form {...props} ref={ref}>
+                    {props.children}
+                </Form>
 
-                    <p css={tw`text-center text-gray-500 text-xs mt-12`}>
-                        &copy; 2015 - {new Date().getFullYear()}&nbsp;
+                <div css={tw`mt-8 pt-6 border-t border-white/5 text-center`}>
+                    <p css={tw`text-xs text-gray-500`}>
+                        &copy; 2015 - {new Date().getFullYear()}{' '}
                         <a
                             rel={'noopener nofollow noreferrer'}
                             href={'https://github.com/alxzy-group/alxzen'}
                             target={'_blank'}
-                            css={tw`no-underline text-indigo-400 hover:text-indigo-300 transition-colors`}
+                            css={tw`no-underline text-gray-400 hover:text-white transition-colors`}
                         >
                             alxzen Software
                         </a>
                     </p>
-                </FormWrapper>
-            </RightPanel>
-        </SplitLayout>
+                </div>
+            </GlassCard>
+        </Wrapper>
     );
 });
 

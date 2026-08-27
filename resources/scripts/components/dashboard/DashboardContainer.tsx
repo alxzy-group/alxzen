@@ -15,7 +15,8 @@ import { useLocation } from 'react-router-dom';
 import NavigationBar from '@/components/NavigationBar';
 import AnnounceBar from '@/components/elements/AnnounceBar';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import DuniaAlxzyOverlay from '@/components/alxzy-theme/DuniaAlxzy/DuniaAlxzyOverlay';
+import { GlobeIcon } from '@heroicons/react/solid';
 const dashboardStyles = `
 @keyframes dash-title-in {
     from { opacity: 0; transform: translateX(-16px); }
@@ -102,6 +103,22 @@ const EmptyState = styled(motion.div)`
     border-radius: 16px;
 `;
 
+const FloatingActionButton = styled(motion.button)`
+    ${tw`fixed bottom-8 right-8 z-40 p-4 rounded-full flex items-center gap-3 shadow-2xl backdrop-blur-xl border`}
+    background: rgba(14, 165, 233, 0.15);
+    border-color: rgba(14, 165, 233, 0.4);
+    box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
+    
+    &:hover {
+        background: rgba(14, 165, 233, 0.25);
+        transform: translateY(-2px);
+    }
+    
+    span {
+        ${tw`font-bold text-cyan-400 hidden md:block`}
+    }
+`;
+
 export default () => {
     const { search } = useLocation();
     const defaultPage = Number(new URLSearchParams(search).get('page') || '1');
@@ -112,6 +129,7 @@ export default () => {
     const username = useStoreState((state) => state.user.data!.username);
     const rootAdmin = useStoreState((state) => state.user.data!.rootAdmin);
     const [showOnlyAdmin, setShowOnlyAdmin] = usePersistedState(`${uuid}:show_all_servers`, false);
+    const [isWorldOpen, setIsWorldOpen] = useState(false);
 
     const { data: servers, error } = useSWR<PaginatedResult<Server>>(
         ['/api/client/servers', showOnlyAdmin && rootAdmin, page],
@@ -171,8 +189,8 @@ export default () => {
                                                 initial={{ opacity: 0, y: 24 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{
-                                                    duration: 0.4,
-                                                    delay: index * 0.07,
+                                                    duration: 0.5,
+                                                    delay: index * 0.08,
                                                     ease: [0.2, 0.8, 0.2, 1]
                                                 }}
                                             >
@@ -197,6 +215,22 @@ export default () => {
                                 )
                             }
                         </Pagination>
+                    )}
+                </AnimatePresence>
+
+                <FloatingActionButton 
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.5, type: 'spring' }}
+                    onClick={() => setIsWorldOpen(true)}
+                >
+                    <GlobeIcon className="w-8 h-8 text-sky-400" />
+                    <span>Masuk Dunia Alxzy</span>
+                </FloatingActionButton>
+
+                <AnimatePresence>
+                    {isWorldOpen && (
+                        <DuniaAlxzyOverlay onClose={() => setIsWorldOpen(false)} />
                     )}
                 </AnimatePresence>
             </RootContainer>
