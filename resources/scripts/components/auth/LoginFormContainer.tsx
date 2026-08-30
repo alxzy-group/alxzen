@@ -13,7 +13,7 @@ type Props = React.DetailedHTMLProps<React.FormHTMLAttributes<HTMLFormElement>, 
 
 const Wrapper = styled.div`
     ${tw`min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden`}
-    background: #09090b;
+    background: transparent;
 
     /* Grid background pattern */
     &::before {
