@@ -1,9 +1,9 @@
 #!/bin/bash
 TOKEN="${GITHUB_TOKEN}"
 REPO="alxzy-group/alxzen"
-TAG="v4.0.1"
-NAME="v4.0.1 - Theme Background Fix & Update Panel Fix"
-BODY="Fixed Advanced Theme Settings not applying correctly. Fixed option 4 (Update Panel) in setup.sh to also update multiplayer server."
+TAG="v4.0.2"
+NAME="v4.0.2 - Glass UI & Smart Audio Autoplay"
+BODY="Improved UI with glassmorphism, transparent backgrounds for login and dashboard, fixed black empty spaces, and added smart audio autoplay with fallback for video backgrounds."
 
 echo "Checking for existing release..."
 RESPONSE=$(curl -s -H "Authorization: Bearer $TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/$REPO/releases/tags/$TAG)

@@ -31,7 +31,8 @@ const InjectStyles = () => <style dangerouslySetInnerHTML={{ __html: globalStyle
 
 const CardWrapper = styled(motion(Link))<{ $status: string }>`
     ${tw`relative block w-full overflow-hidden`}
-    background: #111111;
+    background: rgba(17, 17, 17, 0.6);
+    backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-left: 3px solid ${({ $status }) =>
         $status === 'running'  ? '#4ade80' :

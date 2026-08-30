@@ -6,6 +6,7 @@ const SubNavigation = styled.div`
     
     /* FIX: Ganti bg-[#09090b]/50 jadi RGBA manual */
     background-color: rgba(9, 9, 11, 0.5);
+    backdrop-filter: blur(16px);
 
     & > div {
         ${tw`flex items-center text-sm mx-auto px-4 md:px-8`};

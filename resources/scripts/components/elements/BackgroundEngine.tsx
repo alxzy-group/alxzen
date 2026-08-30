@@ -6,17 +6,24 @@ import DNABackground from '@/components/elements/DNABackground';
 
 const BackgroundWrapper = styled.div`
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
+    background: #09090b;
 `;
 
 const MediaOverlay = styled(motion.div)`
     ${tw`absolute inset-0 w-full h-full`}
+    background: #09090b;
     img, video {
         ${tw`w-full h-full object-cover`}
-        opacity: 0.15;
+        opacity: 0.55;
     }
 `;
 
@@ -33,6 +40,7 @@ const BackgroundEngine = () => {
     const [bgType, setBgType] = useState<string>('network');
     const [bgData, setBgData] = useState<string | null>(null);
     const [audioEnabled, setAudioEnabled] = useState(false);
+    const [initialLoad, setInitialLoad] = useState(true);
     const videoRef = useRef<HTMLVideoElement>(null);
 
     useEffect(() => {
@@ -45,19 +53,39 @@ const BackgroundEngine = () => {
         // Audio preference stored locally per user
         import('localforage').then(localforage => {
             localforage.default.getItem<boolean>('bgAudio').then(audio => {
-                if (audio !== null) setAudioEnabled(audio);
+                if (audio !== null) {
+                    setAudioEnabled(audio);
+                } else {
+                    // Try forcing audio if no preference is set yet
+                    setAudioEnabled(true);
+                }
+                setInitialLoad(false);
             });
         });
     }, []);
 
     useEffect(() => {
-        if (videoRef.current) {
+        if (videoRef.current && !initialLoad) {
             videoRef.current.muted = !audioEnabled;
+            
+            if (audioEnabled) {
+                // Browser might block this if user hasn't interacted
+                const playPromise = videoRef.current.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.warn("Autoplay with audio blocked by browser. Falling back to muted video.", error);
+                        setAudioEnabled(false);
+                    });
+                }
+            }
         }
-        import('localforage').then(localforage => {
-            localforage.default.setItem('bgAudio', audioEnabled);
-        });
-    }, [audioEnabled]);
+        
+        if (!initialLoad) {
+            import('localforage').then(localforage => {
+                localforage.default.setItem('bgAudio', audioEnabled);
+            });
+        }
+    }, [audioEnabled, initialLoad]);
 
     // tsParticles for 'network' and 'bubbles' are handled by wrapper.blade.php
     // This component only handles DNA, image, and video backgrounds

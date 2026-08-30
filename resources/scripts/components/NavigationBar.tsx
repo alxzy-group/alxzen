@@ -62,7 +62,8 @@ const SidebarOverlay = styled.div<{ $open: boolean }>`
 
 const Sidebar = styled.div<{ $open: boolean }>`
     ${tw`fixed top-0 left-0 bottom-0 w-[300px] z-[70] flex flex-col`}
-    background: linear-gradient(180deg, #111111 0%, #1a1a1a 100%);
+    background: rgba(17, 17, 17, 0.6);
+    backdrop-filter: blur(16px);
     border-right: 1px solid rgba(14, 165, 233, 0.2);
     box-shadow: ${props => props.$open ? '10px 0 40px rgba(14, 165, 233, 0.15)' : 'none'};
     transform: translateX(${props => props.$open ? '0%' : '-100%'});
