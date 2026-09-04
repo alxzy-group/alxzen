@@ -1,9 +1,9 @@
 #!/bin/bash
 TOKEN="${GITHUB_TOKEN}"
 REPO="alxzy-group/alxzen"
-TAG="v4.0.2"
-NAME="v4.0.2 - Glass UI & Smart Audio Autoplay"
-BODY="Improved UI with glassmorphism, transparent backgrounds for login and dashboard, fixed black empty spaces, and added smart audio autoplay with fallback for video backgrounds."
+TAG="v4.0.3"
+NAME="v4.0.3 - Transparent Console & FileManager"
+BODY="Improved UI with transparent background and glassmorphism (backdrop-blur) on the Console and FileManager components for better visibility of background media."
 
 echo "Checking for existing release..."
 RESPONSE=$(curl -s -H "Authorization: Bearer $TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/$REPO/releases/tags/$TAG)
