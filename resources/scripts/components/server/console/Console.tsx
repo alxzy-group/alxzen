@@ -21,7 +21,7 @@ import 'xterm/css/xterm.css';
 import styles from './style.module.css';
 
 const theme = {
-    background: '#09090b',
+    background: 'transparent',
     cursor: 'transparent',
     black: '#09090b',
     red: '#E54B4B',
@@ -207,7 +207,7 @@ export default () => {
         })}>
             <SpinnerOverlay visible={!connected} size={'large'} />
             <div
-                className={classNames(styles.container, styles.overflows_container, 'bg-[#09090b]', { 'rounded-b': !canSendCommands })}
+                className={classNames(styles.container, styles.overflows_container, 'bg-black/40 backdrop-blur-md', { 'rounded-b': !canSendCommands })}
             >
                 <div className={'h-full'}>
                     <div id={styles.terminal} ref={ref} />
