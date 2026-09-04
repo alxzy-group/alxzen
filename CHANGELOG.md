@@ -1,5 +1,9 @@
 # Changelog
 
+## [v4.0.3] - 2026-09-04
+### Added
+- **UI Transparency**: Made Console and File Manager backgrounds transparent with glassmorphism blur, allowing custom background images/videos to remain visible while preserving readability.
+
 ## [v3.13] - 2026-08-24
 - Fixed Server Sidebar Navigation styling (AMOLED S24).
 - Moved AnnounceBar to global server view.
