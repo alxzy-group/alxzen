@@ -65,7 +65,7 @@ export default () => {
         <ServerContentBlock title={'File Manager'} showFlashKey={'files'}>
             <ErrorBoundary>
                 {/* Floating Action Bar (Sticky Top) */}
-                <div className={'sticky top-0 z-50 bg-[#09090b]/80 backdrop-blur-md pb-4 mb-4 border-b border-white/5 flex flex-wrap items-center justify-between gap-4 pt-2'}>
+                <div className={'sticky top-0 z-50 bg-[#09090b]/40 backdrop-blur-xl pb-4 mb-4 border-b border-white/5 flex flex-wrap items-center justify-between gap-4 pt-2'}>
                     <FileManagerBreadcrumbs
                         renderLeft={
                             <FileActionCheckbox
@@ -79,7 +79,7 @@ export default () => {
                     <Can action={'file.create'}>
                         <div className={'flex flex-wrap items-center gap-2 mt-2 md:mt-0 w-full md:w-auto'}>
                             {/* View Mode Toggle */}
-                            <div className={'flex items-center space-x-1 bg-[#111] p-1 rounded-lg border border-white/5 md:mr-2 flex-shrink-0'}>
+                            <div className={'flex items-center space-x-1 bg-black/40 p-1 rounded-lg border border-white/5 md:mr-2 flex-shrink-0'}>
                                 <button
                                     onClick={() => setViewMode('grid')}
                                     className={`p-2 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-[#38bdf8] text-black' : 'text-gray-400 hover:text-white'}`}

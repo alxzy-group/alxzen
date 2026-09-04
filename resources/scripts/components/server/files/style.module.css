@@ -16,13 +16,14 @@
 
 .file_row {
     @apply cursor-pointer no-underline transition-all duration-200;
-    background-color: rgba(17, 17, 17, 0.95);
+    background-color: rgba(17, 17, 17, 0.4);
+    backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
     overflow: hidden;
 
     &:hover, &:focus-within {
-        background-color: rgba(25, 25, 25, 1);
+        background-color: rgba(25, 25, 25, 0.6);
         border-color: rgba(56, 189, 248, 0.3);
         box-shadow: 0 4px 16px rgba(56, 189, 248, 0.08);
     }
