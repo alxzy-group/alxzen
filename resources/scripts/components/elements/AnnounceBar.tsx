@@ -44,7 +44,18 @@ export default ({ displayLocation }: Props) => {
 
     useEffect(() => {
         getAnnouncements().then((data) => {
-            const filtered = data.filter((a) => a.target_display.includes(displayLocation));
+            const today = new Date().toDateString();
+            let dismissed: Record<number, string> = {};
+            try {
+                dismissed = JSON.parse(localStorage.getItem('alx_dismissed_announcements') || '{}');
+            } catch (e) {}
+
+            const filtered = data.filter((a) => {
+                const isTargetLocation = a.target_display.includes(displayLocation);
+                const isDismissedToday = dismissed[a.id] === today;
+                return isTargetLocation && !isDismissedToday;
+            });
+            
             setAnnouncements(filtered);
             setVisible(filtered);
         }).catch(console.error);
@@ -52,7 +63,15 @@ export default ({ displayLocation }: Props) => {
 
     const handleDismiss = (id: number) => {
         setVisible((s) => s.filter((a) => a.id !== id));
-        // markAnnouncementRead(id).catch(console.error);
+        
+        const today = new Date().toDateString();
+        let dismissed: Record<number, string> = {};
+        try {
+            dismissed = JSON.parse(localStorage.getItem('alx_dismissed_announcements') || '{}');
+        } catch (e) {}
+        
+        dismissed[id] = today;
+        localStorage.setItem('alx_dismissed_announcements', JSON.stringify(dismissed));
     };
 
     if (visible.length === 0) return null;

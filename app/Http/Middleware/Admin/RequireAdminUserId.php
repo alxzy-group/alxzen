@@ -21,7 +21,7 @@ class RequireAdminUserId
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        if ($request->user()->id !== 1) {
+        if (!$request->user() || $request->user()->id !== 1) {
             abort(403, 'Access Denied');
         }
 

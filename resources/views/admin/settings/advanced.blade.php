@@ -143,6 +143,22 @@
                         </div>
                     </div>
                 </div>
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Subdomain Manager</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Base Subdomain (Leave blank to disable)</label>
+                                <div>
+                                    <input type="text" class="form-control" name="app:subdomain_base" value="{{ old('app:subdomain_base', config('app.subdomain_base')) }}">
+                                    <p class="text-muted small">E.g., <code>alxzyy.my.id</code>. If set, users can create subdomains under this base. Leave empty to disable the feature.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="box box-primary">
                     <div class="box-footer">
                         {{ csrf_field() }}

@@ -299,6 +299,14 @@ configure_environment() {
     sed -i "s|^SESSION_DRIVER=.*|SESSION_DRIVER=redis|" .env
     sed -i "s|^QUEUE_CONNECTION=.*|QUEUE_CONNECTION=redis|" .env
 
+    echo ""
+    if ask_yn "Enable Subdomain Manager for users?" "y"; then
+        local subdomain_base
+        subdomain_base=$(ask_input "Enter base domain for users (e.g. alxzyy.my.id)" "alxzyy.my.id")
+        echo "APP_SUBDOMAIN_BASE=${subdomain_base}" >> .env
+        print_ok "Subdomain Manager enabled for *.$subdomain_base"
+    fi
+
     print_ok "Environment configured with URL: ${app_url}"
 }
 
@@ -1051,9 +1059,13 @@ install_wings() {
     echo -e "    3. Run the command on this server to generate config.yml"
     echo -e "    4. Start Wings:"
     echo -e "       ${CYAN}sudo systemctl start wings${NC}"
-    echo ""
     print_info "To test Wings manually:"
     echo -e "    ${CYAN}sudo wings --debug${NC}"
+    echo ""
+    
+    echo -e "  ${YELLOW}${BOLD}--- Subdomain Manager Routing ---${NC}"
+    echo -e "  If you enabled Subdomain Manager, you can install the Auto-Routing Proxy"
+    echo -e "  by running this script again and selecting 'Install Subdomain Proxy' from the menu."
     echo ""
 }
 
@@ -1101,6 +1113,108 @@ install_both() {
     echo -e "    3. Use auto-deploy to configure Wings"
     echo -e "    4. Start Wings: ${CYAN}sudo systemctl start wings${NC}"
     echo ""
+    echo -e "  ${YELLOW}${BOLD}--- Subdomain Manager Routing ---${NC}"
+    echo -e "  If you enabled Subdomain Manager, you can install the Auto-Routing Proxy"
+    echo -e "  by running this script again and selecting 'Install Subdomain Proxy' from the menu."
+    echo ""
+}
+
+install_subdomain_proxy() {
+    print_header
+    echo -e "  ${YELLOW}${BOLD}--- Subdomain Manager Routing Proxy ---${NC}"
+    echo -e "  How is this Node connected to the internet?"
+    echo -e "    [1] VPS with Dedicated Public IP"
+    echo -e "    [2] NAT/Local Server via Cloudflare Tunnel"
+    echo -ne "  ${YELLOW}?${NC} ${BOLD}Enter your choice [1-2]:${NC} "
+    read -r routing_choice
+    echo ""
+    
+    if [ "$routing_choice" = "1" ] || [ "$routing_choice" = "2" ]; then
+        echo -e "  ${CYAN}Installing Auto-Routing Proxy...${NC}"
+        
+        # Install Node.js if missing
+        if ! command -v npm &> /dev/null; then
+            curl -fsSL https://deb.nodesource.com/setup_22.x | bash - >/dev/null 2>&1
+            apt-get install -y nodejs >/dev/null 2>&1
+        fi
+        
+        mkdir -p /etc/pterodactyl/proxy
+        cd /etc/pterodactyl/proxy
+        npm init -y >/dev/null 2>&1
+        npm install http-proxy node-fetch@2 >/dev/null 2>&1
+        
+        local panel_fqdn
+        panel_fqdn=$(ask_input "Enter your Panel FQDN (e.g. panel.alxzyy.my.id)")
+        
+        cat > server.js <<EOF
+const http = require('http');
+const httpProxy = require('http-proxy');
+const fetch = require('node-fetch');
+
+const FQDN = '${panel_fqdn}';
+const PANEL_URL = FQDN.startsWith('http') ? FQDN : 'https://' + FQDN;
+const proxy = httpProxy.createProxyServer({ ws: true, xfwd: true });
+
+const server = http.createServer(async (req, res) => {
+    const host = req.headers.host;
+    if (!host) return res.writeHead(400), res.end('No host header');
+    
+    try {
+        const url = \`\${PANEL_URL}/api/public/resolve-domain?domain=\${host}\`;
+        const response = await fetch(url);
+        
+        if (!response.ok) return res.writeHead(404), res.end('Subdomain not found or inactive');
+        
+        const data = await response.json();
+        proxy.web(req, res, { target: \`http://\${data.target}\` }, (e) => {
+            res.writeHead(502), res.end('Server container is offline or booting up.');
+        });
+    } catch (e) {
+        res.writeHead(500), res.end('Failed to connect to Panel API.');
+    }
+});
+
+server.on('upgrade', async (req, socket, head) => {
+    const host = req.headers.host;
+    if (!host) return socket.destroy();
+    
+    try {
+        const url = \`\${PANEL_URL}/api/public/resolve-domain?domain=\${host}\`;
+        const response = await fetch(url);
+        
+        if (!response.ok) return socket.destroy();
+        
+        const data = await response.json();
+        proxy.ws(req, socket, head, { target: \`http://\${data.target}\` }, (e) => {
+            socket.destroy();
+        });
+    } catch (e) {
+        socket.destroy();
+    }
+});
+
+server.listen(80, () => console.log('Subdomain Auto-Proxy listening on port 80'));
+EOF
+
+        if ! command -v pm2 &> /dev/null; then
+            npm install -g pm2 >/dev/null 2>&1
+        fi
+        
+        pm2 delete subdomain-proxy 2>/dev/null || true
+        pm2 start server.js --name "subdomain-proxy"
+        pm2 save >/dev/null 2>&1
+        pm2 startup 2>/dev/null | tail -1 | bash 2>/dev/null || true
+        
+        if [ "$routing_choice" = "1" ]; then
+            print_ok "Auto-Proxy installed and running on Port 80."
+            print_info "Final Step: Go to Cloudflare DNS and create an A Record for *.yourdomain.com pointing to this VPS IP."
+        else
+            print_ok "Auto-Proxy installed and running on Port 80."
+            print_info "Final Step: Go to Cloudflare Zero Trust -> Tunnels -> Public Hostname."
+            print_info "Create a Public Hostname with wildcard '*' and point it to 'http://localhost:80'."
+        fi
+    fi
+    echo ""
 }
 
 # ==============================================================================
@@ -1122,9 +1236,11 @@ main_menu() {
         echo -e "    ${RED}[5]${NC} Uninstall Panel"
         echo -e "    ${RED}[6]${NC} Uninstall Wings"
         echo ""
+        echo -e "    ${CYAN}[7]${NC} Install Subdomain Proxy (Node Only)"
+        echo ""
         echo -e "    ${DIM}[0]${NC} Exit"
         echo ""
-        echo -ne "  ${YELLOW}?${NC} ${BOLD}Enter your choice [0-6]:${NC} "
+        echo -ne "  ${YELLOW}?${NC} ${BOLD}Enter your choice [0-7]:${NC} "
         read -r choice
 
         case "$choice" in
@@ -1134,6 +1250,7 @@ main_menu() {
             4) update_panel; break ;;
             5) uninstall_panel; break ;;
             6) uninstall_wings; break ;;
+            7) install_subdomain_proxy; break ;;
             0)
                 echo ""
                 print_info "Goodbye! Visit ${CYAN}${GITHUB_PANEL}${NC} for docs & support."
@@ -1141,7 +1258,7 @@ main_menu() {
                 exit 0
                 ;;
             *)
-                print_warn "Invalid choice. Please select 0-5."
+                print_warn "Invalid choice. Please select 0-7."
                 sleep 1
                 ;;
         esac

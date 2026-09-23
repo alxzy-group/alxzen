@@ -1,8 +1,23 @@
 # Changelog
 
+## [v4.1.0] - 2026-09-23
+### Added
+- **Subdomain Manager**: Vercel-like domain routing system. Users can instantly attach subdomains (e.g. `myserver.yourdomain.com`) to their servers directly from the panel.
+- **Auto-Routing Proxy**: Node.js reverse proxy integrated into `setup.sh` that dynamically routes wildcard DNS traffic to the correct server allocation instantly.
+- **Admin Domain Config**: Admins can now configure the Base Subdomain via the Advanced Settings UI without editing `.env` directly.
+
+### Fixed
+- **Suspended Server Access**: Patched a critical logic flaw where suspended servers could still be accessed via their subdomains through the proxy.
+- **Cross-Server Domain Deletion**: Fixed an issue where the API middleware did not validate `ServerDomain` ownership, preventing cross-server deletion attempts.
+- **Installer Proxy Logic**: Corrected the proxy restart logic in `setup.sh` to properly replace old processes during re-installations.
+
 ## [v4.0.3] - 2026-09-04
 ### Added
 - **UI Transparency**: Made Console and File Manager backgrounds transparent with glassmorphism blur, allowing custom background images/videos to remain visible while preserving readability.
+
+### Fixed
+- **Activity Log Theme**: Fixed Activity Log container background color to match the global dark theme (#111111) and squircle corners.
+- **Admin Versions**: Synchronized the theme, protection, and expiration versions in `config/app.php`.
 
 ## [v3.13] - 2026-08-24
 - Fixed Server Sidebar Navigation styling (AMOLED S24).

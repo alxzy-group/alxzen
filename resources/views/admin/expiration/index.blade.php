@@ -84,7 +84,7 @@
                 <h3 class="alx-card-title"><i class="fa fa-clock-o"></i> Expiration Manager</h3>
                 <div class="alx-search-group" style="flex: 1; justify-content: flex-end;">
                     <form action="{{ route('admin.expiration') }}" method="GET" style="display:inline-flex; gap: 8px;">
-                        <input type="text" name="filter[*]" class="form-control" value="{{ request()->input()['filter']['*'] ?? '' }}" placeholder="Search server name...">
+                        <input type="text" name="filter[name]" class="form-control" value="{{ request()->input('filter.name', '') }}" placeholder="Search server name...">
                         <button type="submit" class="alx-btn alx-btn-search"><i class="fa fa-search"></i> Search</button>
                     </form>
                     <form action="{{ route('admin.expiration.deleteAll') }}" method="POST" style="display:inline-flex;" onsubmit="return confirm('Are you sure you want to delete all expired servers? This action cannot be undone and will delete server files and databases.');">
@@ -116,12 +116,20 @@
                                 </td>
 
                                 <td>
-                                    <a href="{{ route('admin.users.view', $server->user->id) }}" class="alx-username">{{ $server->user->username }}</a>
-                                    <small class="alx-email">{{ $server->user->email }}</small>
+                                    @if($server->user)
+                                        <a href="{{ route('admin.users.view', $server->user->id) }}" class="alx-username">{{ $server->user->username }}</a>
+                                        <small class="alx-email">{{ $server->user->email }}</small>
+                                    @else
+                                        <span class="alx-username" style="color:#ef4444;">Unknown User</span>
+                                    @endif
                                 </td>
 
                                 <td>
-                                    <span style="color:#94a3b8;">{{ $server->node->name }}</span>
+                                    @if($server->node)
+                                        <span style="color:#94a3b8;">{{ $server->node->name }}</span>
+                                    @else
+                                        <span style="color:#ef4444;">Unknown Node</span>
+                                    @endif
                                 </td>
 
                                 <td>
@@ -167,7 +175,7 @@
 
             @if($servers->hasPages())
                 <div class="alx-admin-pager">
-                    {!! $servers->appends(['filter' => Request::input('filter')])->render() !!}
+                    {!! $servers->appends(['filter' => request()->input('filter')])->render() !!}
                 </div>
             @endif
         </div>

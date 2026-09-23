@@ -54,5 +54,5 @@
 }
 
 .chart_container {
-    @apply bg-gray-600 rounded shadow-lg pt-2 border-b-4 border-gray-700 relative;
+    @apply bg-black/40 backdrop-blur-md rounded shadow-lg pt-2 border-b border-white/5 relative;
 }

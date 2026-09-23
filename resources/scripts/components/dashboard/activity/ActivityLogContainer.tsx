@@ -47,18 +47,24 @@ export default () => {
             {!data && isValidating ? (
                 <Spinner centered />
             ) : (
-                <div className={'bg-gray-700'}>
-                    {data?.items.map((activity) => (
-                        <ActivityLogEntry key={activity.id} activity={activity}>
-                            {typeof activity.properties.useragent === 'string' && (
-                                <Tooltip content={activity.properties.useragent} placement={'top'}>
-                                    <span>
-                                        <DesktopComputerIcon />
-                                    </span>
-                                </Tooltip>
-                            )}
-                        </ActivityLogEntry>
-                    ))}
+                <div className={'bg-[#111111] rounded-2xl shadow-xl border border-white/5 overflow-hidden'}>
+                    {data?.items.length === 0 ? (
+                        <div className="p-6 text-center text-gray-400 text-sm">
+                            No activity logs available.
+                        </div>
+                    ) : (
+                        data?.items.map((activity) => (
+                            <ActivityLogEntry key={activity.id} activity={activity}>
+                                {typeof activity.properties.useragent === 'string' && (
+                                    <Tooltip content={activity.properties.useragent} placement={'top'}>
+                                        <span>
+                                            <DesktopComputerIcon />
+                                        </span>
+                                    </Tooltip>
+                                )}
+                            </ActivityLogEntry>
+                        ))
+                    )}
                 </div>
             )}
             {data && (

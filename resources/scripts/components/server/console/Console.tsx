@@ -168,6 +168,19 @@ export default () => {
     );
 
     useEffect(() => {
+        if (!ref.current) return;
+        const resizeObserver = new ResizeObserver(
+            debounce(() => {
+                if (terminal.element) {
+                    fitAddon.fit();
+                }
+            }, 50)
+        );
+        resizeObserver.observe(ref.current);
+        return () => resizeObserver.disconnect();
+    }, [terminal, fitAddon]);
+
+    useEffect(() => {
         const listeners: Record<string, (s: string) => void> = {
             [SocketEvent.STATUS]: handlePowerChangeEvent,
             [SocketEvent.CONSOLE_OUTPUT]: handleConsoleOutput,
@@ -200,7 +213,7 @@ export default () => {
     }, [connected, instance]);
 
     return (
-        <div className={classNames(styles.terminal, 'relative rounded-2xl overflow-hidden transition-all duration-500', {
+        <div className={classNames(styles.terminal, 'relative rounded-2xl overflow-hidden resize-y transition-shadow duration-500 min-h-[300px]', {
             'ring-1 ring-sky-500/50 shadow-[0_0_20px_rgba(14,165,233,0.15)]': status === 'running',
             'ring-1 ring-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.15)] animate-pulse': status === 'starting',
             'ring-1 ring-white/5': status === 'offline' || status === 'stopping',
