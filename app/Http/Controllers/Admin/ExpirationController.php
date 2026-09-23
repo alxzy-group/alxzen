@@ -16,8 +16,8 @@ class ExpirationController extends Controller
             ->select('id', 'name', 'expires_at', 'uuidShort', 'status', 'owner_id', 'node_id', 'allocation_id')
             ->with(['user', 'node', 'allocation']);
 
-        if ($request->filled('filter.*')) {
-            $query->where('name', 'LIKE', '%' . $request->input('filter.*') . '%');
+        if ($request->filled('filter.name')) {
+            $query->where('servers.name', 'LIKE', '%' . $request->input('filter.name') . '%');
         }
 
         $servers = $query->orderBy('expires_at', 'asc') // Urutkan dari yang mau expired duluan
@@ -73,6 +73,7 @@ class ExpirationController extends Controller
         $servers = Server::query()
             ->whereNotNull('expires_at')
             ->where('expires_at', '<', Carbon::now())
+            ->limit(5)
             ->get();
 
         if ($servers->isEmpty()) {
@@ -82,7 +83,7 @@ class ExpirationController extends Controller
         $count = 0;
         foreach ($servers as $server) {
             try {
-                app(\Pterodactyl\Services\Servers\ServerDeletionService::class)->handle($server, false);
+                app(\Pterodactyl\Services\Servers\ServerDeletionService::class)->withForce(false)->handle($server);
                 $count++;
             } catch (\Exception $e) {
                 \Log::error("Gagal menghapus server expired (ID: {$server->id}): " . $e->getMessage());

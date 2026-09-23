@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Pterodactyl\Exceptions\Http\Server\ServerStateConflictException;
+use Pterodactyl\Models\ServerDomain;
 
 /**
  * \Pterodactyl\Models\Server.
@@ -416,5 +417,15 @@ class Server extends Model implements Identifiable
         ) {
             throw new ServerStateConflictException($this);
         }
+    }
+
+    /**
+     * Gets all domains associated with this server.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function domains(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ServerDomain::class);
     }
 }

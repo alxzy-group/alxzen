@@ -13,5 +13,8 @@ Route::get('/locales/locale.json', Base\LocaleController::class)
     ->withoutMiddleware(['auth', RequireTwoFactorAuthentication::class])
     ->where('namespace', '.*');
 
+Route::get('/api/public/resolve-domain', [\Pterodactyl\Http\Controllers\Api\Public\DomainRouterController::class, 'resolve'])
+    ->withoutMiddleware(['auth', RequireTwoFactorAuthentication::class]);
+
 Route::get('/{react}', [Base\IndexController::class, 'index'])
     ->where('react', '^(?!(\/)?(api|auth|admin|daemon)).+');

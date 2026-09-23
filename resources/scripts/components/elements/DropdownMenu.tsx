@@ -2,6 +2,7 @@ import React, { createRef } from 'react';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
 import Fade from '@/components/elements/Fade';
+import Portal from '@/components/elements/Portal';
 
 interface Props {
     children: React.ReactNode;
@@ -118,19 +119,21 @@ class DropdownMenu extends React.PureComponent<Props, State> {
         return (
             <div>
                 {this.props.renderToggle(this.onClickHandler)}
-                <Fade timeout={150} in={this.state.visible} unmountOnExit>
-                    <div
-                        ref={this.menu}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            this.setState({ visible: false });
-                        }}
-                        style={{ width: '12rem' }}
-                        css={tw`bg-gray-800 p-2 rounded-lg border border-gray-700 shadow-xl text-gray-300 z-[9999]`}
-                    >
-                        {this.props.children}
-                    </div>
-                </Fade>
+                <Portal>
+                    <Fade timeout={150} in={this.state.visible} unmountOnExit>
+                        <div
+                            ref={this.menu}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                this.setState({ visible: false });
+                            }}
+                            style={{ width: '12rem' }}
+                            css={tw`bg-gray-800 p-2 rounded-lg border border-gray-700 shadow-xl text-gray-300 z-[9999]`}
+                        >
+                            {this.props.children}
+                        </div>
+                    </Fade>
+                </Portal>
             </div>
         );
     }

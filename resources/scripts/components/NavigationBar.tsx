@@ -6,7 +6,7 @@ import {
     faBars, faTimes, faServer, faCogs, faUserCircle, faSignOutAlt, 
     faTerminal, faFolderOpen, faDatabase, faCalendarAlt, faUsers, 
     faNetworkWired, faBoxOpen, faCloudDownloadAlt,
-    faKey, faHistory, faUnlockAlt
+    faKey, faHistory, faUnlockAlt, faGlobe
 } from '@fortawesome/free-solid-svg-icons';
 import { useStoreState } from 'easy-peasy';
 import { ApplicationStore } from '@/state';
@@ -255,6 +255,9 @@ export default () => {
                                     <NavItem to={`/server/${serverId}/network`}><FontAwesomeIcon icon={faNetworkWired} style={{ width: 15 }} /> Network</NavItem>
                                     <NavItem to={`/server/${serverId}/startup`}><FontAwesomeIcon icon={faBoxOpen} style={{ width: 15 }} /> Startup</NavItem>
                                     <NavItem to={`/server/${serverId}/activity`}><FontAwesomeIcon icon={faHistory} style={{ width: 15 }} /> Activity</NavItem>
+                                    {(window as any).SiteConfiguration?.subdomain_manager && (
+                                        <NavItem to={`/server/${serverId}/domains`}><FontAwesomeIcon icon={faGlobe} style={{ width: 15 }} /> Domains</NavItem>
+                                    )}
                                     <NavItem to={`/server/${serverId}/settings`}><FontAwesomeIcon icon={faCogs} style={{ width: 15 }} /> Settings</NavItem>
                                 </div>
                             </SubMenu>

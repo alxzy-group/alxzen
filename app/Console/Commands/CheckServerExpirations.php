@@ -62,7 +62,8 @@ class CheckServerExpirations extends Command
             $this->info("SUCCESS: {$server->name}");
         } catch (\Exception $exception) {
             $this->error("ERROR: " . $exception->getMessage());
-            $server->update(['status' => \Pterodactyl\Models\Server::STATUS_SUSPENDED]);
+            // Jangan paksa update ke database jika gagal ke Wings.
+            // Biarkan cronjob mencoba suspend kembali di putaran berikutnya.
         }
     }
 }

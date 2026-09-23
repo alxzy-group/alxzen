@@ -155,4 +155,11 @@ Route::group([
         Route::post('/reinstall', [Client\Servers\SettingsController::class, 'reinstall']);
         Route::put('/docker-image', [Client\Servers\SettingsController::class, 'dockerImage']);
     });
+
+    Route::group(['prefix' => '/domains'], function () {
+        Route::get('/', [Client\Servers\DomainController::class, 'index']);
+        Route::post('/', [Client\Servers\DomainController::class, 'store']);
+        Route::post('/{domain}/verify', [Client\Servers\DomainController::class, 'verify']);
+        Route::delete('/{domain}', [Client\Servers\DomainController::class, 'delete']);
+    });
 });

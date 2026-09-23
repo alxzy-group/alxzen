@@ -33,6 +33,7 @@ class AdvancedSettingsFormRequest extends AdminFormRequest
             ],
             'app:theme:type' => 'nullable|string|in:network,dna,bubbles,image,video',
             'app:theme:data' => 'nullable|string',
+            'app:subdomain_base' => 'nullable|string|max:191',
         ];
     }
 
