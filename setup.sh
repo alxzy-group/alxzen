@@ -1193,7 +1193,7 @@ server.on('upgrade', async (req, socket, head) => {
     }
 });
 
-server.listen(80, () => console.log('Subdomain Auto-Proxy listening on port 80'));
+server.listen(8081, () => console.log('Subdomain Auto-Proxy listening on port 8081'));
 EOF
 
         if ! command -v pm2 &> /dev/null; then
@@ -1206,12 +1206,12 @@ EOF
         pm2 startup 2>/dev/null | tail -1 | bash 2>/dev/null || true
         
         if [ "$routing_choice" = "1" ]; then
-            print_ok "Auto-Proxy installed and running on Port 80."
-            print_info "Final Step: Go to Cloudflare DNS and create an A Record for *.yourdomain.com pointing to this VPS IP."
+            print_ok "Auto-Proxy installed and running on Port 8081."
+            print_info "Final Step: Make sure your Nginx/Apache routes wildcard traffic to port 8081."
         else
-            print_ok "Auto-Proxy installed and running on Port 80."
+            print_ok "Auto-Proxy installed and running on Port 8081."
             print_info "Final Step: Go to Cloudflare Zero Trust -> Tunnels -> Public Hostname."
-            print_info "Create a Public Hostname with wildcard '*' and point it to 'http://localhost:80'."
+            print_info "Create a Public Hostname with wildcard '*' and point it to 'http://localhost:8081'."
         fi
     fi
     echo ""
