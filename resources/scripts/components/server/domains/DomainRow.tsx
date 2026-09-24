@@ -45,9 +45,9 @@ export default ({ domain, onDeleted, onUpdated }: Props) => {
                 </div>
                 
                 <div className="flex gap-4 items-center">
-                    <Button.Danger isSpinner={isDeleting} onClick={() => setVisible(true)}>
+                    <Button color="red" isLoading={isDeleting} onClick={() => setVisible(true)}>
                         <FontAwesomeIcon icon={faTrash} />
-                    </Button.Danger>
+                    </Button>
                 </div>
             </div>
 
