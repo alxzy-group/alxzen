@@ -48,14 +48,14 @@ export default () => {
 
     return (
         <ServerContentBlock title={'Subdomains'} showFlashKey={'server:domains'}>
-            <div css={tw`flex flex-col md:flex-row gap-8`}>
-                <div css={tw`w-full md:w-8/12`}>
-                    <div css={tw`bg-neutral-700 p-4 rounded shadow-md relative`}>
+            <div className="flex flex-col md:flex-row gap-8">
+                <div className="w-full md:w-8/12">
+                    <div className="bg-black/40 backdrop-blur-md border border-white/10 p-6 rounded-2xl shadow-xl relative">
                         <SpinnerOverlay visible={loading} />
-                        <h2 css={tw`text-neutral-300 font-semibold mb-4 text-xl`}>Active Subdomains</h2>
+                        <h2 className="text-gray-100 font-semibold mb-4 text-xl">Active Subdomains</h2>
                         
                         {!loading && domains.length === 0 && (
-                            <p css={tw`text-neutral-400 text-sm`}>No subdomains have been created for this server.</p>
+                            <p className="text-gray-400 text-sm">No subdomains have been created for this server.</p>
                         )}
 
                         {domains.map((domain) => (
@@ -69,17 +69,17 @@ export default () => {
                     </div>
                 </div>
                 
-                <div css={tw`w-full md:w-4/12`}>
-                    <div css={tw`bg-neutral-700 p-4 rounded shadow-md relative`}>
+                <div className="w-full md:w-4/12">
+                    <div className="bg-black/40 backdrop-blur-md border border-white/10 p-6 rounded-2xl shadow-xl relative">
                         <SpinnerOverlay visible={submitting} />
-                        <h2 css={tw`text-neutral-300 font-semibold mb-4 text-xl`}>Create Subdomain</h2>
+                        <h2 className="text-gray-100 font-semibold mb-4 text-xl">Create Subdomain</h2>
                         
                         <form onSubmit={submit}>
-                            <p css={tw`text-sm text-neutral-400 mb-4`}>
+                            <p className="text-sm text-gray-400 mb-6">
                                 Create a free, instantly active subdomain for your server.
                             </p>
                             
-                            <div css={tw`flex items-center mb-4`}>
+                            <div className="flex items-center mb-6">
                                 <Input 
                                     type="text"
                                     name="domain"
@@ -87,14 +87,14 @@ export default () => {
                                     value={newDomain}
                                     onChange={(e) => setNewDomain(e.target.value.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase())}
                                     disabled={submitting}
-                                    css={tw`flex-1 rounded-r-none`}
+                                    className="flex-1 rounded-r-none border-white/10 bg-black/20 focus:ring-sky-500 focus:border-sky-500 text-gray-200"
                                 />
-                                <div css={tw`bg-neutral-600 border border-neutral-700 border-l-0 px-4 py-2 rounded-r flex items-center text-neutral-300`}>
-                                    <span css={tw`opacity-50 select-none`}>.{(window as any).SiteConfiguration?.subdomain_base || 'yourdomain.com'}</span>
+                                <div className="bg-black/50 border border-white/10 border-l-0 px-4 py-[11px] rounded-r flex items-center text-gray-300">
+                                    <span className="opacity-70 select-none">.{(window as any).SiteConfiguration?.subdomain_base || 'yourdomain.com'}</span>
                                 </div>
                             </div>
                             
-                            <div css={tw`flex justify-end`}>
+                            <div className="flex justify-end">
                                 <Button type="submit" color="primary" disabled={submitting || newDomain.length < 3}>
                                     Create Subdomain
                                 </Button>

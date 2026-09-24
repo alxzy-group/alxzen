@@ -1,9 +1,9 @@
 #!/bin/bash
 TOKEN="${GITHUB_TOKEN}"
 REPO="alxzy-group/alxzen"
-TAG="v4.1.0"
-NAME="v4.1.0 - Subdomain Manager & Auto-Proxy"
-BODY="Introduces the new Vercel-like Subdomain Manager allowing users to instantly connect subdomains to their servers. Includes a Node.js reverse proxy integrated into setup.sh for instant routing. Also patches a critical bypass where suspended servers could still be accessed via subdomains."
+TAG="v4.1.1"
+NAME="v4.1.1 - UI Hotfix (Subdomain Glassmorphism)"
+BODY="Fixes the Subdomain Manager UI to match the Glassmorphism theme."
 
 echo "Checking for existing release..."
 RESPONSE=$(curl -s -H "Authorization: Bearer $TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/$REPO/releases/tags/$TAG)

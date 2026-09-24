@@ -33,18 +33,18 @@ export default ({ domain, onDeleted, onUpdated }: Props) => {
     };
 
     return (
-        <div css={tw`bg-neutral-800 p-4 rounded mb-4 border border-neutral-600`}>
-            <div css={tw`flex items-center justify-between`}>
-                <div css={tw`flex flex-col`}>
-                    <span css={tw`text-lg text-neutral-200 font-mono`}>{domain.domain}</span>
-                    <div css={tw`mt-1 flex items-center`}>
-                        <span css={tw`text-green-500 text-sm flex items-center gap-2`}>
+        <div className="bg-black/20 border border-white/5 p-4 rounded-xl mb-4 transition-all hover:bg-black/30">
+            <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                    <span className="text-lg text-gray-200 font-mono">{domain.domain}</span>
+                    <div className="mt-1 flex items-center">
+                        <span className="text-emerald-400 text-sm flex items-center gap-2">
                             <FontAwesomeIcon icon={faCheckCircle} /> Connected
                         </span>
                     </div>
                 </div>
                 
-                <div css={tw`flex gap-4 items-center`}>
+                <div className="flex gap-4 items-center">
                     <Button.Danger isSpinner={isDeleting} onClick={() => setVisible(true)}>
                         <FontAwesomeIcon icon={faTrash} />
                     </Button.Danger>
