@@ -572,6 +572,11 @@ systemctl restart nginx
 
 ## 📝 Changelog
 
+### v4.1.10 — Subdomain Proxy & GPU Passthrough
+- **feat:** Subdomain Proxy now asks for wildcard domain and generates Nginx + Self-Signed SSL automatically
+- **feat:** Added `[8] Enable GPU Passthrough (Intel VAAPI)` option in setup script for hardware acceleration in Wings
+- **fix:** Fixed Expiration Alert text rendering and layout breaking on mobile devices in Server Console (`flex-1`)
+
 ### v3.5 — Branding & Admin UI Overhaul
 - **feat:** Dynamic Company Name — login page title updates from Admin Settings
 - **feat:** Configurable Logo URL in Admin Settings for login page branding
