@@ -881,6 +881,15 @@ update_panel() {
     git config --global --add safe.directory "$PANEL_DIR"
     php artisan down
 
+    # Ensure Node.js & Yarn are installed for basic VPS
+    print_step "Checking Node.js & Yarn dependencies"
+    if ! command -v node &> /dev/null || ! command -v yarn &> /dev/null; then
+        curl -fsSL https://deb.nodesource.com/setup_22.x | bash - 2>/dev/null
+        apt-get install -y -qq nodejs
+        corepack enable 2>/dev/null || npm install -g yarn pm2 2>/dev/null || true
+    fi
+    print_ok "Node.js & Yarn are ready."
+
     # Download & extract latest release
     print_step "Downloading latest panel release"
     curl -Lo /tmp/panel.tar.gz "$GITHUB_PANEL_DL"
@@ -892,6 +901,11 @@ update_panel() {
     print_step "Updating Composer dependencies"
     COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_AUDIT=1 php -d memory_limit=-1 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction --no-security-blocking
     print_ok "Composer updated."
+
+    # Update Node modules
+    print_step "Updating Node modules (yarn install)"
+    yarn install --production=false --frozen-lockfile || yarn install
+    print_ok "Node modules updated."
 
     # Run database migrations
     print_step "Running database migrations"
@@ -1207,7 +1221,51 @@ EOF
         
         if [ "$routing_choice" = "1" ]; then
             print_ok "Auto-Proxy installed and running on Port 8081."
-            print_info "Final Step: Make sure your Nginx/Apache routes wildcard traffic to port 8081."
+            echo ""
+            echo -e "  ${CYAN}--- Nginx Auto-Configuration ---${NC}"
+            echo -ne "  ${YELLOW}?${NC} ${BOLD}Enter the wildcard domain you will use for subdomains (e.g. ravenzenabot.my.id):${NC} "
+            read -r proxy_domain
+            
+            if [ -n "$proxy_domain" ]; then
+                echo -e "  ${DIM}Generating self-signed wildcard SSL for *.$proxy_domain...${NC}"
+                mkdir -p /etc/nginx/ssl
+                openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+                    -keyout "/etc/nginx/ssl/wildcard_$proxy_domain.key" \
+                    -out "/etc/nginx/ssl/wildcard_$proxy_domain.crt" \
+                    -subj "/CN=*.$proxy_domain" >/dev/null 2>&1
+                
+                echo -e "  ${DIM}Creating Nginx configuration...${NC}"
+                cat << EOF > "/etc/nginx/sites-available/subdomain-proxy.conf"
+server {
+    listen 80;
+    listen 443 ssl;
+    server_name *.$proxy_domain $proxy_domain;
+
+    ssl_certificate /etc/nginx/ssl/wildcard_$proxy_domain.crt;
+    ssl_certificate_key /etc/nginx/ssl/wildcard_$proxy_domain.key;
+
+    location / {
+        proxy_pass http://127.0.0.1:8081;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+EOF
+                ln -sf /etc/nginx/sites-available/subdomain-proxy.conf /etc/nginx/sites-enabled/
+                systemctl restart nginx || true
+                
+                print_ok "Nginx configured successfully for *.$proxy_domain!"
+                echo -e "  ${YELLOW}IMPORTANT:${NC} Ensure your Cloudflare SSL/TLS mode is set to 'Full' (Not Strict)."
+                echo -e "  Create an 'A' record in Cloudflare for '*' pointing to this VPS with the Orange Cloud (Proxied) enabled."
+            else
+                print_info "Final Step: Make sure your Nginx/Apache routes wildcard traffic to port 8081."
+            fi
         else
             print_ok "Auto-Proxy installed and running on Port 8081."
             print_info "Final Step: Go to Cloudflare Zero Trust -> Tunnels -> Public Hostname."
@@ -1215,6 +1273,84 @@ EOF
         fi
     fi
     echo ""
+}
+
+# ==============================================================================
+#  GPU PASSTHROUGH (EXPERIMENTAL)
+# ==============================================================================
+
+enable_gpu_passthrough() {
+    print_header
+    echo -e "  ${YELLOW}--- EXPERIMENTAL: ENABLE INTEL GPU (VAAPI) ---${NC}"
+    echo ""
+    print_warn "This will allow Docker containers to access your host GPU."
+    print_warn "It bypasses Pterodactyl's strict security isolation."
+    print_warn "Do this ONLY for personal servers you fully trust."
+    echo ""
+    
+    if [ ! -d "/dev/dri" ]; then
+        print_error "No Intel GPU detected (/dev/dri not found)!"
+        echo "Please make sure your Intel graphics drivers are installed."
+        sleep 3
+        return
+    fi
+    
+    echo -e "${GREEN}✓ Intel GPU detected at /dev/dri!${NC}"
+    echo -ne "  ${YELLOW}?${NC} ${BOLD}Are you sure you want to proceed? (y/N):${NC} "
+    read -r confirm
+    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+        echo "Aborted."
+        sleep 1
+        return
+    fi
+    
+    CONFIG_FILE="/etc/pterodactyl/config.yml"
+    if [ ! -f "$CONFIG_FILE" ]; then
+        print_error "Wings config not found at $CONFIG_FILE. Is Wings installed?"
+        sleep 3
+        return
+    fi
+    
+    echo -e "\n${DIM}Configuring Wings allowed_mounts...${NC}"
+    
+    if grep -q "/dev/dri" "$CONFIG_FILE"; then
+        echo -e "${YELLOW}GPU passthrough is already configured in config.yml.${NC}"
+    else
+        if grep -q 'allowed_mounts: \[\]' "$CONFIG_FILE"; then
+            sed -i 's/allowed_mounts: \[\]/allowed_mounts:\n  - \/dev\/dri/' "$CONFIG_FILE"
+        elif grep -q "allowed_mounts:" "$CONFIG_FILE"; then
+            sed -i '/allowed_mounts:/a \  - \/dev\/dri' "$CONFIG_FILE"
+        else
+            echo -e "\nallowed_mounts:\n  - /dev/dri" >> "$CONFIG_FILE"
+        fi
+        echo -e "${GREEN}Added /dev/dri to allowed_mounts in config.yml!${NC}"
+    fi
+    
+    echo -e "${DIM}Setting permissions for /dev/dri...${NC}"
+    chmod -R 777 /dev/dri
+    
+    if ! crontab -l 2>/dev/null | grep -q "chmod -R 777 /dev/dri"; then
+        (crontab -l 2>/dev/null; echo "@reboot chmod -R 777 /dev/dri") | crontab -
+        echo -e "${GREEN}Added crontab entry to persist permissions across reboots!${NC}"
+    fi
+    
+    echo -e "${DIM}Restarting Wings...${NC}"
+    systemctl restart wings
+    
+    echo ""
+    print_info "SUCCESS! GPU Passthrough enabled for Wings."
+    echo "To use this in your server:"
+    echo -e "  1. Go to your Pterodactyl Admin Panel -> ${CYAN}Nodes${NC} -> ${CYAN}Mounts${NC}"
+    echo -e "  2. Create a new Mount:"
+    echo -e "     - Source Path: ${GREEN}/dev/dri${NC}"
+    echo -e "     - Target Path: ${GREEN}/dev/dri${NC}"
+    echo -e "     - Read Only: ${YELLOW}Unchecked (Important for encoding!)${NC}"
+    echo -e "     - User Mountable: ${YELLOW}Checked${NC}"
+    echo -e "  3. Add this mount to your specific Node and Server."
+    echo -e "  4. Restart your Server."
+    echo ""
+    echo -ne "Press Enter to return to menu..."
+    read -r
 }
 
 # ==============================================================================
@@ -1237,10 +1373,11 @@ main_menu() {
         echo -e "    ${RED}[6]${NC} Uninstall Wings"
         echo ""
         echo -e "    ${CYAN}[7]${NC} Install Subdomain Proxy (Node Only)"
+        echo -e "    ${PURPLE}[8]${NC} Enable GPU Passthrough (Intel VAAPI)"
         echo ""
         echo -e "    ${DIM}[0]${NC} Exit"
         echo ""
-        echo -ne "  ${YELLOW}?${NC} ${BOLD}Enter your choice [0-7]:${NC} "
+        echo -ne "  ${YELLOW}?${NC} ${BOLD}Enter your choice [0-8]:${NC} "
         read -r choice
 
         case "$choice" in
@@ -1251,6 +1388,7 @@ main_menu() {
             5) uninstall_panel; break ;;
             6) uninstall_wings; break ;;
             7) install_subdomain_proxy; break ;;
+            8) enable_gpu_passthrough; break ;;
             0)
                 echo ""
                 print_info "Goodbye! Visit ${CYAN}${GITHUB_PANEL}${NC} for docs & support."
@@ -1258,7 +1396,7 @@ main_menu() {
                 exit 0
                 ;;
             *)
-                print_warn "Invalid choice. Please select 0-7."
+                print_warn "Invalid choice. Please select 0-8."
                 sleep 1
                 ;;
         esac
