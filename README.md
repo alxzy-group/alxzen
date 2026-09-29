@@ -8,8 +8,7 @@
 
 # Alxzen Panel
 
-**Alxzen** is a customized distribution of the Pterodactyl® game server management panel, built with a focus on automation, aesthetic dominance, and system integrity. Featuring the **Samsung S24 AMOLED** interface and an integrated **Expiration Management** system.
-
+**Alxzen** is a customized distribution of the Pterodactyl® game server management panel, built with a focus on automation, aesthetic dominance, and system integrity. Featuring the **Samsung S24 AMOLED** interface, **Multiplayer Server**, and an integrated **Expiration Management** system.
 
 ---
 
@@ -21,6 +20,9 @@
 | **⏰ Expiration Manager** | Direct admin control over server life-cycles with automated daily checks |
 | **🔒 Auto-Suspension** | Native integration with suspension engine for expired instances |
 | **🛡️ Root Protection v3.0** | Enhanced middleware ensuring core settings remain exclusive to primary admin |
+| **🌐 Subdomain Proxy** | Automated Nginx wildcard generation and SSL proxying for node game servers |
+| **🎮 Web Console Multiplayer** | Built-in PM2 server (Socket.io) handling multiplayer interactions out of the box |
+| **⚡ GPU Passthrough** | Hardware acceleration support for Wings (Intel VAAPI) via interactive setup |
 | **⚡ Route Cache Compatible** | All admin routes use proper middleware — `php artisan optimize` works flawlessly |
 | **🔧 Hardcoded Branding** | Permanent brand integrity for alxzen across the entire system |
 
@@ -35,11 +37,14 @@ bash <(curl -s https://raw.githubusercontent.com/alxzy-group/alxzen/main/setup.s
 ```
 
 The interactive installer will guide you through:
-- **[1] Install Panel Only** — Full panel with PHP, MariaDB, Redis, Nginx, SSL
+- **[1] Install Panel Only** — Full panel with PHP, MariaDB, Redis, Nginx, SSL, and Multiplayer
 - **[2] Install Wings Only** — Docker + Wings daemon for game server nodes
 - **[3] Install Panel + Wings** — Everything on one machine
-- **[4] Uninstall Panel**
-- **[5] Uninstall Wings**
+- **[4] Update Panel** — Automated script to download latest release & update dependencies safely
+- **[5] Uninstall Panel**
+- **[6] Uninstall Wings**
+- **[7] Install Subdomain Proxy (Node Only)** — Setup Wildcard Nginx + SSL proxy
+- **[8] Enable GPU Passthrough (Intel VAAPI)** — For Wings Hardware Acceleration
 - **[0] Exit**
 
 ### Supported Operating Systems
@@ -55,25 +60,14 @@ The interactive installer will guide you through:
 
 ## 🔄 Updating Alxzen Panel
 
-If you already have Alxzen Panel installed and want to update to the latest version without losing your data:
+Updating is now fully automated via the `setup.sh` script. 
+
+Run the installer and select **[4] Update Panel**:
 
 ```bash
-cd /var/www/pterodactyl
-php artisan down
-
-# Download & extract latest release
-curl -Lo /tmp/panel.tar.gz https://github.com/alxzy-group/alxzen/releases/latest/download/panel.tar.gz
-tar -xzf /tmp/panel.tar.gz
-rm -f /tmp/panel.tar.gz
-
-# Clear caches & set permissions
-php artisan view:clear && php artisan config:clear
-chown -R www-data:www-data /var/www/pterodactyl/*
-chown -R www-data:www-data /var/www/pterodactyl/.[!.]*
-
-# Bring panel back online
-php artisan up
+bash <(curl -s https://raw.githubusercontent.com/alxzy-group/alxzen/main/setup.sh)
 ```
+*The script will automatically download the latest release, verify Node.js/Yarn dependencies, update Composer dependencies, run database migrations, run Yarn install (to prevent broken `node_modules`), clear caches, and restart your services.*
 
 ---
 
