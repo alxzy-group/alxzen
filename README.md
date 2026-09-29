@@ -572,6 +572,10 @@ systemctl restart nginx
 
 ## 📝 Changelog
 
+### v4.1.11 — Root Protection V3 Fix
+- **fix:** Removed restrictive `admin.superuser` middleware from UI routes to allow sub-admins (ID != 1) to view server lists, node details, and create new servers and API keys.
+- **security:** Destructive actions (Delete Server, Node, User, etc.) remain strictly protected via internal `id !== 1` checks to prevent rogue sub-admins.
+
 ### v4.1.10 — Subdomain Proxy & GPU Passthrough
 - **feat:** Subdomain Proxy now asks for wildcard domain and generates Nginx + Self-Signed SSL automatically
 - **feat:** Added `[8] Enable GPU Passthrough (Intel VAAPI)` option in setup script for hardware acceleration in Wings
