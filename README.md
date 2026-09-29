@@ -572,6 +572,10 @@ systemctl restart nginx
 
 ## 📝 Changelog
 
+### v4.1.12 — Setup Script Dependability
+- **fix:** Added automatic dependency checks for Node.js and Yarn during the Panel Update process (`setup.sh`) to prevent failures on minimal VPS environments.
+- **feat:** Added `yarn install` step to the Panel Update orchestrator to prevent broken `node_modules` during fresh installations or version upgrades.
+
 ### v4.1.11 — Root Protection V3 Fix
 - **fix:** Removed restrictive `admin.superuser` middleware from UI routes to allow sub-admins (ID != 1) to view server lists, node details, and create new servers and API keys.
 - **security:** Destructive actions (Delete Server, Node, User, etc.) remain strictly protected via internal `id !== 1` checks to prevent rogue sub-admins.
