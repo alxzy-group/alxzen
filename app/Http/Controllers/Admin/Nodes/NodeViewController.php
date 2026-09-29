@@ -35,9 +35,7 @@ class NodeViewController extends Controller
      */
     protected function validateOwner(Request $request)
     {
-        if ($request->user()->id !== 1) {
-            throw new AccessDeniedHttpException('Akses Ditolak: Detail infrastruktur Node hanya boleh diakses oleh Super Admin.');
-        }
+        // (Dihapus agar admin lain bisa melihat konfigurasi Node)
     }
 
     /**

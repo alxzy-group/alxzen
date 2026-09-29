@@ -18,9 +18,7 @@ class NodeController extends Controller
     public function index(Request $request): View
     {
         // Jika kamu ingin admin lain benar-benar tidak bisa melihat daftar Node sama sekali:
-        if ($request->user()->id !== 1) {
-            throw new AccessDeniedHttpException('Akses Ditolak: Anda tidak memiliki izin untuk melihat daftar Node.');
-        }
+        // (Dihapus agar admin lain bisa membuat server)
 
         $nodes = QueryBuilder::for(
             Node::query()->with('location')->withCount('servers')

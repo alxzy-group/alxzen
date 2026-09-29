@@ -38,9 +38,7 @@ class ServerViewController extends Controller
      */
     public function index(Request $request, Server $server): View
     {
-    if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
-        abort(403, 'Access Denied: Anda tidak memiliki izin untuk mengelola server ini.');
-    }
+    // (Dihapus agar admin lain bisa melihat detail server)
         return view('admin.servers.view.index', compact('server'));
     }
 
