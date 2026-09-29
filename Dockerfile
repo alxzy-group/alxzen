@@ -14,7 +14,7 @@ FROM --platform=$TARGETOS/$TARGETARCH php:8.3-fpm-alpine
 WORKDIR /app
 COPY . ./
 COPY --from=0 /app/public/assets ./public/assets
-RUN apk add --no-cache --update ca-certificates dcron curl git supervisor tar unzip nginx libpng-dev libxml2-dev libzip-dev certbot certbot-nginx \
+RUN apk add --no-cache --update ca-certificates dcron curl git supervisor tar unzip nginx libpng-dev libxml2-dev libzip-dev certbot certbot-nginx nodejs npm \
     && docker-php-ext-configure zip \
     && docker-php-ext-install bcmath gd pdo_mysql zip \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
@@ -24,6 +24,7 @@ RUN apk add --no-cache --update ca-certificates dcron curl git supervisor tar un
     && composer install --no-dev --optimize-autoloader \
     && rm -rf .env bootstrap/cache/*.php \
     && mkdir -p /app/storage/logs/ \
+    && cd multiplayer && npm install --silent && cd .. \
     && chown -R nginx:nginx .
 
 RUN rm /usr/local/etc/php-fpm.conf \
