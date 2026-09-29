@@ -10,6 +10,7 @@ import StatGraphs from '@/components/server/console/StatGraphs';
 import PowerButtons from '@/components/server/console/PowerButtons';
 import ServerDetailsBlock from '@/components/server/console/ServerDetailsBlock';
 import { Alert } from '@/components/elements/alert';
+import { useState, useEffect } from 'react';
 
 export type PowerAction = 'start' | 'stop' | 'restart' | 'kill';
 
@@ -20,6 +21,49 @@ const ServerConsoleContainer = () => {
     const isTransferring = ServerContext.useStoreState((state) => state.server.data!.isTransferring);
     const eggFeatures = ServerContext.useStoreState((state) => state.server.data!.eggFeatures, isEqual);
     const isNodeUnderMaintenance = ServerContext.useStoreState((state) => state.server.data!.isNodeUnderMaintenance);
+    const expiresAt = ServerContext.useStoreState((state) => state.server.data!.expiresAt);
+
+    const [hasNotified, setHasNotified] = useState(false);
+
+    useEffect(() => {
+        if (!expiresAt || hasNotified) return;
+
+        const expirationDate = new Date(expiresAt);
+        const hoursLeft = (expirationDate.getTime() - new Date().getTime()) / (1000 * 60 * 60);
+        if (hoursLeft > 0 && hoursLeft <= 12) {
+            if (Notification.permission === 'granted') {
+                new Notification(`Server Expiring Soon`, {
+                    body: `Your server "${name}" akan kedaluwarsa dalam kurang dari 12 jam. Segera perpanjang!`,
+                });
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then((permission) => {
+                    if (permission === 'granted') {
+                        new Notification(`Server Expiring Soon`, {
+                            body: `Your server "${name}" akan kedaluwarsa dalam kurang dari 12 jam. Segera perpanjang!`,
+                        });
+                    }
+                });
+            }
+            setHasNotified(true);
+        }
+    }, [expiresAt, hasNotified, name]);
+
+    const expirationDate = expiresAt ? new Date(expiresAt) : null;
+    const isExpired = expirationDate ? expirationDate.getTime() <= new Date().getTime() : false;
+    const hoursLeft = expirationDate ? (expirationDate.getTime() - new Date().getTime()) / (1000 * 60 * 60) : null;
+    const isExpiringSoon = hoursLeft !== null && hoursLeft > 0 && hoursLeft <= 12;
+
+    const getRemainingTimeText = (date: Date) => {
+        const diffMs = date.getTime() - new Date().getTime();
+        if (isNaN(diffMs)) return 'beberapa saat';
+        const totalMinutes = Math.floor(diffMs / 1000 / 60);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        if (hours > 0 && minutes > 0) return `${hours} jam ${minutes} menit`;
+        if (hours > 0) return `${hours} jam`;
+        if (minutes > 0) return `${minutes} menit`;
+        return 'kurang dari semenit';
+    };
 
     return (
         <ServerContentBlock title={'Console'}>
@@ -30,6 +74,18 @@ const ServerConsoleContainer = () => {
                         : isInstalling
                         ? 'This server is currently running its installation process and most actions are unavailable.'
                         : 'This server is currently being transferred to another node and all actions are unavailable.'}
+                </Alert>
+            )}
+            {isExpiringSoon && (
+                <Alert type={'danger'} className={'mb-4'}>
+                    <span className="flex-1">
+                        Peringatan: Server Anda akan kedaluwarsa dalam <strong>{getRemainingTimeText(expirationDate!)}</strong>. Harap segera perpanjang layanan untuk menghindari suspensi.
+                    </span>
+                </Alert>
+            )}
+            {isExpired && (
+                <Alert type={'danger'} className={'mb-4'}>
+                    <span className="flex-1">Peringatan: Masa aktif server ini telah habis.</span>
                 </Alert>
             )}
             <div className={'grid grid-cols-4 gap-4 mb-4'}>
