@@ -566,7 +566,10 @@ systemctl restart nginx
 
 ## 📝 Changelog
 
-### v4.1.12 — Setup Script Dependability
+### v4.1.12 — UI Upgrades & Setup Script Dependability
+- **feat:** Added a draggable terminal window on the Server Console page using `framer-motion` for smoother UX.
+- **style:** Overhauled the `503` Maintenance page with a premium Glassmorphism design and friendly ID error text.
+- **style:** Enhanced the terminal container with dynamic neon glowing borders based on server state.
 - **fix:** Added automatic dependency checks for Node.js and Yarn during the Panel Update process (`setup.sh`) to prevent failures on minimal VPS environments.
 - **feat:** Added `yarn install` step to the Panel Update orchestrator to prevent broken `node_modules` during fresh installations or version upgrades.
 
