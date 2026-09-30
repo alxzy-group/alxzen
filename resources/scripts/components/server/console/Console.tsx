@@ -16,6 +16,7 @@ import { usePersistedState } from '@/plugins/usePersistedState';
 import { SocketEvent, SocketRequest } from '@/components/server/events';
 import classNames from 'classnames';
 import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
+import { motion, useDragControls } from 'framer-motion';
 
 import 'xterm/css/xterm.css';
 import styles from './style.module.css';
@@ -69,6 +70,7 @@ export default () => {
     const isTransferring = ServerContext.useStoreState((state) => state.server.data!.isTransferring);
     const [history, setHistory] = usePersistedState<string[]>(`${serverId}:command_history`, []);
     const [historyIndex, setHistoryIndex] = useState(-1);
+    const dragControls = useDragControls();
     // SearchBarAddon has hardcoded z-index: 999 :(
     const zIndex = `
     .xterm-search-bar__addon {
@@ -213,14 +215,29 @@ export default () => {
     }, [connected, instance]);
 
     return (
-        <div className={classNames(styles.terminal, 'relative rounded-2xl overflow-hidden resize-y transition-shadow duration-500 min-h-[300px]', {
-            'ring-1 ring-sky-500/50 shadow-[0_0_20px_rgba(14,165,233,0.15)]': status === 'running',
-            'ring-1 ring-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.15)] animate-pulse': status === 'starting',
-            'ring-1 ring-white/5': status === 'offline' || status === 'stopping',
-        })}>
+        <motion.div
+            drag
+            dragControls={dragControls}
+            dragListener={false}
+            dragMomentum={false}
+            className={classNames(styles.terminal, 'relative rounded-2xl overflow-hidden resize-y transition-shadow duration-500 min-h-[300px] border border-white/10 bg-black/60 backdrop-blur-xl', {
+                'ring-1 ring-sky-500/50 shadow-[0_0_40px_rgba(14,165,233,0.3)]': status === 'running',
+                'ring-1 ring-blue-500/50 shadow-[0_0_40px_rgba(59,130,246,0.3)] animate-pulse': status === 'starting',
+                'ring-1 ring-white/5 shadow-2xl': status === 'offline' || status === 'stopping',
+            })}
+            style={{ zIndex: 40 }}
+        >
+            {/* Drag Handle */}
+            <div 
+                className="w-full h-8 bg-white/5 hover:bg-white/10 transition-colors cursor-move flex items-center justify-center border-b border-white/10 select-none"
+                onPointerDown={(e) => dragControls.start(e)}
+            >
+                <div className="w-16 h-1.5 bg-white/20 rounded-full"></div>
+            </div>
+
             <SpinnerOverlay visible={!connected} size={'large'} />
             <div
-                className={classNames(styles.container, styles.overflows_container, 'bg-black/40 backdrop-blur-md', { 'rounded-b': !canSendCommands })}
+                className={classNames(styles.container, styles.overflows_container, 'bg-transparent', { 'rounded-b': !canSendCommands })}
             >
                 <div className={'h-full'}>
                     <div id={styles.terminal} ref={ref} />
@@ -248,6 +265,6 @@ export default () => {
                     </div>
                 </div>
             )}
-        </div>
+        </motion.div>
     );
 };
