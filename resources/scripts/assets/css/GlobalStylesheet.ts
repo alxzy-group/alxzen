@@ -14,7 +14,9 @@ export default createGlobalStyle`
     }
 
     body {
-        ${tw`font-sans bg-gray-900 text-gray-50`};
+        ${tw`font-sans`};
+        background-color: hsl(var(--bg-page));
+        color: hsl(var(--text-primary));
         letter-spacing: 0.015em;
     }
 

@@ -3,8 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+    /* ─── DARK MODE (default) ─── */
     :root {
-        --gray-50: 216 33% 97%;
+        /* Gray scale — dark mode */
+        --gray-50:  216 33% 97%;
         --gray-100: 214 15% 91%;
         --gray-200: 210 16% 82%;
         --gray-300: 211 13% 65%;
@@ -14,22 +16,65 @@
         --gray-700: 209 18% 30%;
         --gray-800: 209 20% 25%;
         --gray-900: 240 9% 4%;
-        
-        --black: 208 25% 10%; /* Equivalent to #131a20 */
+
+        --black: 208 25% 10%;
+
+        /* ── Semantic tokens ── */
+        --bg-page:        240 9% 4%;
+        --bg-surface:     209 20% 8%;
+        --bg-elevated:    209 18% 13%;
+        --border:         209 18% 18%;
+        --border-accent:  199 89% 48% / 0.25;
+
+        --text-primary:   0 0% 97%;
+        --text-secondary: 211 13% 65%;
+        --text-muted:     211 10% 40%;
+
+        --sidebar-bg:           209 20% 6%;
+        --sidebar-text:         211 13% 65%;
+        --sidebar-text-active:  199 89% 63%;
+        --sidebar-hover-bg:     199 89% 48% / 0.08;
+        --sidebar-active-bg:    199 89% 48% / 0.14;
     }
 
+    /* ─── LIGHT MODE ─── */
     .theme-light {
-        --gray-50: 210 24% 16%;
-        --gray-100: 209 20% 25%;
-        --gray-200: 209 18% 30%;
-        --gray-300: 209 14% 37%;
-        --gray-400: 211 12% 43%;
-        --gray-500: 211 10% 53%;
-        --gray-600: 211 13% 65%;
-        --gray-700: 210 16% 82%;
-        --gray-800: 214 15% 91%;
-        --gray-900: 216 33% 97%;
-        
-        --black: 216 33% 97%; /* Switch black to a very light gray/white in light mode */
+        /* Gray scale stays as-is for tailwind utilities that use it */
+        --gray-50:  216 33% 97%;
+        --gray-100: 214 15% 91%;
+        --gray-200: 210 16% 82%;
+        --gray-300: 211 13% 65%;
+        --gray-400: 211 10% 53%;
+        --gray-500: 211 12% 43%;
+        --gray-600: 209 14% 37%;
+        --gray-700: 209 18% 30%;
+        --gray-800: 209 20% 25%;
+        --gray-900: 240 9% 4%;
+
+        --black: 216 33% 97%;
+
+        /* ── Semantic tokens — light mode only ── */
+        --bg-page:        210 20% 94%;
+        --bg-surface:     0 0% 100%;
+        --bg-elevated:    210 20% 90%;
+        --border:         214 15% 82%;
+        --border-accent:  199 89% 48% / 0.3;
+
+        --text-primary:   220 20% 9%;
+        --text-secondary: 220 10% 32%;
+        --text-muted:     220 8% 52%;
+
+        --sidebar-bg:           0 0% 100%;
+        --sidebar-text:         220 10% 32%;
+        --sidebar-text-active:  199 89% 38%;
+        --sidebar-hover-bg:     199 89% 48% / 0.08;
+        --sidebar-active-bg:    199 89% 48% / 0.13;
+    }
+
+    /* Apply page background globally */
+    html, body {
+        background-color: hsl(var(--bg-page));
+        color: hsl(var(--text-primary));
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
 }

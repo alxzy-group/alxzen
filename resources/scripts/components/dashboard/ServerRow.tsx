@@ -30,39 +30,44 @@ const globalStyles = `
 const InjectStyles = () => <style dangerouslySetInnerHTML={{ __html: globalStyles }} />;
 
 const CardWrapper = styled(motion(Link))<{ $status: string }>`
-    ${tw`relative block w-full overflow-hidden border border-gray-700`}
-    background: hsl(var(--gray-800) / 0.6);
-    backdrop-filter: blur(16px);
+    ${tw`relative block w-full overflow-hidden`}
+    background: hsl(var(--bg-surface));
+    border: 1px solid hsl(var(--border));
     border-left: 3px solid ${({ $status }) =>
         $status === 'running'  ? '#4ade80' :
         $status === 'starting' ? '#0ea5e9' :
-        $status === 'offline'  ? '#333333' : '#facc15'};
+        $status === 'offline'  ? 'hsl(var(--border))' : '#facc15'};
     border-radius: 16px;
     isolation: isolate;
+    text-decoration: none;
     
     & > * { position: relative; z-index: 1; }
 `;
 
 const Header = styled.div`
-    ${tw`p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-700`}
+    ${tw`p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3`}
+    border-bottom: 1px solid hsl(var(--border));
     background: transparent;
 `;
 
 const ServerIconBox = styled.div`
-    ${tw`w-9 h-9 flex items-center justify-center border border-gray-600 rounded-lg text-[13px] text-gray-400`}
-    background: hsl(var(--gray-700) / 0.3);
-
+    ${tw`w-9 h-9 flex items-center justify-center rounded-lg text-[13px]`}
+    color: hsl(var(--text-secondary));
+    background: hsl(var(--bg-elevated));
+    border: 1px solid hsl(var(--border));
     flex-shrink: 0;
 `;
 
 const ServerName = styled.h3`
-    ${tw`text-base font-black text-white tracking-tight m-0 leading-none`}
+    ${tw`text-base font-black tracking-tight m-0 leading-none`}
+    color: hsl(var(--text-primary));
 `;
 
 const ConnectionBadge = styled.div`
-    ${tw`flex items-center gap-1.5 text-[11px] font-mono mt-1.5`}
-    color: #a1a1aa;
-    ${tw`flex items-center gap-2 px-3 py-1 bg-black border border-gray-700 rounded-md text-[11px] font-mono`}
+    ${tw`flex items-center gap-2 text-[11px] font-mono mt-1.5`}
+    color: hsl(var(--text-muted));
+    background: hsl(var(--bg-elevated));
+    border: 1px solid hsl(var(--border));
     border-radius: 6px;
     padding: 2px 8px;
 `;
@@ -99,8 +104,8 @@ const StatsGrid = styled.div`
 const StatBox = styled.div`
     ${tw`flex flex-col px-5 py-4`}
     transition: background 0.2s;
-    &:not(:last-child) { ${tw`border-r border-gray-700`} }
-    &:hover { background: hsl(var(--gray-700) / 0.3); }
+    &:not(:last-child) { border-right: 1px solid hsl(var(--border)); }
+    &:hover { background: hsl(var(--bg-elevated)); }
 `;
 
 const StatLabel = styled.div`
@@ -110,13 +115,14 @@ const StatLabel = styled.div`
 `;
 
 const StatValue = styled.div`
-    ${tw`text-lg font-black text-white tracking-tight mb-2`}
+    ${tw`text-lg font-black tracking-tight mb-2`}
+    color: hsl(var(--text-primary));
     font-variant-numeric: tabular-nums;
 `;
 
 const BarTrack = styled.div`
     width: 100%; height: 2px;
-    ${tw`bg-gray-700`}
+    background: hsl(var(--border));
 `;
 
 const BarFill = styled(motion.div)<{ $color: string }>`

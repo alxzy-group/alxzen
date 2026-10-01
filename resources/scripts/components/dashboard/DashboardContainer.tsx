@@ -55,7 +55,8 @@ const AccentLine = styled.div`
 `;
 
 const Title = styled.h1`
-    ${tw`text-5xl md:text-6xl font-black tracking-tighter text-white mb-1`}
+    ${tw`text-5xl md:text-6xl font-black tracking-tighter mb-1`}
+    color: hsl(var(--text-primary));
     letter-spacing: -2px;
     span {
         background: linear-gradient(90deg, #38bdf8, #0ea5e9);
@@ -67,7 +68,7 @@ const Title = styled.h1`
 
 const SubTitle = styled.p`
     ${tw`text-base font-medium m-0`}
-    color: rgba(148,163,184,0.6);
+    color: hsl(var(--text-muted));
     letter-spacing: 0.3px;
 `;
 
@@ -90,17 +91,17 @@ const Grid = styled.div`
 
 const SkeletonCard = styled.div`
     height: 170px;
-    background: linear-gradient(90deg, #111111 25%, #1a1a1a 50%, #111111 75%);
+    background: linear-gradient(90deg, hsl(var(--bg-surface)) 25%, hsl(var(--bg-elevated)) 50%, hsl(var(--bg-surface)) 75%);
     background-size: 400px 100%;
     animation: dash-skeleton 1.4s infinite linear;
-    border: 1px solid rgba(255,255,255,0.05);
+    border: 1px solid hsl(var(--border));
     border-radius: 16px;
 `;
 
 const EmptyState = styled(motion.div)`
     ${tw`col-span-2 flex flex-col items-center justify-center py-24 text-center gap-3`}
-    border: 1px dashed rgba(255,255,255,0.15);
-    background: rgba(255,255,255,0.02);
+    border: 1px dashed hsl(var(--border));
+    background: hsl(var(--bg-surface));
     border-radius: 16px;
 `;
 

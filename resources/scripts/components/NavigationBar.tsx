@@ -17,15 +17,11 @@ import http from '@/api/http';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import Avatar from '@/components/Avatar';
 
-// ─── Design Tokens (S24 AMOLED) ──────────────────────────────────────────────
-// Primary: #0ea5e9 (sky-500) → #38bdf8 (sky-400) → #7dd3fc (sky-300)
-// BG Dark: #111111 (AMOLED Black)
-// Surface: rgba(14,165,233,0.06) border rgba(14,165,233,0.18)
-
 const NavContainer = styled.div`
-    ${tw`fixed top-0 left-0 right-0 z-50 h-20 bg-gray-900`}
-    border-bottom: 1px solid rgba(14, 165, 233, 0.15);
-    transition: all 0.3s ease;
+    ${tw`fixed top-0 left-0 right-0 z-50 h-20`}
+    background-color: hsl(var(--bg-surface));
+    border-bottom: 1px solid hsl(var(--border));
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 `;
 
 const NavInner = styled.div`
@@ -41,7 +37,8 @@ const RightSection = styled.div`
 `;
 
 const Logo = styled(Link)`
-    ${tw`text-xl md:text-2xl font-black tracking-tighter text-gray-50 no-underline block`}
+    ${tw`text-xl md:text-2xl font-black tracking-tighter no-underline block`}
+    color: hsl(var(--text-primary));
     span {
         background: linear-gradient(90deg, #38bdf8, #0ea5e9);
         -webkit-background-clip: text;
@@ -52,7 +49,7 @@ const Logo = styled(Link)`
 
 const SidebarOverlay = styled.div<{ $open: boolean }>`
     ${tw`fixed inset-0 z-[60] transition-opacity duration-300`}
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
     opacity: ${props => props.$open ? 1 : 0};
     pointer-events: ${props => props.$open ? 'auto' : 'none'};
@@ -60,17 +57,16 @@ const SidebarOverlay = styled.div<{ $open: boolean }>`
 
 const Sidebar = styled.div<{ $open: boolean }>`
     ${tw`fixed top-0 left-0 bottom-0 w-[300px] z-[70] flex flex-col`}
-    background: hsl(var(--gray-900) / 0.85);
-    backdrop-filter: blur(16px);
-    border-right: 1px solid rgba(14, 165, 233, 0.2);
-    box-shadow: ${props => props.$open ? '10px 0 40px rgba(14, 165, 233, 0.15)' : 'none'};
+    background-color: hsl(var(--sidebar-bg));
+    border-right: 1px solid hsl(var(--border));
+    box-shadow: ${props => props.$open ? '10px 0 40px rgba(14, 165, 233, 0.12)' : 'none'};
     transform: translateX(${props => props.$open ? '0%' : '-100%'});
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, background-color 0.3s ease;
 `;
 
 const SidebarHeader = styled.div`
     ${tw`flex items-center justify-between p-6`}
-    border-bottom: 1px solid rgba(14, 165, 233, 0.12);
+    border-bottom: 1px solid hsl(var(--border));
 `;
 
 const SidebarContent = styled.div`
@@ -78,21 +74,23 @@ const SidebarContent = styled.div`
 `;
 
 const NavItem = styled(NavLink)`
-    ${tw`flex items-center gap-3 px-4 py-2.5 text-sm text-gray-400 font-medium transition-all duration-200`}
+    ${tw`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-all duration-200`}
+    color: hsl(var(--sidebar-text));
     border-left: 2px solid transparent;
-    border-radius: 12px; /* S24 squircle */
+    border-radius: 12px;
     margin-bottom: 2px;
+    text-decoration: none;
 
     &:hover {
-        color: #7dd3fc;
-        background: rgba(14, 165, 233, 0.08);
+        color: hsl(var(--sidebar-text-active));
+        background: hsl(var(--sidebar-hover-bg));
     }
 
     &.active {
-        color: #38bdf8;
-        background: rgba(14, 165, 233, 0.12);
+        color: hsl(var(--sidebar-text-active));
+        background: hsl(var(--sidebar-active-bg));
         border-left-color: #0ea5e9;
-        box-shadow: inset 20px 0 20px -20px rgba(14, 165, 233, 0.3);
+        font-weight: 700;
     }
 `;
 
@@ -103,15 +101,15 @@ const SectionTitle = styled.div`
 
 const ServerSectionButton = styled.button<{ $open: boolean }>`
     ${tw`flex items-center justify-between w-full mt-4 mb-1 px-4 py-2.5 text-xs font-bold uppercase tracking-widest transition-all duration-200 outline-none`}
-    color: ${props => props.$open ? '#38bdf8' : '#6b7280'};
-    background: ${props => props.$open ? 'rgba(14, 165, 233, 0.08)' : 'transparent'};
+    color: ${props => props.$open ? '#38bdf8' : 'hsl(var(--sidebar-text))'};
+    background: ${props => props.$open ? 'hsl(var(--sidebar-active-bg))' : 'transparent'};
     border: none;
     border-left: 2px solid ${props => props.$open ? '#0ea5e9' : 'transparent'};
     border-radius: 12px;
 
     &:hover {
-        color: #38bdf8;
-        background: rgba(14, 165, 233, 0.06);
+        color: hsl(var(--sidebar-text-active));
+        background: hsl(var(--sidebar-hover-bg));
     }
 
     .chevron {
@@ -129,7 +127,7 @@ const SubMenu = styled.div<{ $open: boolean }>`
     > div {
         overflow: hidden;
         padding-left: 0.75rem;
-        border-left: 1px solid rgba(14, 165, 233, 0.12);
+        border-left: 1px solid hsl(var(--border));
         margin-left: 1rem;
         display: flex;
         flex-direction: column;
@@ -139,21 +137,85 @@ const SubMenu = styled.div<{ $open: boolean }>`
 
 const UserFooter = styled.div`
     ${tw`p-5`}
-    border-top: 1px solid rgba(14, 165, 233, 0.1);
-    background: rgba(14, 165, 233, 0.03);
+    border-top: 1px solid hsl(var(--border));
+    background: hsl(var(--bg-elevated) / 0.5);
 `;
 
 const MenuButton = styled.button`
-    ${tw`w-10 h-10 flex items-center justify-center text-gray-200 transition-all duration-200 hover:text-gray-50`}
-    background: rgba(14, 165, 233, 0.06);
-    border: 1px solid rgba(14, 165, 233, 0.12);
+    ${tw`w-10 h-10 flex items-center justify-center transition-all duration-200`}
+    color: hsl(var(--text-secondary));
+    background: hsl(var(--bg-elevated));
+    border: 1px solid hsl(var(--border));
     border-radius: 12px;
 
     &:hover {
         color: #38bdf8;
-        background: rgba(14, 165, 233, 0.15);
+        background: rgba(14, 165, 233, 0.12);
         border-color: rgba(14, 165, 233, 0.4);
-        box-shadow: 0 0 16px rgba(14, 165, 233, 0.25);
+        box-shadow: 0 0 16px rgba(14, 165, 233, 0.2);
+    }
+`;
+
+const SidebarTitle = styled.div`
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: hsl(var(--text-primary));
+    span {
+        background: linear-gradient(90deg,#38bdf8,#0ea5e9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+`;
+
+const SidebarCloseBtn = styled.button`
+    transition: color 0.2s;
+    color: hsl(var(--text-muted));
+    background: none;
+    border: none;
+    cursor: pointer;
+    &:hover { color: #38bdf8; }
+`;
+
+const UserName = styled.div`
+    font-size: 13px;
+    font-weight: 700;
+    color: hsl(var(--text-primary));
+`;
+
+const UserRole = styled.div`
+    font-size: 10px;
+    color: #0ea5e9;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+`;
+
+const LogoutBtn = styled.button`
+    transition: color 0.2s;
+    color: hsl(var(--text-muted));
+    background: none;
+    border: none;
+    cursor: pointer;
+    &:hover { color: #38bdf8; }
+`;
+
+const AdminLink = styled.a`
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    color: #38bdf8;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+    border-left: 2px solid rgba(14,165,233,0.4);
+    background: rgba(14,165,233,0.06);
+    transition: all 0.2s;
+    border-radius: 12px;
+    &:hover {
+        background: rgba(14,165,233,0.12);
+        color: #7dd3fc;
     }
 `;
 
@@ -203,10 +265,18 @@ export default () => {
 
                     <RightSection>
                         <SearchContainer />
-                        <MenuButton onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} style={{ borderRadius: '50%', width: 40 }}>
+                        <MenuButton
+                            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                            style={{ borderRadius: '50%', width: 40 }}
+                            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                        >
                             <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} />
                         </MenuButton>
-                        <div style={{ width: 40, height: 40, overflow: 'hidden', border: '1px solid rgba(14,165,233,0.25)', boxShadow: '0 0 12px rgba(14,165,233,0.15)' }}>
+                        <div style={{
+                            width: 40, height: 40, overflow: 'hidden', borderRadius: '50%',
+                            border: '1px solid rgba(14,165,233,0.25)',
+                            boxShadow: '0 0 12px rgba(14,165,233,0.15)'
+                        }}>
                             <Avatar.User />
                         </div>
                     </RightSection>
@@ -218,15 +288,12 @@ export default () => {
             <SidebarOverlay $open={isOpen} onClick={() => setIsOpen(false)} />
             <Sidebar $open={isOpen}>
                 <SidebarHeader>
-                    <div style={{ fontSize: 18, fontWeight: 900, color: 'hsl(var(--gray-50))', letterSpacing: '-0.5px' }}>
-                        Main<span style={{ background: 'linear-gradient(90deg,#38bdf8,#0ea5e9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Menu</span>
-                    </div>
-                    <button onClick={() => setIsOpen(false)} style={{ color: '#4b5563', transition: 'color 0.2s' }}
-                        onMouseEnter={e => (e.currentTarget.style.color = '#38bdf8')}
-                        onMouseLeave={e => (e.currentTarget.style.color = '#4b5563')}
-                    >
+                    <SidebarTitle>
+                        Main<span>Menu</span>
+                    </SidebarTitle>
+                    <SidebarCloseBtn onClick={() => setIsOpen(false)}>
                         <FontAwesomeIcon icon={faTimes} />
-                    </button>
+                    </SidebarCloseBtn>
                 </SidebarHeader>
 
                 <SidebarContent>
@@ -277,38 +344,31 @@ export default () => {
 
                     {rootAdmin && (
                         <>
-                            <div style={{ margin: '8px 0', borderTop: '1px solid rgba(14,165,233,0.1)' }} />
-                            <a href={'/admin'} style={{
-                                display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px',
-                                color: '#38bdf8', fontWeight: 700, fontSize: 13, textDecoration: 'none',
-                                borderLeft: '2px solid rgba(14,165,233,0.4)',
-                                background: 'rgba(14,165,233,0.06)',
-                                transition: 'all 0.2s',
-                                borderRadius: '12px'
-                            }}>
+                            <div style={{ margin: '8px 0', borderTop: '1px solid hsl(var(--border))' }} />
+                            <AdminLink href={'/admin'}>
                                 <FontAwesomeIcon icon={faCogs} style={{ width: 15 }} /> Admin Panel
-                            </a>
+                            </AdminLink>
                         </>
                     )}
                 </SidebarContent>
 
                 <UserFooter>
                     <div css={tw`flex items-center gap-3`}>
-                        <div style={{ width: 36, height: 36, overflow: 'hidden', border: '1px solid rgba(14,165,233,0.3)', flexShrink: 0 }}>
+                        <div style={{
+                            width: 36, height: 36, overflow: 'hidden',
+                            border: '1px solid rgba(14,165,233,0.3)',
+                            borderRadius: '50%',
+                            flexShrink: 0
+                        }}>
                             <Avatar.User />
                         </div>
                         <div css={tw`flex-1 min-w-0`}>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: 'hsl(var(--gray-50))' }}>{user.username}</div>
-                            <div style={{ fontSize: 10, color: '#0ea5e9', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                                {user.rootAdmin ? 'Administrator' : 'User'}
-                            </div>
+                            <UserName>{user.username}</UserName>
+                            <UserRole>{user.rootAdmin ? 'Administrator' : 'User'}</UserRole>
                         </div>
-                        <button onClick={onTriggerLogout} style={{ color: '#374151', transition: 'color 0.2s' }}
-                            onMouseEnter={e => (e.currentTarget.style.color = '#38bdf8')}
-                            onMouseLeave={e => (e.currentTarget.style.color = '#374151')}
-                        >
+                        <LogoutBtn onClick={onTriggerLogout}>
                             <FontAwesomeIcon icon={faSignOutAlt} />
-                        </button>
+                        </LogoutBtn>
                     </div>
                 </UserFooter>
             </Sidebar>

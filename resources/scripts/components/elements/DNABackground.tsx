@@ -17,7 +17,6 @@ const BackgroundContainer = styled.div`
     height: 100vh;
     z-index: -1;
     overflow: hidden;
-    ${tw`bg-gray-900`}
 `;
 
 const Particle = styled.div<{ $left: string; $size: string; $delay: string; $duration: string }>`

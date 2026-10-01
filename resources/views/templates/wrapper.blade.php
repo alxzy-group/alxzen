@@ -41,7 +41,7 @@
 
         @include('layouts.scripts')
     </head>
-    <body class="{{ $css['body'] ?? 'bg-neutral-900 text-neutral-50' }}">
+    <body class="{{ $css['body'] ?? '' }}">
         @section('content')
             @yield('above-container')
             @yield('container')
@@ -57,7 +57,10 @@
             document.addEventListener("DOMContentLoaded", function() {
                 var themeType = (window.SiteConfiguration && window.SiteConfiguration.theme && window.SiteConfiguration.theme.type) || 'network';
                 var isLight = document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
-                var particleBg = isLight ? "transparent" : "#09090b";
+                // Dark mode: AMOLED black. Light mode: transparent so CSS bg-page shows
+                var particleBg = isLight ? "transparent" : "#07080a";
+                var particleColor = isLight ? "rgba(14,165,233,0.5)" : "#0ea5e9";
+                var particleOpacity = isLight ? 0.4 : 0.6;
                 
                 var configs = {
                     network: {
@@ -69,10 +72,10 @@
                         },
                         particles: {
                             color: { value: "#0ea5e9" },
-                            links: { color: "#0ea5e9", distance: 160, enable: true, opacity: 0.35, width: 1.5 },
+                            links: { color: "#0ea5e9", distance: 160, enable: true, opacity: isLight ? 0.2 : 0.35, width: 1.5 },
                             move: { enable: true, speed: 1, direction: "none", outModes: { default: "bounce" } },
-                            number: { density: { enable: true, area: 600 }, value: 80 },
-                            opacity: { value: 0.6 },
+                            number: { density: { enable: true, area: 600 }, value: isLight ? 50 : 80 },
+                            opacity: { value: particleOpacity },
                             size: { value: { min: 1.5, max: 3.5 } }
                         },
                         detectRetina: true
@@ -84,8 +87,8 @@
                         particles: {
                             color: { value: "#38bdf8" },
                             move: { enable: true, speed: 1.5, direction: "top", outModes: { default: "out" } },
-                            number: { density: { enable: true, area: 600 }, value: 60 },
-                            opacity: { value: { min: 0.15, max: 0.6 } },
+                            number: { density: { enable: true, area: 600 }, value: isLight ? 35 : 60 },
+                            opacity: { value: { min: isLight ? 0.08 : 0.15, max: isLight ? 0.3 : 0.6 } },
                             size: { value: { min: 3, max: 14 } }
                         },
                         detectRetina: true
