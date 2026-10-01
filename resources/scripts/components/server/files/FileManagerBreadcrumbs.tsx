@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { ServerContext } from '@/state/server';
 import { NavLink, useLocation } from 'react-router-dom';
 import { encodePathSegments, hashToPath } from '@/helpers';
-import tw from 'twin.macro';
 
 interface Props {
     renderLeft?: JSX.Element;
@@ -37,33 +36,58 @@ export default ({ renderLeft, withinFileEditor, isNewFile }: Props) => {
                 return { name: directory, path: `/${dirs.slice(0, index + 1).join('/')}` };
             });
 
+    const crumbLinkStyle: React.CSSProperties = {
+        padding: '0 4px',
+        color: 'hsl(var(--text-secondary))',
+        textDecoration: 'none',
+        fontWeight: 500,
+        fontSize: '0.875rem',
+        transition: 'color 0.15s ease',
+    };
+
+    const crumbTextStyle: React.CSSProperties = {
+        padding: '0 4px',
+        color: 'hsl(var(--text-primary))',
+        fontWeight: 600,
+        fontSize: '0.875rem',
+    };
+
+    const separatorStyle: React.CSSProperties = {
+        color: 'hsl(var(--text-muted))',
+        fontSize: '0.875rem',
+    };
+
     return (
-        <div css={tw`flex flex-grow-0 items-center text-sm text-neutral-500 overflow-x-hidden`}>
-            {renderLeft || <div css={tw`w-12`} />}/<span css={tw`px-1 text-neutral-300`}>home</span>/
-            <NavLink to={`/server/${id}/files`} css={tw`px-1 text-neutral-200 no-underline hover:text-neutral-100`}>
+        <div style={{ display: 'flex', flexGrow: 0, alignItems: 'center', fontSize: '0.875rem', color: 'hsl(var(--text-muted))', overflowX: 'hidden' }}>
+            {renderLeft || <div style={{ width: 48 }} />}
+            <span style={separatorStyle}>/</span>
+            <span style={crumbTextStyle}>home</span>
+            <span style={separatorStyle}>/</span>
+            <NavLink to={`/server/${id}/files`} style={crumbLinkStyle}>
                 container
             </NavLink>
-            /
+            <span style={separatorStyle}>/</span>
             {breadcrumbs().map((crumb, index) =>
                 crumb.path ? (
                     <React.Fragment key={index}>
                         <NavLink
                             to={`/server/${id}/files#${encodePathSegments(crumb.path)}`}
-                            css={tw`px-1 text-neutral-200 no-underline hover:text-neutral-100`}
+                            style={crumbLinkStyle}
                         >
                             {crumb.name}
                         </NavLink>
-                        /
+                        <span style={separatorStyle}>/</span>
                     </React.Fragment>
                 ) : (
-                    <span key={index} css={tw`px-1 text-neutral-300`}>
+                    <span key={index} style={crumbTextStyle}>
                         {crumb.name}
                     </span>
                 )
             )}
             {file && (
                 <React.Fragment>
-                    <span css={tw`px-1 text-neutral-300`}>{file}</span>
+                    <span style={separatorStyle}>/</span>
+                    <span style={crumbTextStyle}>{file}</span>
                 </React.Fragment>
             )}
         </div>

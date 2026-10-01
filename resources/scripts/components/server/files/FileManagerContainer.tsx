@@ -64,8 +64,16 @@ export default () => {
     return (
         <ServerContentBlock title={'File Manager'} showFlashKey={'files'}>
             <ErrorBoundary>
-                {/* Floating Action Bar (Sticky Top) */}
-                <div className={'sticky top-0 z-50 bg-[#09090b]/40 backdrop-blur-xl pb-4 mb-4 border-b border-white/5 flex flex-wrap items-center justify-between gap-4 pt-2'}>
+                <div style={{
+                    position: 'sticky', top: 0, zIndex: 50,
+                    background: 'hsl(var(--bg-page) / 0.85)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    paddingBottom: 16, marginBottom: 16,
+                    borderBottom: '1px solid hsl(var(--border))',
+                    display: 'flex', flexWrap: 'wrap', alignItems: 'center',
+                    justifyContent: 'space-between', gap: 16, paddingTop: 8
+                }}>
                     <FileManagerBreadcrumbs
                         renderLeft={
                             <FileActionCheckbox
@@ -79,20 +87,36 @@ export default () => {
                     <Can action={'file.create'}>
                         <div className={'flex flex-wrap items-center gap-2 mt-2 md:mt-0 w-full md:w-auto'}>
                             {/* View Mode Toggle */}
-                            <div className={'flex items-center space-x-1 bg-black/40 p-1 rounded-lg border border-white/5 md:mr-2 flex-shrink-0'}>
+                            <div style={{
+                                display: 'flex', alignItems: 'center', gap: 2,
+                                background: 'hsl(var(--bg-elevated))',
+                                padding: 4, borderRadius: 10,
+                                border: '1.5px solid hsl(var(--border))',
+                                marginRight: 8, flexShrink: 0
+                            }}>
                                 <button
                                     onClick={() => setViewMode('grid')}
-                                    className={`p-2 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-[#38bdf8] text-black' : 'text-gray-400 hover:text-white'}`}
+                                    style={{
+                                        padding: '6px 8px', borderRadius: 7, border: 'none', cursor: 'pointer',
+                                        background: viewMode === 'grid' ? 'hsl(var(--accent))' : 'transparent',
+                                        color: viewMode === 'grid' ? '#fff' : 'hsl(var(--text-muted))',
+                                        transition: 'all 0.15s ease'
+                                    }}
                                     title={'Grid View'}
                                 >
-                                    <svg className={'w-4 h-4'} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                                    <svg style={{ width: 16, height: 16 }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
                                 </button>
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className={`p-2 rounded-md transition-colors ${viewMode === 'list' ? 'bg-[#38bdf8] text-black' : 'text-gray-400 hover:text-white'}`}
+                                    style={{
+                                        padding: '6px 8px', borderRadius: 7, border: 'none', cursor: 'pointer',
+                                        background: viewMode === 'list' ? 'hsl(var(--accent))' : 'transparent',
+                                        color: viewMode === 'list' ? '#fff' : 'hsl(var(--text-muted))',
+                                        transition: 'all 0.15s ease'
+                                    }}
                                     title={'List View'}
                                 >
-                                    <svg className={'w-4 h-4'} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+                                    <svg style={{ width: 16, height: 16 }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                                 </button>
                             </div>
                             <FileManagerStatus />

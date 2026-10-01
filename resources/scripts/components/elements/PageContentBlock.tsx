@@ -26,17 +26,7 @@ const PageContentBlock: React.FC<PageContentBlockProps> = ({ title, showFlashKey
                 </ContentContainer>
                 <ContentContainer css={tw`mb-4`}>
                     <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'hsl(var(--text-disabled))' }}>
-                        <a
-                            rel={'noopener nofollow noreferrer'}
-                            href={'https://pterodactyl.io'}
-                            target={'_blank'}
-                            style={{ textDecoration: 'none', color: 'hsl(var(--text-disabled))' }}
-                            onMouseEnter={e => (e.currentTarget.style.color = 'hsl(var(--text-muted))')}
-                            onMouseLeave={e => (e.currentTarget.style.color = 'hsl(var(--text-disabled))')}
-                        >
-                            Pterodactyl&reg;
-                        </a>
-                        &nbsp;&copy; 2015 - {new Date().getFullYear()}
+                        alxzy &copy; {new Date().getFullYear()}
                     </p>
                 </ContentContainer>
             </>

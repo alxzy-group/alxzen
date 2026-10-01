@@ -272,13 +272,6 @@ export default () => {
                         >
                             <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} />
                         </MenuButton>
-                        <div style={{
-                            width: 40, height: 40, overflow: 'hidden', borderRadius: '50%',
-                            border: '1px solid rgba(14,165,233,0.25)',
-                            boxShadow: '0 0 12px rgba(14,165,233,0.15)'
-                        }}>
-                            <Avatar.User />
-                        </div>
                     </RightSection>
                 </NavInner>
             </NavContainer>
