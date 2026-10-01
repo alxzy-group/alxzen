@@ -36,10 +36,10 @@ const Wrapper = styled.div`
 `;
 
 const GlassCard = styled(motion.div)`
-    ${tw`relative z-10 w-full max-w-md p-8 sm:p-10 rounded-2xl flex flex-col bg-gray-800`}
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(14, 165, 233, 0.15);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    ${tw`relative z-10 w-full max-w-md p-8 sm:p-10 rounded-2xl flex flex-col`}
+    background: hsl(var(--bg-surface));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
 `;
 
 const HeaderSection = styled.div`
@@ -47,14 +47,16 @@ const HeaderSection = styled.div`
 `;
 
 const BrandTitle = styled.h1`
-    ${tw`text-3xl font-bold tracking-tight text-gray-50 mb-2`}
+    ${tw`text-3xl font-bold tracking-tight mb-2`}
+    color: hsl(var(--text-primary));
     span {
         ${tw`text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-600`}
     }
 `;
 
 const Subtitle = styled.p`
-    ${tw`text-sm text-gray-400 font-medium`}
+    color: hsl(var(--text-muted));
+    ${tw`text-sm font-medium`}
 `;
 
 const LoginFormContainer = forwardRef<HTMLFormElement, Props>(({ title, ...props }, ref) => {

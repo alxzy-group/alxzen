@@ -56,48 +56,62 @@
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 var themeType = (window.SiteConfiguration && window.SiteConfiguration.theme && window.SiteConfiguration.theme.type) || 'network';
-                var isLight = document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
-                // Dark mode: AMOLED black. Light mode: transparent so CSS bg-page shows
-                var particleBg = isLight ? "transparent" : "#07080a";
-                var particleColor = isLight ? "rgba(14,165,233,0.5)" : "#0ea5e9";
-                var particleOpacity = isLight ? 0.4 : 0.6;
                 
-                var configs = {
-                    network: {
-                        background: { color: { value: particleBg } },
-                        fpsLimit: 60,
-                        interactivity: {
-                            events: { onHover: { enable: true, mode: "grab" }, resize: true },
-                            modes: { grab: { distance: 200, links: { opacity: 0.8, color: "#0ea5e9" } } }
+                function loadParticles() {
+                    var isLight = document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+                    var particleBg = isLight ? "transparent" : "#07080a";
+                    var particleColor = isLight ? "rgba(14,165,233,0.5)" : "#0ea5e9";
+                    var particleOpacity = isLight ? 0.4 : 0.6;
+                    
+                    var configs = {
+                        network: {
+                            background: { color: { value: particleBg } },
+                            fpsLimit: 60,
+                            interactivity: {
+                                events: { onHover: { enable: true, mode: "grab" }, resize: true },
+                                modes: { grab: { distance: 200, links: { opacity: 0.8, color: "#0ea5e9" } } }
+                            },
+                            particles: {
+                                color: { value: particleColor },
+                                links: { color: particleColor, distance: 160, enable: true, opacity: isLight ? 0.2 : 0.35, width: 1.5 },
+                                move: { enable: true, speed: 1, direction: "none", outModes: { default: "bounce" } },
+                                number: { density: { enable: true, area: 600 }, value: isLight ? 50 : 80 },
+                                opacity: { value: particleOpacity },
+                                size: { value: { min: 1.5, max: 3.5 } }
+                            },
+                            detectRetina: true
                         },
-                        particles: {
-                            color: { value: "#0ea5e9" },
-                            links: { color: "#0ea5e9", distance: 160, enable: true, opacity: isLight ? 0.2 : 0.35, width: 1.5 },
-                            move: { enable: true, speed: 1, direction: "none", outModes: { default: "bounce" } },
-                            number: { density: { enable: true, area: 600 }, value: isLight ? 50 : 80 },
-                            opacity: { value: particleOpacity },
-                            size: { value: { min: 1.5, max: 3.5 } }
-                        },
-                        detectRetina: true
-                    },
-                    bubbles: {
-                        background: { color: { value: particleBg } },
-                        fpsLimit: 60,
-                        interactivity: { events: { resize: true } },
-                        particles: {
-                            color: { value: "#38bdf8" },
-                            move: { enable: true, speed: 1.5, direction: "top", outModes: { default: "out" } },
-                            number: { density: { enable: true, area: 600 }, value: isLight ? 35 : 60 },
-                            opacity: { value: { min: isLight ? 0.08 : 0.15, max: isLight ? 0.3 : 0.6 } },
-                            size: { value: { min: 3, max: 14 } }
-                        },
-                        detectRetina: true
-                    }
-                };
+                        bubbles: {
+                            background: { color: { value: particleBg } },
+                            fpsLimit: 60,
+                            interactivity: { events: { resize: true } },
+                            particles: {
+                                color: { value: "#38bdf8" },
+                                move: { enable: true, speed: 1.5, direction: "top", outModes: { default: "out" } },
+                                number: { density: { enable: true, area: 600 }, value: isLight ? 35 : 60 },
+                                opacity: { value: { min: isLight ? 0.08 : 0.15, max: isLight ? 0.3 : 0.6 } },
+                                size: { value: { min: 3, max: 14 } }
+                            },
+                            detectRetina: true
+                        }
+                    };
 
-                if (configs[themeType] && typeof tsParticles !== 'undefined') {
-                    tsParticles.load("tsparticles-bg", configs[themeType]);
+                    if (configs[themeType] && typeof tsParticles !== 'undefined') {
+                        tsParticles.load("tsparticles-bg", configs[themeType]);
+                    }
                 }
+
+                loadParticles();
+
+                // Watch for theme changes on html element
+                var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.attributeName === "class") {
+                            loadParticles();
+                        }
+                    });
+                });
+                observer.observe(document.documentElement, { attributes: true });
             });
         </script>
     </body>

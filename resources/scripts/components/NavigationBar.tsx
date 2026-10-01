@@ -19,7 +19,7 @@ import Avatar from '@/components/Avatar';
 
 const NavContainer = styled.div`
     ${tw`fixed top-0 left-0 right-0 z-50 h-20`}
-    background-color: hsl(var(--bg-surface));
+    background-color: hsl(var(--bg-surface)) !important;
     border-bottom: 1px solid hsl(var(--border));
     transition: background-color 0.3s ease, border-color 0.3s ease;
 `;

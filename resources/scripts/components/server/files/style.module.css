@@ -16,15 +16,15 @@
 
 .file_row {
     @apply cursor-pointer no-underline transition-all duration-200;
-    background-color: hsl(var(--gray-800) / 0.4);
+    background-color: hsl(var(--bg-elevated) / 0.5);
     backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--gray-700));
+    border: 1px solid hsl(var(--border));
     position: relative;
     overflow: hidden;
 
     &:hover, &:focus-within {
-        background-color: hsl(var(--gray-700) / 0.6);
-        border-color: rgba(56, 189, 248, 0.3);
+        background-color: hsl(var(--bg-elevated));
+        border-color: rgba(56, 189, 248, 0.4);
         box-shadow: 0 4px 16px rgba(56, 189, 248, 0.08);
     }
 }

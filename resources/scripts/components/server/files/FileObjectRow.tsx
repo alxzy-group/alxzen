@@ -134,7 +134,7 @@ const FileObjectRow = ({ file, isListView }: { file: FileObject; isListView?: bo
                 </div>
 
                 <div className={isListView ? 'flex-1 min-w-0' : 'min-w-0 w-full text-center'}>
-                    <p className={'text-sm font-medium text-gray-200 truncate'} title={file.name}>
+                    <p className={'text-sm font-medium truncate text-[hsl(var(--text-primary))]'} title={file.name}>
                         {file.name}
                     </p>
                     {file.isFile && (
