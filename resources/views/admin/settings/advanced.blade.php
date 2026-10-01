@@ -127,6 +127,7 @@
                                         <option value="network" @if(old('app:theme:type', config('app.theme.type')) == 'network') selected @endif>Particle Network (Interactive)</option>
                                         <option value="dna" @if(old('app:theme:type', config('app.theme.type')) == 'dna') selected @endif>DNA Particles</option>
                                         <option value="bubbles" @if(old('app:theme:type', config('app.theme.type')) == 'bubbles') selected @endif>Bubbles</option>
+                                        <option value="saweria" @if(old('app:theme:type', config('app.theme.type')) == 'saweria') selected @endif>Saweria Style (Clean)</option>
                                         <option value="image" @if(old('app:theme:type', config('app.theme.type')) == 'image') selected @endif>Custom Image URL</option>
                                         <option value="video" @if(old('app:theme:type', config('app.theme.type')) == 'video') selected @endif>Custom Video URL</option>
                                     </select>

@@ -97,13 +97,18 @@
                     };
 
                     if (configs[themeType] && typeof tsParticles !== 'undefined') {
-                        if (tsParticles.dom) {
-                            var instances = tsParticles.dom();
-                            for (var i = 0; i < instances.length; i++) {
-                                instances[i].destroy();
-                            }
+                        var instances = tsParticles.dom ? tsParticles.dom() : [];
+                        if (instances.length > 0) {
+                            instances[0].options.load(configs[themeType]);
+                            instances[0].refresh();
+                        } else {
+                            tsParticles.load("tsparticles-bg", configs[themeType]);
                         }
-                        tsParticles.load("tsparticles-bg", configs[themeType]);
+                    } else if (themeType === 'saweria' && typeof tsParticles !== 'undefined') {
+                        var instances = tsParticles.dom ? tsParticles.dom() : [];
+                        if (instances.length > 0) {
+                            instances[0].destroy();
+                        }
                     }
                 }
 

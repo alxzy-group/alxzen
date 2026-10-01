@@ -5,12 +5,12 @@ import localforage from 'localforage';
 import { useStoreActions } from 'easy-peasy';
 
 export default () => {
-    const [bgType, setBgType] = useState<'default' | 'image' | 'video'>('default');
+    const [bgType, setBgType] = useState<'default' | 'saweria' | 'image' | 'video'>('default');
     const [bgData, setBgData] = useState<string>('');
     const { addFlash } = useStoreActions((actions: any) => actions.flashes);
 
     useEffect(() => {
-        localforage.getItem<'default' | 'image' | 'video'>('bgType').then(type => {
+        localforage.getItem<'default' | 'saweria' | 'image' | 'video'>('bgType').then(type => {
             if (type) setBgType(type);
         });
         localforage.getItem<string>('bgData').then(data => {
@@ -59,16 +59,17 @@ export default () => {
                 <label css={tw`block text-sm text-gray-300 mb-2`}>Background Type</label>
                 <select 
                     value={bgType}
-                    onChange={(e) => setBgType(e.target.value as 'default' | 'image' | 'video')}
+                    onChange={(e) => setBgType(e.target.value as 'default' | 'saweria' | 'image' | 'video')}
                     css={tw`w-full bg-[#1a1a1f] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500`}
                 >
                     <option value="default">Default (3D Particles)</option>
+                    <option value="saweria">Saweria Style (Clean / No Particles)</option>
                     <option value="image">Custom Image (URL / Upload)</option>
                     <option value="video">Custom Video (URL / Upload)</option>
                 </select>
             </div>
 
-            {bgType !== 'default' && (
+            {(bgType === 'image' || bgType === 'video') && (
                 <div css={tw`mb-6`}>
                     <label css={tw`block text-sm text-gray-300 mb-2`}>Upload or Enter URL</label>
                     <div css={tw`flex flex-col gap-3`}>
