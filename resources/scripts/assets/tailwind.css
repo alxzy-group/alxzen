@@ -74,15 +74,15 @@
     /* ─── LIGHT MODE ─── */
     .theme-light {
         /* ── Page & Surface ── */
-        --bg-page:            0 0% 99%;
-        --bg-surface:         0 0% 97%;
-        --bg-elevated:        0 0% 100%;
-        --bg-overlay:         0 0% 95%;
+        --bg-page:            210 20% 97%; /* #f5f6f8 style off-white */
+        --bg-surface:         210 20% 95%; /* slightly darker off-white */
+        --bg-elevated:        0 0% 100%; /* Pure white */
+        --bg-overlay:         210 20% 92%;
         --bg-card:            0 0% 100%;
 
         /* ── Borders ── */
-        --border:             220 13% 91%;
-        --border-subtle:      220 13% 94%;
+        --border:             210 14% 85%; /* Darker, more visible border */
+        --border-subtle:      210 14% 90%;
         --border-accent:      199 89% 48% / 0.25;
         --border-focus:       199 89% 44%;
 

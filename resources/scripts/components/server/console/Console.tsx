@@ -90,9 +90,9 @@ export default () => {
                 ...theme,
                 foreground: '#0f172a',
                 cursor: '#0f172a',
-                black: '#ffffff',
+                black: '#0f172a',
                 white: '#334155',
-                brightBlack: 'rgba(0, 0, 0, 0.2)',
+                brightBlack: 'rgba(0, 0, 0, 0.5)',
                 brightWhite: '#020617',
             } : theme;
         }
@@ -256,10 +256,11 @@ export default () => {
         >
             {/* Drag Handle */}
             <div 
-                className="w-full h-8 bg-white/5 hover:bg-white/10 transition-colors cursor-move flex items-center justify-center border-b border-white/10 select-none"
+                className="w-full h-8 transition-colors cursor-move flex items-center justify-center border-b select-none"
+                style={{ backgroundColor: 'hsl(var(--bg-overlay))', borderBottomColor: 'hsl(var(--border))' }}
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <div className="w-16 h-1.5 bg-white/20 rounded-full"></div>
+                <div className="w-16 h-1.5 rounded-full opacity-50" style={{ backgroundColor: 'hsl(var(--text-disabled))' }}></div>
             </div>
 
             <SpinnerOverlay visible={!connected} size={'large'} />
@@ -283,10 +284,7 @@ export default () => {
                         autoCapitalize={'none'}
                     />
                     <div
-                        className={classNames(
-                            'text-gray-100 peer-focus:text-gray-50 peer-focus:animate-pulse',
-                            styles.command_icon
-                        )}
+                        className={styles.command_icon}
                     >
                         <ChevronDoubleRightIcon className={'w-4 h-4'} />
                     </div>

@@ -43,16 +43,30 @@
 
     & .command_icon {
         @apply flex items-center top-0 left-0 absolute z-10 select-none h-full px-3 transition-colors duration-100;
+        color: hsl(var(--text-disabled));
+    }
+
+    & .command_icon:focus-within {
+        color: hsl(var(--accent));
+        @apply animate-pulse;
     }
 
     & .command_input {
-        @apply relative bg-black/40 backdrop-blur-md px-2 text-gray-100 pl-10 pr-4 py-2 w-full font-mono text-sm sm:rounded-b;
+        @apply relative px-2 pl-10 pr-4 py-2 w-full font-mono text-sm sm:rounded-b;
         @apply focus:ring-0 outline-none focus-visible:outline-none;
         @apply border-0 border-b-2 border-transparent transition-colors duration-100;
-        @apply active:border-cyan-500 focus:border-cyan-500;
+        background-color: hsl(var(--bg-overlay));
+        color: hsl(var(--text-primary));
+        border-bottom-color: transparent;
+    }
+
+    & .command_input:active, & .command_input:focus {
+        border-bottom-color: hsl(var(--accent));
     }
 }
 
 .chart_container {
-    @apply bg-black/40 backdrop-blur-md rounded shadow-lg pt-2 border-b border-white/5 relative;
+    @apply rounded shadow-lg pt-2 border-b relative;
+    background-color: hsl(var(--bg-overlay));
+    border-color: hsl(var(--border));
 }
