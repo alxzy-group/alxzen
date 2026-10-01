@@ -71,6 +71,33 @@ export default () => {
     const [history, setHistory] = usePersistedState<string[]>(`${serverId}:command_history`, []);
     const [historyIndex, setHistoryIndex] = useState(-1);
     const dragControls = useDragControls();
+    
+    const [isLightMode, setIsLightMode] = useState(
+        document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light'
+    );
+
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            setIsLightMode(document.documentElement.classList.contains('theme-light'));
+        });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        if (terminal) {
+            terminal.options.theme = isLightMode ? {
+                ...theme,
+                foreground: '#0f172a',
+                cursor: '#0f172a',
+                black: '#ffffff',
+                white: '#334155',
+                brightBlack: 'rgba(0, 0, 0, 0.2)',
+                brightWhite: '#020617',
+            } : theme;
+        }
+    }, [isLightMode, terminal]);
+
     // SearchBarAddon has hardcoded z-index: 999 :(
     const zIndex = `
     .xterm-search-bar__addon {
@@ -220,12 +247,12 @@ export default () => {
             dragControls={dragControls}
             dragListener={false}
             dragMomentum={false}
-            className={classNames(styles.terminal, 'relative rounded-2xl overflow-hidden resize-y transition-shadow duration-500 min-h-[300px] border border-gray-700 bg-[#000000] shadow-2xl', {
+            className={classNames(styles.terminal, 'relative rounded-2xl overflow-hidden resize-y transition-shadow duration-500 min-h-[300px] border shadow-2xl', {
                 'ring-1 ring-sky-500/50 shadow-[0_0_40px_rgba(14,165,233,0.3)]': status === 'running',
                 'ring-1 ring-blue-500/50 shadow-[0_0_40px_rgba(59,130,246,0.3)] animate-pulse': status === 'starting',
                 'ring-1 ring-white/5': status === 'offline' || status === 'stopping',
             })}
-            style={{ zIndex: 40 }}
+            style={{ zIndex: 40, backgroundColor: 'hsl(var(--bg-elevated))', borderColor: 'hsl(var(--border))' }}
         >
             {/* Drag Handle */}
             <div 

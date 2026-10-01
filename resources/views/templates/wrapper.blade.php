@@ -59,7 +59,7 @@
                 
                 function loadParticles() {
                     var isLight = document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
-                    var particleBg = isLight ? "#ffffff" : "#07080a";
+                    var particleBg = "transparent";
                     var particleColor = isLight ? "rgba(14,165,233,0.5)" : "#0ea5e9";
                     var particleOpacity = isLight ? 0.4 : 0.6;
                     
@@ -97,6 +97,12 @@
                     };
 
                     if (configs[themeType] && typeof tsParticles !== 'undefined') {
+                        if (tsParticles.dom) {
+                            var instances = tsParticles.dom();
+                            for (var i = 0; i < instances.length; i++) {
+                                instances[i].destroy();
+                            }
+                        }
                         tsParticles.load("tsparticles-bg", configs[themeType]);
                     }
                 }

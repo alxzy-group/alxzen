@@ -20,10 +20,10 @@
         --black: 208 25% 10%;
 
         /* ── Semantic tokens ── */
-        --bg-page:        240 9% 4%;
-        --bg-surface:     209 20% 8%;
-        --bg-elevated:    209 18% 13%;
-        --border:         209 18% 18%;
+        --bg-page:        0 0% 0%;
+        --bg-surface:     209 20% 6%;
+        --bg-elevated:    209 18% 10%;
+        --border:         209 18% 15%;
         --border-accent:  199 89% 48% / 0.25;
 
         --text-primary:   0 0% 97%;
@@ -54,10 +54,10 @@
         --black: 216 33% 97%;
 
         /* ── Semantic tokens — light mode only ── */
-        --bg-page:        210 20% 94%;
-        --bg-surface:     0 0% 100%;
-        --bg-elevated:    210 20% 90%;
-        --border:         214 15% 82%;
+        --bg-page:        0 0% 100%;
+        --bg-surface:     0 0% 98%;
+        --bg-elevated:    0 0% 96%;
+        --border:         214 15% 90%;
         --border-accent:  199 89% 48% / 0.3;
 
         --text-primary:   220 20% 9%;
