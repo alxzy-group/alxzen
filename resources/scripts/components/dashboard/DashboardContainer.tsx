@@ -82,7 +82,7 @@ const FilterBar = styled(motion.div)`
 
 const FilterLabel = styled.span`
     ${tw`text-[11px] font-bold uppercase tracking-widest`}
-    color: #0ea5e9;
+    color: hsl(var(--accent));
 `;
 
 const Grid = styled.div`
@@ -206,11 +206,11 @@ export default () => {
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ duration: 0.4 }}
                                     >
-                                        <span style={{ fontSize: 36, opacity: 0.15, color: '#e5e5e5' }}>◻</span>
-                                        <p style={{ color: '#e5e5e5', fontWeight: 700, fontSize: 13, letterSpacing: 1, textTransform: 'uppercase', margin: 0 }}>
+                                        <span style={{ fontSize: 36, opacity: 0.15, color: 'hsl(var(--text-primary))' }}>◻</span>
+                                        <p style={{ color: 'hsl(var(--text-secondary))', fontWeight: 700, fontSize: 13, letterSpacing: 1, textTransform: 'uppercase', margin: 0 }}>
                                             No Servers
                                         </p>
-                                        <p style={{ color: '#a3a3a3', fontSize: 12, margin: 0 }}>
+                                        <p style={{ color: 'hsl(var(--text-muted))', fontSize: 12, margin: 0 }}>
                                             Create or assign a server to get started.
                                         </p>
                                     </EmptyState>

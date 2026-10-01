@@ -110,8 +110,8 @@ const StatBox = styled.div`
 
 const StatLabel = styled.div`
     ${tw`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest mb-2`}
-    ${tw`text-gray-400`}
-    svg { color: #0ea5e9; }
+    color: hsl(var(--text-muted));
+    svg { color: hsl(var(--accent)); }
 `;
 
 const StatValue = styled.div`
@@ -215,9 +215,9 @@ export default memo(({ server, className }: { server: Server; className?: string
                         >
                             <FontAwesomeIcon
                                 icon={status === 'starting' ? faBolt : faSignal}
-                                style={{ fontSize: 24, color: status === 'starting' ? '#0ea5e9' : '#333333', marginBottom: 4 }}
+                                style={{ fontSize: 24, color: status === 'starting' ? 'hsl(var(--accent))' : 'hsl(var(--border))', marginBottom: 4 }}
                             />
-                            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#e5e5e5', textTransform: 'uppercase' }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: 'hsl(var(--text-muted))', textTransform: 'uppercase' }}>
                                 {status === 'starting' ? 'Booting...' : 'Offline'}
                             </span>
                         </OfflineState>

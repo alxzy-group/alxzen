@@ -1,73 +1,154 @@
+/* ── Button Base ── */
 .button {
-    @apply px-4 py-2 inline-flex items-center justify-center;
-    @apply rounded text-base font-semibold transition-all duration-100;
-    @apply focus:ring-[3px] focus:ring-offset-2 focus:ring-offset-gray-700 focus:ring-opacity-50;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    border-radius: 10px;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    position: relative;
+    outline: none;
+    user-select: none;
 
-    /* Sizing Controls */
     &.small {
-        @apply px-4 py-0 h-8 font-normal text-sm focus:ring-2;
+        padding: 6px 13px;
+        font-size: 0.8rem;
+        border-radius: 8px;
     }
 
     &.large {
-        @apply px-5 py-3;
-    }
-
-    &.secondary {
-        @apply text-gray-50 bg-transparent;
-
-        &:disabled {
-            background: transparent !important;
-        }
-    }
-
-    &:disabled {
-        @apply cursor-not-allowed;
+        padding: 12px 24px;
+        font-size: 0.95rem;
+        border-radius: 12px;
     }
 
     &.square {
-        @apply p-0 w-12 h-12;
+        padding: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
 
         &.small {
-            @apply w-8 h-8;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
         }
     }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    &.secondary {
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    &:focus-visible {
+        outline: 2px solid hsl(var(--border-focus));
+        outline-offset: 2px;
+    }
 }
 
+/* ── Primary (Sky Blue — Saweria-like) ── */
 .primary {
-    @apply bg-blue-600 text-blue-50;
-    @apply hover:bg-blue-500 active:bg-blue-500 focus:ring-blue-400 focus:ring-opacity-75;
+    background: hsl(var(--accent));
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 2px 8px hsl(var(--accent) / 0.35);
+
+    &:hover:not(:disabled) {
+        background: hsl(var(--accent-hover));
+        box-shadow: 0 4px 16px hsl(var(--accent) / 0.45);
+        transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+        box-shadow: 0 1px 4px hsl(var(--accent) / 0.3);
+    }
 
     &.secondary {
-        @apply hover:bg-blue-600 active:bg-blue-600;
+        color: hsl(var(--accent));
+        border-color: hsl(var(--accent-border));
+
+        &:hover:not(:disabled) {
+            background: hsl(var(--accent-muted)) !important;
+        }
     }
 
     &:disabled {
-        @apply bg-blue-500/75 text-blue-200/75;
+        background: hsl(var(--accent) / 0.5);
+        box-shadow: none;
     }
 }
 
+/* ── Text / Neutral ── */
 .text {
-    @apply bg-gray-500 text-gray-50;
-    @apply hover:bg-gray-400 active:bg-gray-400 focus:ring-gray-300 focus:ring-opacity-50;
+    background: hsl(var(--bg-overlay));
+    color: hsl(var(--text-secondary));
+    border-color: hsl(var(--border));
+
+    &:hover:not(:disabled) {
+        background: hsl(var(--bg-elevated));
+        color: hsl(var(--text-primary));
+        border-color: hsl(var(--border-focus) / 0.4);
+    }
+
+    &:active:not(:disabled) {
+        background: hsl(var(--bg-surface));
+    }
 
     &.secondary {
-        @apply hover:bg-gray-500 active:bg-gray-500;
+        background: transparent;
+        color: hsl(var(--text-secondary));
+
+        &:hover:not(:disabled) {
+            background: hsl(var(--bg-overlay)) !important;
+        }
     }
 
     &:disabled {
-        @apply bg-gray-500/75 text-gray-200/75;
+        color: hsl(var(--text-disabled));
     }
 }
 
+/* ── Danger ── */
 .danger {
-    @apply bg-red-600 text-gray-50;
-    @apply hover:bg-red-500 active:bg-red-500 focus:ring-red-400 focus:ring-opacity-75;
+    background: hsl(var(--danger-muted));
+    color: hsl(var(--danger));
+    border-color: hsl(var(--danger) / 0.3);
+
+    &:hover:not(:disabled) {
+        background: hsl(var(--danger));
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 4px 16px hsl(var(--danger) / 0.4);
+        transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
 
     &.secondary {
-        @apply hover:bg-red-600 active:bg-red-600;
+        background: transparent;
+        color: hsl(var(--danger));
+
+        &:hover:not(:disabled) {
+            background: hsl(var(--danger-muted)) !important;
+        }
     }
 
     &:disabled {
-        @apply bg-red-600/75 text-red-50/75;
+        opacity: 0.5;
     }
 }

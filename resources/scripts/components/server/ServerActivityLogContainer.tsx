@@ -48,11 +48,11 @@ export default () => {
             {!data && isValidating ? (
                 <Spinner centered />
             ) : !data?.items.length ? (
-                <div className={'rounded-xl border border-white/5 bg-[#111]/80 p-8 text-center'}>
-                    <p className={'text-sm text-gray-400'}>No activity logs available for this server.</p>
+                <div style={{ borderRadius: 14, border: '1px dashed hsl(var(--border))', background: 'hsl(var(--bg-surface))', padding: '48px 24px', textAlign: 'center' }}>
+                    <p style={{ fontSize: '0.875rem', color: 'hsl(var(--text-muted))' }}>No activity logs available for this server.</p>
                 </div>
             ) : (
-                <div className={'rounded-xl border border-white/5 bg-[#111]/80 overflow-hidden'}>
+                <div style={{ borderRadius: 14, border: '1.5px solid hsl(var(--border))', background: 'hsl(var(--bg-elevated))', overflow: 'hidden' }}>
                     {data?.items.map((activity, index) => (
                         <ActivityLogEntry key={activity.id} activity={activity}>
                             <span />

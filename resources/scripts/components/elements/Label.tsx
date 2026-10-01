@@ -1,9 +1,16 @@
 import styled from 'styled-components/macro';
-import tw from 'twin.macro';
 
 const Label = styled.label<{ isLight?: boolean }>`
-    ${tw`block text-xs uppercase text-neutral-200 mb-1 sm:mb-2`};
-    ${(props) => props.isLight && tw`text-neutral-700`};
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+    color: hsl(var(--text-muted));
+    margin-bottom: 6px;
+    font-family: 'Inter', sans-serif;
+
+    ${(props) => props.isLight && `color: hsl(var(--text-secondary));`};
 `;
 
 export default Label;

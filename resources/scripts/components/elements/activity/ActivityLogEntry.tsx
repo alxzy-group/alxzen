@@ -44,27 +44,41 @@ export default ({ activity, children }: Props) => {
     const properties = wrapProperties(activity.properties);
 
     return (
-        <div className={'flex items-start gap-4 px-5 py-4 border-b border-white/5 last:border-0 transition-colors hover:bg-white/[0.02] group'}>
+        <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 16,
+            padding: '14px 20px',
+            borderBottom: '1px solid hsl(var(--border))',
+            transition: 'background 0.15s ease',
+        }}
+        className={'last:border-0 group'}
+        onMouseEnter={e => (e.currentTarget.style.background = 'hsl(var(--bg-overlay))')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+        >
             {/* Avatar */}
-            <div className={'hidden sm:flex items-center justify-center flex-shrink-0 mt-0.5'}>
-                <div className={'w-9 h-9 rounded-full overflow-hidden ring-1 ring-white/10'}>
+            <div style={{ flexShrink: 0, marginTop: 2 }} className={'hidden sm:flex'}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', overflow: 'hidden', border: '1.5px solid hsl(var(--border))' }}>
                     <Avatar name={actor?.uuid || 'system'} />
                 </div>
             </div>
             {/* Content */}
-            <div className={'flex-1 min-w-0'}>
-                <div className={'flex items-center gap-2 flex-wrap'}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                     <Tooltip placement={'top'} content={actor?.email || 'System User'}>
-                        <span className={'text-sm font-semibold text-gray-100'}>{actor?.username || 'System'}</span>
+                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'hsl(var(--text-primary))' }}>
+                            {actor?.username || 'System'}
+                        </span>
                     </Tooltip>
-                    <span className={'text-gray-600'}>&mdash;</span>
+                    <span style={{ color: 'hsl(var(--border))' }}>&mdash;</span>
                     <Link
                         to={`#${pathTo({ event: activity.event })}`}
-                        className={'text-sm text-[#38bdf8] hover:text-[#7dd3fc] transition-colors font-mono'}
+                        style={{ fontSize: '0.8125rem', color: 'hsl(var(--accent))', fontFamily: 'monospace', textDecoration: 'none' }}
+                        className={'hover:opacity-80 transition-opacity'}
                     >
                         {activity.event}
                     </Link>
-                    <div className={classNames(style.icons, 'group-hover:text-gray-300')}>
+                    <div className={classNames(style.icons)} style={{ color: 'hsl(var(--text-muted))' }}>
                         {activity.isApi && (
                             <Tooltip placement={'top'} content={'Using API Key'}>
                                 <TerminalIcon />
@@ -78,12 +92,13 @@ export default ({ activity, children }: Props) => {
                         {children}
                     </div>
                 </div>
+                <p className={style.description} style={{ color: 'hsl(var(--text-secondary))' }} />
                 <p className={style.description}>
                     <Translate ns={'activity'} values={properties} i18nKey={activity.event.replace(':', '.')} />
                 </p>
-                <div className={'mt-1.5 flex items-center gap-2 text-xs text-gray-500'}>
+                <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.75rem', color: 'hsl(var(--text-muted))' }}>
                     {activity.ip && (
-                        <span className={'font-mono bg-white/5 px-1.5 py-0.5 rounded text-[11px]'}>
+                        <span style={{ fontFamily: 'monospace', background: 'hsl(var(--bg-overlay))', padding: '2px 8px', borderRadius: 6, fontSize: '0.6875rem', border: '1px solid hsl(var(--border))' }}>
                             {activity.ip}
                         </span>
                     )}
@@ -94,7 +109,7 @@ export default ({ activity, children }: Props) => {
             </div>
             {/* Meta button */}
             {activity.hasAdditionalMetadata && (
-                <div className={'flex-shrink-0 self-center'}>
+                <div style={{ flexShrink: 0, alignSelf: 'center' }}>
                     <ActivityLogMetaButton meta={activity.properties} />
                 </div>
             )}

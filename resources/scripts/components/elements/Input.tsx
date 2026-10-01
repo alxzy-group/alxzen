@@ -6,15 +6,61 @@ export interface Props {
     hasError?: boolean;
 }
 
-const light = css<Props>`
-    ${tw`bg-white border-neutral-200 text-neutral-800`};
-    &:focus {
-        ${tw`border-primary-400`}
+const inputStyle = css<Props>`
+    resize: none;
+    width: 100%;
+    min-width: 0;
+    appearance: none;
+    outline: none;
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    border-radius: var(--radius, 10px);
+    border: 1.5px solid hsl(var(--input-border));
+    background: hsl(var(--input-bg));
+    color: hsl(var(--input-text));
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+
+    &::placeholder {
+        color: hsl(var(--input-placeholder));
+    }
+
+    & + .input-help {
+        margin-top: 5px;
+        font-size: 0.75rem;
+        color: ${(props: Props) => props.hasError ? 'hsl(var(--danger))' : 'hsl(var(--text-muted))'};
+    }
+
+    &:required,
+    &:invalid {
+        box-shadow: none;
+    }
+
+    &:not(:disabled):not(:read-only):focus {
+        outline: none;
+        border-color: hsl(var(--border-focus));
+        box-shadow: 0 0 0 3px hsl(var(--accent-border)), 0 0 0 1px hsl(var(--border-focus));
+        background: hsl(var(--input-bg));
+        ${(props: Props) => props.hasError && `border-color: hsl(var(--danger)); box-shadow: 0 0 0 3px hsl(var(--danger-muted));`};
+    }
+
+    &:read-only:not(:disabled) {
+        cursor: default;
+        opacity: 0.7;
     }
 
     &:disabled {
-        ${tw`bg-neutral-100 border-neutral-200`};
+        opacity: 0.45;
+        cursor: not-allowed;
     }
+
+    ${(props: Props) => props.hasError && `
+        border-color: hsl(var(--danger));
+        color: hsl(var(--input-text));
+    `};
 `;
 
 const checkboxStyle = css<Props>`
@@ -36,47 +82,6 @@ const checkboxStyle = css<Props>`
     }
 `;
 
-const inputStyle = css<Props>`
-    // Reset to normal styling.
-    resize: none;
-    ${tw`appearance-none outline-none w-full min-w-0`};
-    ${tw`p-3 border-2 text-sm transition-all duration-150`};
-    border-radius: 0;
-    background: rgba(0, 0, 0, 0.5);
-    border-color: rgba(229, 9, 20, 0.2);
-    color: #cbd5e1;
-    box-shadow: none;
-
-    &::placeholder {
-        color: #374151;
-    }
-
-    & + .input-help {
-        ${tw`mt-1 text-xs`};
-        color: ${(props: Props) => props.hasError ? '#fca5a5' : '#4b5563'};
-    }
-
-    &:required,
-    &:invalid {
-        ${tw`shadow-none`};
-    }
-
-    &:not(:disabled):not(:read-only):focus {
-        outline: none;
-        border-color: rgba(124, 58, 237, 0.6);
-        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12), 0 0 14px rgba(124, 58, 237, 0.15);
-        background: rgba(124, 58, 237, 0.04);
-        ${(props: Props) => props.hasError && tw`border-red-400`};
-    }
-
-    &:disabled {
-        ${tw`opacity-50`};
-    }
-
-    ${(props: Props) => props.isLight && light};
-    ${(props: Props) => props.hasError && `border-color: rgba(239,68,68,0.6); color: #fca5a5;`};
-`;
-
 const Input = styled.input<Props>`
     &:not([type='checkbox']):not([type='radio']) {
         ${inputStyle};
@@ -91,6 +96,7 @@ const Input = styled.input<Props>`
         }
     }
 `;
+
 const Textarea = styled.textarea<Props>`
     ${inputStyle}
 `;
