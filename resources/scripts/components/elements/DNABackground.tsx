@@ -1,5 +1,6 @@
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes } from 'styled-components/macro';
+import tw from 'twin.macro';
 
 const moveAnimation = keyframes`
   0% { transform: translateY(0) rotate(0deg); opacity: 0; }
