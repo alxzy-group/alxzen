@@ -1,16 +1,16 @@
 const colors = require('tailwindcss/colors');
 
 const gray = {
-    50: 'hsl(216, 33%, 97%)',
-    100: 'hsl(214, 15%, 91%)',
-    200: 'hsl(210, 16%, 82%)',
-    300: 'hsl(211, 13%, 65%)',
-    400: 'hsl(211, 10%, 53%)',
-    500: 'hsl(211, 12%, 43%)',
-    600: 'hsl(209, 14%, 37%)',
-    700: 'hsl(209, 18%, 30%)',
-    800: 'hsl(209, 20%, 25%)',
-    900: 'hsl(210, 24%, 16%)',
+    50: 'hsl(var(--gray-50) / <alpha-value>)',
+    100: 'hsl(var(--gray-100) / <alpha-value>)',
+    200: 'hsl(var(--gray-200) / <alpha-value>)',
+    300: 'hsl(var(--gray-300) / <alpha-value>)',
+    400: 'hsl(var(--gray-400) / <alpha-value>)',
+    500: 'hsl(var(--gray-500) / <alpha-value>)',
+    600: 'hsl(var(--gray-600) / <alpha-value>)',
+    700: 'hsl(var(--gray-700) / <alpha-value>)',
+    800: 'hsl(var(--gray-800) / <alpha-value>)',
+    900: 'hsl(var(--gray-900) / <alpha-value>)',
 };
 
 module.exports = {
@@ -23,7 +23,7 @@ module.exports = {
                 header: ['"IBM Plex Sans"', '"Roboto"', 'system-ui', 'sans-serif'],
             },
             colors: {
-                black: '#131a20',
+                black: 'hsl(var(--black) / <alpha-value>)',
                 // "primary" and "neutral" are deprecated, prefer the use of "blue" and "gray"
                 // in new code.
                 primary: colors.blue,

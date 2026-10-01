@@ -6,7 +6,7 @@ import {
     faBars, faTimes, faServer, faCogs, faUserCircle, faSignOutAlt, 
     faTerminal, faFolderOpen, faDatabase, faCalendarAlt, faUsers, 
     faNetworkWired, faBoxOpen, faCloudDownloadAlt,
-    faKey, faHistory, faUnlockAlt, faGlobe
+    faKey, faHistory, faUnlockAlt, faGlobe, faSun, faMoon
 } from '@fortawesome/free-solid-svg-icons';
 import { useStoreState } from 'easy-peasy';
 import { ApplicationStore } from '@/state';
@@ -24,7 +24,7 @@ import Avatar from '@/components/Avatar';
 
 const NavContainer = styled.div`
     ${tw`fixed top-0 left-0 right-0 z-50 h-20`}
-    background: rgba(17, 17, 17, 0.88);
+    background: hsl(var(--gray-900) / 0.88);
     border-bottom: 1px solid rgba(14, 165, 233, 0.15);
     backdrop-filter: blur(20px);
     transition: all 0.3s ease;
@@ -43,7 +43,7 @@ const RightSection = styled.div`
 `;
 
 const Logo = styled(Link)`
-    ${tw`text-xl md:text-2xl font-black tracking-tighter text-white no-underline block`}
+    ${tw`text-xl md:text-2xl font-black tracking-tighter text-gray-50 no-underline block`}
     span {
         background: linear-gradient(90deg, #38bdf8, #0ea5e9);
         -webkit-background-clip: text;
@@ -62,7 +62,7 @@ const SidebarOverlay = styled.div<{ $open: boolean }>`
 
 const Sidebar = styled.div<{ $open: boolean }>`
     ${tw`fixed top-0 left-0 bottom-0 w-[300px] z-[70] flex flex-col`}
-    background: rgba(17, 17, 17, 0.6);
+    background: hsl(var(--gray-900) / 0.85);
     backdrop-filter: blur(16px);
     border-right: 1px solid rgba(14, 165, 233, 0.2);
     box-shadow: ${props => props.$open ? '10px 0 40px rgba(14, 165, 233, 0.15)' : 'none'};
@@ -170,6 +170,16 @@ export default () => {
     const match = useRouteMatch<{ id: string }>('/server/:id');
     const serverId = match?.params.id;
     const location = useLocation();
+    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+
+    useEffect(() => {
+        if (theme === 'light') {
+            document.documentElement.classList.add('theme-light');
+        } else {
+            document.documentElement.classList.remove('theme-light');
+        }
+        localStorage.setItem('theme', theme);
+    }, [theme]);
 
     useEffect(() => { setIsOpen(false); }, [location.pathname]);
 
@@ -195,6 +205,9 @@ export default () => {
 
                     <RightSection>
                         <SearchContainer />
+                        <MenuButton onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} style={{ borderRadius: '50%', width: 40 }}>
+                            <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} />
+                        </MenuButton>
                         <div style={{ width: 40, height: 40, overflow: 'hidden', border: '1px solid rgba(14,165,233,0.25)', boxShadow: '0 0 12px rgba(14,165,233,0.15)' }}>
                             <Avatar.User />
                         </div>
@@ -207,7 +220,7 @@ export default () => {
             <SidebarOverlay $open={isOpen} onClick={() => setIsOpen(false)} />
             <Sidebar $open={isOpen}>
                 <SidebarHeader>
-                    <div style={{ fontSize: 18, fontWeight: 900, color: '#fff', letterSpacing: '-0.5px' }}>
+                    <div style={{ fontSize: 18, fontWeight: 900, color: 'hsl(var(--gray-50))', letterSpacing: '-0.5px' }}>
                         Main<span style={{ background: 'linear-gradient(90deg,#38bdf8,#0ea5e9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Menu</span>
                     </div>
                     <button onClick={() => setIsOpen(false)} style={{ color: '#4b5563', transition: 'color 0.2s' }}
@@ -287,7 +300,7 @@ export default () => {
                             <Avatar.User />
                         </div>
                         <div css={tw`flex-1 min-w-0`}>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{user.username}</div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: 'hsl(var(--gray-50))' }}>{user.username}</div>
                             <div style={{ fontSize: 10, color: '#0ea5e9', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                                 {user.rootAdmin ? 'Administrator' : 'User'}
                             </div>

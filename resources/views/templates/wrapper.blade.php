@@ -2,6 +2,11 @@
 <html>
     <head>
         <title>{{ config('app.name', 'alxzen') }}</title>
+        <script>
+            if (localStorage.getItem('theme') === 'light') {
+                document.documentElement.classList.add('theme-light');
+            }
+        </script>
 
         @section('meta')
             <meta charset="utf-8">
@@ -16,7 +21,7 @@
             <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#bc6e3c">
             <link rel="shortcut icon" href="/favicons/favicon.ico">
             <meta name="msapplication-config" content="/favicons/browserconfig.xml">
-            <meta name="theme-color" content="#0e4688">
+            <meta name="theme-color" content="#0ea5e9">
         @show
 
         @section('user-data')
@@ -36,7 +41,7 @@
 
         @include('layouts.scripts')
     </head>
-    <body class="{{ $css['body'] ?? 'bg-neutral-50' }}">
+    <body class="{{ $css['body'] ?? 'bg-neutral-900 text-neutral-50' }}">
         @section('content')
             @yield('above-container')
             @yield('container')
@@ -54,7 +59,7 @@
                 
                 var configs = {
                     network: {
-                        background: { color: { value: "#09090b" } },
+                        background: { color: { value: "transparent" } },
                         fpsLimit: 60,
                         interactivity: {
                             events: { onHover: { enable: true, mode: "grab" }, resize: true },
@@ -71,7 +76,7 @@
                         detectRetina: true
                     },
                     bubbles: {
-                        background: { color: { value: "#09090b" } },
+                        background: { color: { value: "transparent" } },
                         fpsLimit: 60,
                         interactivity: { events: { resize: true } },
                         particles: {
