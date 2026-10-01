@@ -566,6 +566,11 @@ systemctl restart nginx
 
 ## 📝 Changelog
 
+### v4.1.13 — Global Light Theme Mode
+- **feat:** Implemented a non-destructive Global Light Mode utilizing CSS Variable inversion.
+- **feat:** Added a Theme Toggle button (☀️/🌙) to the top Navigation Bar.
+- **fix:** Removed hardcoded hex values in `tailwind.config.js` and replaced them with dynamic CSS variables to seamlessly switch palettes without overriding custom dark themes.
+
 ### v4.1.12 — UI Upgrades & Setup Script Dependability
 - **feat:** Added a draggable terminal window on the Server Console page using `framer-motion` for smoother UX.
 - **style:** Overhauled the `503` Maintenance page with a premium Glassmorphism design and friendly ID error text.
