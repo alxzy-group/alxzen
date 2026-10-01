@@ -17,13 +17,13 @@ interface StatBlockProps {
 
 const StatContainer = styled.div`
     ${tw`relative flex items-center justify-between rounded-full px-4 py-2 overflow-hidden transition-all duration-300 gap-3`}
-    background-color: hsl(var(--gray-800));
-    border: 1px solid hsl(var(--gray-700));
+    background-color: hsl(var(--bg-elevated));
+    border: 1px solid hsl(var(--border));
     backdrop-filter: blur(12px);
     z-index: 1;
 
     &:hover {
-        background-color: hsl(var(--gray-700));
+        background-color: hsl(var(--bg-surface));
         border: 1px solid rgba(56, 189, 248, 0.4);
         box-shadow: 0 4px 15px rgba(56, 189, 248, 0.15);
     }
@@ -45,8 +45,8 @@ export default ({ title, copyOnClick, children, icon, className }: StatBlockProp
                 <FontAwesomeIcon icon={icon} />
             </IconWrapper>
             <ContentWrapper>
-                <p css={tw`text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-tight`}>{title}</p>
-                <div css={tw`text-sm font-semibold text-gray-100 leading-tight`}>
+                <p css={tw`text-[9px] font-bold uppercase tracking-widest leading-tight`} style={{ color: 'hsl(var(--text-muted))' }}>{title}</p>
+                <div css={tw`text-sm font-semibold leading-tight`} style={{ color: 'hsl(var(--text-primary))' }}>
                     {copyOnClick ? (
                         <CopyOnClick text={copyOnClick}>
                             <p>{children}</p>

@@ -3,15 +3,15 @@ import tw from 'twin.macro';
 
 export default styled.div<{ $hoverable?: boolean }>`
     ${tw`flex rounded-2xl mb-2 items-center p-4 transition-all duration-300 relative overflow-hidden`}
-    background-color: hsl(var(--gray-800));
-    border: 1px solid hsl(var(--gray-700));
+    background-color: hsl(var(--bg-elevated));
+    border: 1px solid hsl(var(--border));
     backdrop-filter: blur(12px);
 
     ${(props) =>
         props.$hoverable !== false &&
         `
         &:hover {
-            background-color: hsl(var(--gray-700));
+            background-color: hsl(var(--bg-surface));
             border: 1px solid rgba(56, 189, 248, 0.4);
             transform: scale(1.01) translateY(-1px);
             box-shadow: 0 8px 30px rgba(56, 189, 248, 0.15);
@@ -20,7 +20,8 @@ export default styled.div<{ $hoverable?: boolean }>`
     `}
 
     & .icon {
-        ${tw`rounded-full w-16 flex items-center justify-center bg-gray-800/50 p-3 text-[#38bdf8]`};
-        border: 1px solid rgba(255,255,255,0.05);
+        ${tw`rounded-full w-16 flex items-center justify-center p-3 text-[#38bdf8]`};
+        background: hsl(var(--bg-surface));
+        border: 1px solid hsl(var(--border));
     }
 `;

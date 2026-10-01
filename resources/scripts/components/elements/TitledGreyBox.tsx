@@ -15,13 +15,14 @@ import styled from 'styled-components/macro';
 
 const Wrapper = styled.div`
     ${tw`rounded-2xl shadow-xl transition-all duration-300 relative overflow-hidden`}
-    background-color: hsl(var(--gray-800));
-    border: 1px solid hsl(var(--gray-700));
+    background-color: hsl(var(--bg-elevated));
+    border: 1px solid hsl(var(--border));
     backdrop-filter: blur(12px);
 
     & > .title {
-        ${tw`px-6 py-4 border-b text-sm font-bold tracking-widest uppercase text-gray-400`}
-        border-color: hsl(var(--gray-700));
+        ${tw`px-6 py-4 border-b text-sm font-bold tracking-widest uppercase`}
+        color: hsl(var(--text-muted));
+        border-color: hsl(var(--border));
     }
     
     & > .content {

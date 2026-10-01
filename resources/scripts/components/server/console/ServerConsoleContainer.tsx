@@ -90,10 +90,10 @@ const ServerConsoleContainer = () => {
             )}
             <div className={'grid grid-cols-4 gap-4 mb-4'}>
                 <div className={'hidden sm:block sm:col-span-2 lg:col-span-3 pr-4'}>
-                    <h1 className={'text-4xl font-black text-white tracking-tighter mb-1 line-clamp-1'}>
+                    <h1 className={'text-4xl font-black tracking-tighter mb-1 line-clamp-1'} style={{ color: 'hsl(var(--text-primary))' }}>
                         {name}
                     </h1>
-                    <p className={'text-sm font-medium text-gray-400 line-clamp-2'}>{description}</p>
+                    <p className={'text-sm font-medium line-clamp-2'} style={{ color: 'hsl(var(--text-muted))' }}>{description}</p>
                 </div>
                 <div className={'col-span-4 sm:col-span-2 lg:col-span-1 self-end'}>
                     <Can action={['control.start', 'control.stop', 'control.restart']} matchAny>

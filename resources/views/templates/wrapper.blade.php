@@ -59,7 +59,7 @@
                 
                 function loadParticles() {
                     var isLight = document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
-                    var particleBg = isLight ? "transparent" : "#07080a";
+                    var particleBg = isLight ? "#ffffff" : "#07080a";
                     var particleColor = isLight ? "rgba(14,165,233,0.5)" : "#0ea5e9";
                     var particleOpacity = isLight ? 0.4 : 0.6;
                     

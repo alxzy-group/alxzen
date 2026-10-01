@@ -33,10 +33,10 @@ export default ({ domain, onDeleted, onUpdated }: Props) => {
     };
 
     return (
-        <div className="bg-black/20 border border-white/5 p-4 rounded-xl mb-4 transition-all hover:bg-black/30">
+        <div className="border p-4 rounded-xl mb-4 transition-all" style={{ backgroundColor: 'hsl(var(--bg-elevated))', borderColor: 'hsl(var(--border))' }}>
             <div className="flex items-center justify-between">
                 <div className="flex flex-col">
-                    <span className="text-lg text-gray-200 font-mono">{domain.domain}</span>
+                    <span className="text-lg font-mono" style={{ color: 'hsl(var(--text-primary))' }}>{domain.domain}</span>
                     <div className="mt-1 flex items-center">
                         <span className="text-emerald-400 text-sm flex items-center gap-2">
                             <FontAwesomeIcon icon={faCheckCircle} /> Connected
