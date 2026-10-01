@@ -18,13 +18,6 @@ import { createGlobalStyle } from 'styled-components';
 import BackgroundEngine from '@/components/elements/BackgroundEngine';
 
 const GlobalScrollbar = createGlobalStyle`
-    body {
-        ${tw`bg-neutral-900 text-gray-100 overflow-x-hidden`}
-        background-color: #09090b;
-        background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #09090b 40%);
-        min-height: 100vh;
-    }
-    
     ::-webkit-scrollbar {
         width: 4px;
         height: 4px;

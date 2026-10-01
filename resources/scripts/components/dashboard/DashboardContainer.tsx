@@ -73,9 +73,9 @@ const SubTitle = styled.p`
 
 const FilterBar = styled(motion.div)`
     ${tw`flex items-center gap-4 px-5 py-3`}
-    background: rgba(17, 17, 17, 0.6);
+    background: hsl(var(--gray-800) / 0.6);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.08);
+    ${tw`border border-gray-700`}
     border-radius: 12px;
 `;
 

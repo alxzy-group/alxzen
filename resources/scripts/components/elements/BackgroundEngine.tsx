@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import DNABackground from '@/components/elements/DNABackground';
 
 const BackgroundWrapper = styled.div`
+    ${tw`bg-gray-900`}
     position: fixed;
     top: 0;
     left: 0;
@@ -15,12 +16,10 @@ const BackgroundWrapper = styled.div`
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
-    background: #09090b;
 `;
 
 const MediaOverlay = styled(motion.div)`
-    ${tw`absolute inset-0 w-full h-full`}
-    background: #09090b;
+    ${tw`absolute inset-0 w-full h-full bg-gray-900`}
     img, video {
         ${tw`w-full h-full object-cover`}
         opacity: 0.55;

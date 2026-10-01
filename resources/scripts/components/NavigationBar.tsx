@@ -23,10 +23,8 @@ import Avatar from '@/components/Avatar';
 // Surface: rgba(14,165,233,0.06) border rgba(14,165,233,0.18)
 
 const NavContainer = styled.div`
-    ${tw`fixed top-0 left-0 right-0 z-50 h-20`}
-    background: hsl(var(--gray-900) / 0.88);
+    ${tw`fixed top-0 left-0 right-0 z-50 h-20 bg-gray-900`}
     border-bottom: 1px solid rgba(14, 165, 233, 0.15);
-    backdrop-filter: blur(20px);
     transition: all 0.3s ease;
 `;
 
@@ -146,7 +144,7 @@ const UserFooter = styled.div`
 `;
 
 const MenuButton = styled.button`
-    ${tw`w-10 h-10 flex items-center justify-center text-gray-400 transition-all duration-200`}
+    ${tw`w-10 h-10 flex items-center justify-center text-gray-200 transition-all duration-200 hover:text-gray-50`}
     background: rgba(14, 165, 233, 0.06);
     border: 1px solid rgba(14, 165, 233, 0.12);
     border-radius: 12px;

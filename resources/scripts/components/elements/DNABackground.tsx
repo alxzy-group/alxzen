@@ -16,8 +16,7 @@ const BackgroundContainer = styled.div`
     height: 100vh;
     z-index: -1;
     overflow: hidden;
-    background-color: #09090b; /* AMOLED black */
-    background-image: radial-gradient(circle at 50% 0%, #0c4a6e 0%, #09090b 60%); /* Sky Dark Blue glow */
+    ${tw`bg-gray-900`}
 `;
 
 const Particle = styled.div<{ $left: string; $size: string; $delay: string; $duration: string }>`

@@ -17,13 +17,13 @@ interface StatBlockProps {
 
 const StatContainer = styled.div`
     ${tw`relative flex items-center justify-between rounded-full px-4 py-2 overflow-hidden transition-all duration-300 gap-3`}
-    background-color: rgba(17, 17, 17, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: hsl(var(--gray-800));
+    border: 1px solid hsl(var(--gray-700));
     backdrop-filter: blur(12px);
     z-index: 1;
 
     &:hover {
-        background-color: rgba(17, 17, 17, 1);
+        background-color: hsl(var(--gray-700));
         border: 1px solid rgba(56, 189, 248, 0.4);
         box-shadow: 0 4px 15px rgba(56, 189, 248, 0.15);
     }

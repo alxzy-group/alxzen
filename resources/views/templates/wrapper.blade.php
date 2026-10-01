@@ -56,10 +56,12 @@
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 var themeType = (window.SiteConfiguration && window.SiteConfiguration.theme && window.SiteConfiguration.theme.type) || 'network';
+                var isLight = document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
+                var particleBg = isLight ? "transparent" : "#09090b";
                 
                 var configs = {
                     network: {
-                        background: { color: { value: "transparent" } },
+                        background: { color: { value: particleBg } },
                         fpsLimit: 60,
                         interactivity: {
                             events: { onHover: { enable: true, mode: "grab" }, resize: true },
@@ -76,7 +78,7 @@
                         detectRetina: true
                     },
                     bubbles: {
-                        background: { color: { value: "transparent" } },
+                        background: { color: { value: particleBg } },
                         fpsLimit: 60,
                         interactivity: { events: { resize: true } },
                         particles: {

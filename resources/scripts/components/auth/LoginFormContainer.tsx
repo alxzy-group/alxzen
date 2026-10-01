@@ -36,11 +36,10 @@ const Wrapper = styled.div`
 `;
 
 const GlassCard = styled(motion.div)`
-    ${tw`relative z-10 w-full max-w-md p-8 sm:p-10 rounded-2xl flex flex-col`}
-    background: rgba(20, 20, 22, 0.7);
+    ${tw`relative z-10 w-full max-w-md p-8 sm:p-10 rounded-2xl flex flex-col bg-gray-800`}
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(14, 165, 233, 0.15);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 `;
 
 const HeaderSection = styled.div`
@@ -48,9 +47,9 @@ const HeaderSection = styled.div`
 `;
 
 const BrandTitle = styled.h1`
-    ${tw`text-3xl font-bold tracking-tight text-white mb-2`}
+    ${tw`text-3xl font-bold tracking-tight text-gray-50 mb-2`}
     span {
-        ${tw`text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500`}
+        ${tw`text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-600`}
     }
 `;
 

@@ -220,10 +220,10 @@ export default () => {
             dragControls={dragControls}
             dragListener={false}
             dragMomentum={false}
-            className={classNames(styles.terminal, 'relative rounded-2xl overflow-hidden resize-y transition-shadow duration-500 min-h-[300px] border border-white/10 bg-black/60 backdrop-blur-xl', {
+            className={classNames(styles.terminal, 'relative rounded-2xl overflow-hidden resize-y transition-shadow duration-500 min-h-[300px] border border-gray-700 bg-[#000000] shadow-2xl', {
                 'ring-1 ring-sky-500/50 shadow-[0_0_40px_rgba(14,165,233,0.3)]': status === 'running',
                 'ring-1 ring-blue-500/50 shadow-[0_0_40px_rgba(59,130,246,0.3)] animate-pulse': status === 'starting',
-                'ring-1 ring-white/5 shadow-2xl': status === 'offline' || status === 'stopping',
+                'ring-1 ring-white/5': status === 'offline' || status === 'stopping',
             })}
             style={{ zIndex: 40 }}
         >

@@ -16,14 +16,14 @@
 
 .file_row {
     @apply cursor-pointer no-underline transition-all duration-200;
-    background-color: rgba(17, 17, 17, 0.4);
+    background-color: hsl(var(--gray-800) / 0.4);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid hsl(var(--gray-700));
     position: relative;
     overflow: hidden;
 
     &:hover, &:focus-within {
-        background-color: rgba(25, 25, 25, 0.6);
+        background-color: hsl(var(--gray-700) / 0.6);
         border-color: rgba(56, 189, 248, 0.3);
         box-shadow: 0 4px 16px rgba(56, 189, 248, 0.08);
     }
@@ -41,7 +41,7 @@
         align-items: center;
         justify-content: center;
         text-decoration: none;
-        color: #d1d5db;
+        color: hsl(var(--gray-400));
         width: 100%;
         min-width: 0;
         overflow: hidden;
@@ -52,7 +52,7 @@
         &:not(a) { cursor: default; }
     }
     
-    &:hover > .details { color: #fff; }
+    &:hover > .details { color: hsl(var(--gray-100)); }
 }
 
 .list_view {
@@ -63,19 +63,19 @@
 
     & > .details {
         @apply flex flex-1 items-center no-underline overflow-hidden;
-        color: #d1d5db;
+        color: hsl(var(--gray-400));
         min-width: 0;
         transition: color 0.2s;
         &:not(a) { cursor: default; }
     }
     
-    &:hover > .details { color: #fff; }
+    &:hover > .details { color: hsl(var(--gray-100)); }
 }
 
 .is_selected {
     background-color: rgba(56, 189, 248, 0.08) !important;
     border-color: rgba(56, 189, 248, 0.4) !important;
     & > .details {
-        color: #fff;
+        color: hsl(var(--gray-100));
     }
 }

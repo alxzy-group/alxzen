@@ -8,8 +8,8 @@ interface ChartBlockProps {
 }
 
 const Container = styled.div`
-    background: rgba(17, 17, 17, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: hsl(var(--gray-800));
+    border: 1px solid hsl(var(--gray-700));
     border-radius: 16px;
     overflow: hidden;
     position: relative;
@@ -28,7 +28,7 @@ const Header = styled.div`
     align-items: center;
     justify-content: space-between;
     padding: 12px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid hsl(var(--gray-700));
     background: transparent;
 `;
 
@@ -37,7 +37,7 @@ const Title = styled.h3`
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #e2e8f0;
+    color: hsl(var(--gray-100));
     margin: 0;
 `;
 

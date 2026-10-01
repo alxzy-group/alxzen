@@ -30,10 +30,9 @@ const globalStyles = `
 const InjectStyles = () => <style dangerouslySetInnerHTML={{ __html: globalStyles }} />;
 
 const CardWrapper = styled(motion(Link))<{ $status: string }>`
-    ${tw`relative block w-full overflow-hidden`}
-    background: rgba(17, 17, 17, 0.6);
+    ${tw`relative block w-full overflow-hidden border border-gray-700`}
+    background: hsl(var(--gray-800) / 0.6);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
     border-left: 3px solid ${({ $status }) =>
         $status === 'running'  ? '#4ade80' :
         $status === 'starting' ? '#0ea5e9' :
@@ -45,19 +44,14 @@ const CardWrapper = styled(motion(Link))<{ $status: string }>`
 `;
 
 const Header = styled.div`
-    ${tw`p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3`}
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    ${tw`p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-700`}
     background: transparent;
 `;
 
 const ServerIconBox = styled.div`
-    width: 36px; height: 36px;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px;
-    color: #a1a1aa;
-    font-size: 13px;
+    ${tw`w-9 h-9 flex items-center justify-center border border-gray-600 rounded-lg text-[13px] text-gray-400`}
+    background: hsl(var(--gray-700) / 0.3);
+
     flex-shrink: 0;
 `;
 
@@ -68,8 +62,7 @@ const ServerName = styled.h3`
 const ConnectionBadge = styled.div`
     ${tw`flex items-center gap-1.5 text-[11px] font-mono mt-1.5`}
     color: #a1a1aa;
-    background: #000000;
-    border: 1px solid rgba(255,255,255,0.08);
+    ${tw`flex items-center gap-2 px-3 py-1 bg-black border border-gray-700 rounded-md text-[11px] font-mono`}
     border-radius: 6px;
     padding: 2px 8px;
 `;
@@ -81,15 +74,15 @@ const StatusBadge = styled.div<{ $status: string }>`
     background: ${({ $status }) =>
         $status === 'running'  ? 'rgba(34,197,94,0.1)'    :
         $status === 'starting' ? 'rgba(14,165,233,0.12)' :
-        $status === 'offline'  ? 'rgba(255,255,255,0.08)'  : 'rgba(234,179,8,0.1)'};
+        $status === 'offline'  ? 'hsl(var(--gray-700) / 0.5)'  : 'rgba(234,179,8,0.1)'};
     color: ${({ $status }) =>
         $status === 'running'  ? '#4ade80' :
         $status === 'starting' ? '#38bdf8' :
-        $status === 'offline'  ? '#a1a1aa' : '#facc15'};
+        $status === 'offline'  ? 'hsl(var(--gray-300))' : '#facc15'};
     border: 1px solid ${({ $status }) =>
         $status === 'running'  ? 'rgba(34,197,94,0.2)'    :
         $status === 'starting' ? 'rgba(14,165,233,0.3)'  :
-        $status === 'offline'  ? 'rgba(255,255,255,0.15)'  : 'rgba(234,179,8,0.2)'};
+        $status === 'offline'  ? 'hsl(var(--gray-600) / 0.5)'  : 'rgba(234,179,8,0.2)'};
 
     .dot {
         width: 6px; height: 6px;
@@ -106,13 +99,13 @@ const StatsGrid = styled.div`
 const StatBox = styled.div`
     ${tw`flex flex-col px-5 py-4`}
     transition: background 0.2s;
-    &:not(:last-child) { border-right: 1px solid rgba(255,255,255,0.04); }
-    &:hover { background: rgba(255,255,255,0.02); }
+    &:not(:last-child) { ${tw`border-r border-gray-700`} }
+    &:hover { background: hsl(var(--gray-700) / 0.3); }
 `;
 
 const StatLabel = styled.div`
     ${tw`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest mb-2`}
-    color: rgba(255,255,255,0.5);
+    ${tw`text-gray-400`}
     svg { color: #0ea5e9; }
 `;
 
@@ -123,7 +116,7 @@ const StatValue = styled.div`
 
 const BarTrack = styled.div`
     width: 100%; height: 2px;
-    background: rgba(255,255,255,0.08);
+    ${tw`bg-gray-700`}
 `;
 
 const BarFill = styled(motion.div)<{ $color: string }>`
