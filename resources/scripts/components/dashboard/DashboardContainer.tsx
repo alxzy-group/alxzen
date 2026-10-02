@@ -141,7 +141,6 @@ export default () => {
     return (
         <PageContentBlock title={'Dashboard'} showFlashKey={'dashboard'} className="!mt-0 sm:!mt-0">
             <style dangerouslySetInnerHTML={{ __html: dashboardStyles }} />
-            <NavigationBar />
             
             {/* Banner Section */}
             {(() => {
@@ -166,8 +165,7 @@ export default () => {
                             aspectRatio: '16/9', 
                             backgroundColor: 'hsl(var(--bg-elevated))', 
                             borderBottom: '1px solid hsl(var(--border))',
-                            minHeight: '300px',
-                            maxHeight: '800px'
+                            maxHeight: '400px'
                         }}
                     >
                         {isVideo ? (
