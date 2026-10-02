@@ -150,6 +150,46 @@ export default () => {
             <style dangerouslySetInnerHTML={{ __html: dashboardStyles }} />
             <NavigationBar />
             <RootContainer>
+                {/* Banner Section */}
+                {(() => {
+                    const bannerUrl = (window as any).SiteConfiguration?.dashboard_banner;
+                    if (!bannerUrl) return null;
+
+                    const isVideo = bannerUrl.toLowerCase().endsWith('.mp4') || bannerUrl.toLowerCase().endsWith('.webm');
+
+                    return (
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+                            className="w-full rounded-2xl overflow-hidden shadow-2xl mb-8 relative"
+                            style={{ 
+                                aspectRatio: '16/9', 
+                                backgroundColor: 'hsl(var(--bg-elevated))', 
+                                border: '1px solid hsl(var(--border))',
+                                maxHeight: '350px' // cap height so it doesn't push content too far down on giant monitors
+                            }}
+                        >
+                            {isVideo ? (
+                                <video 
+                                    src={bannerUrl} 
+                                    autoPlay 
+                                    loop 
+                                    muted 
+                                    playsInline
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <img 
+                                    src={bannerUrl} 
+                                    alt="Dashboard Banner" 
+                                    className="w-full h-full object-cover"
+                                />
+                            )}
+                        </motion.div>
+                    );
+                })()}
+
                 <HeaderSection>
                     <TitleBox>
                         <AccentLine />

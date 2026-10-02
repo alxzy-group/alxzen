@@ -32,6 +32,7 @@ class AssetComposer
                 'type' => config('app.theme.type', 'network'),
                 'data' => config('app.theme.data', ''),
             ],
+            'dashboard_banner' => config('app.dashboard.banner', ''),
             'subdomain_manager' => config('app.subdomain_base') ? true : false,
             'subdomain_base' => config('app.subdomain_base') ?: null,
         ]);

@@ -22,6 +22,7 @@ class SettingsServiceProvider extends ServiceProvider
         'app:logo',
         'app:theme:type',
         'app:theme:data',
+        'app:dashboard:banner',
         'app:subdomain_base',
         'recaptcha:enabled',
         'recaptcha:secret_key',

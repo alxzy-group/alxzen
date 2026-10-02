@@ -142,6 +142,15 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label class="control-label">Dashboard Banner URL (16:9)</label>
+                                <div>
+                                    <input type="text" class="form-control" name="app:dashboard:banner" value="{{ old('app:dashboard:banner', config('app.dashboard.banner')) }}">
+                                    <p class="text-muted small">Optional. A direct URL to a video (.mp4, .webm) or image (.gif, .png, .jpg) to show as a 16:9 banner above the dashboard welcome text.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="box">
