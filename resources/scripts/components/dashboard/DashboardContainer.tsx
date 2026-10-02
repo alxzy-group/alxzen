@@ -155,10 +155,14 @@ export default () => {
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-                            className="w-screen relative shadow-2xl mb-12 -mt-4"
+                            className="relative shadow-2xl mb-12 -mt-4"
                             style={{ 
+                                width: '100vw',
+                                position: 'relative',
                                 left: '50%',
-                                transform: 'translateX(-50%)',
+                                right: '50%',
+                                marginLeft: '-50vw',
+                                marginRight: '-50vw',
                                 aspectRatio: '16/9', 
                                 backgroundColor: 'hsl(var(--bg-elevated))', 
                                 borderBottom: '1px solid hsl(var(--border))',
