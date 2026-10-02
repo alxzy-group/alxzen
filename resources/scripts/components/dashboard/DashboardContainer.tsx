@@ -142,52 +142,55 @@ export default () => {
         <PageContentBlock title={'Dashboard'} showFlashKey={'dashboard'} className="!mt-0 sm:!mt-0">
             <style dangerouslySetInnerHTML={{ __html: dashboardStyles }} />
             <NavigationBar />
+            
+            {/* Banner Section */}
+            {(() => {
+                const bannerUrl = (window as any).SiteConfiguration?.dashboard_banner;
+                if (!bannerUrl) return null;
+
+                const isVideo = bannerUrl.toLowerCase().endsWith('.mp4') || bannerUrl.toLowerCase().endsWith('.webm');
+
+                return (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+                        className="relative shadow-2xl mb-12 -mt-4"
+                        style={{ 
+                            width: '100vw',
+                            position: 'relative',
+                            left: '50%',
+                            right: '50%',
+                            marginLeft: '-50vw',
+                            marginRight: '-50vw',
+                            aspectRatio: '16/9', 
+                            backgroundColor: 'hsl(var(--bg-elevated))', 
+                            borderBottom: '1px solid hsl(var(--border))',
+                            maxHeight: '400px'
+                        }}
+                    >
+                        {isVideo ? (
+                            <video 
+                                src={bannerUrl} 
+                                autoPlay 
+                                loop 
+                                muted 
+                                playsInline
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <img 
+                                src={bannerUrl} 
+                                alt="Dashboard Banner" 
+                                className="w-full h-full object-cover"
+                            />
+                        )}
+                    </motion.div>
+                );
+            })()}
+
             <RootContainer>
-                {/* Banner Section */}
-                {(() => {
-                    const bannerUrl = (window as any).SiteConfiguration?.dashboard_banner;
-                    if (!bannerUrl) return null;
 
-                    const isVideo = bannerUrl.toLowerCase().endsWith('.mp4') || bannerUrl.toLowerCase().endsWith('.webm');
-
-                    return (
-                        <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-                            className="relative shadow-2xl mb-12 -mt-4"
-                            style={{ 
-                                width: '100vw',
-                                position: 'relative',
-                                left: '50%',
-                                right: '50%',
-                                marginLeft: '-50vw',
-                                marginRight: '-50vw',
-                                aspectRatio: '16/9', 
-                                backgroundColor: 'hsl(var(--bg-elevated))', 
-                                borderBottom: '1px solid hsl(var(--border))',
-                                maxHeight: '400px'
-                            }}
-                        >
-                            {isVideo ? (
-                                <video 
-                                    src={bannerUrl} 
-                                    autoPlay 
-                                    loop 
-                                    muted 
-                                    playsInline
-                                    className="w-full h-full object-cover"
-                                />
-                            ) : (
-                                <img 
-                                    src={bannerUrl} 
-                                    alt="Dashboard Banner" 
-                                    className="w-full h-full object-cover"
-                                />
-                            )}
-                        </motion.div>
-                    );
-                })()}
 
                 <HeaderSection>
                     <TitleBox>
