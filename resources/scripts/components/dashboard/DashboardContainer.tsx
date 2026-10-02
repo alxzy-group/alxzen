@@ -146,7 +146,7 @@ export default () => {
     }, [error]);
 
     return (
-        <PageContentBlock title={'Dashboard'} showFlashKey={'dashboard'}>
+        <PageContentBlock title={'Dashboard'} showFlashKey={'dashboard'} className="!mt-2 sm:!mt-4">
             <style dangerouslySetInnerHTML={{ __html: dashboardStyles }} />
             <NavigationBar />
             <RootContainer>
@@ -162,7 +162,7 @@ export default () => {
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-                            className="w-full rounded-2xl overflow-hidden shadow-2xl mb-8 relative"
+                            className="w-full rounded-2xl overflow-hidden shadow-2xl mb-8 relative -mt-6 md:-mt-10"
                             style={{ 
                                 aspectRatio: '16/9', 
                                 backgroundColor: 'hsl(var(--bg-elevated))', 
