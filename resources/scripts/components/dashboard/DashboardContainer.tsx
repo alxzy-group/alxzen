@@ -45,14 +45,7 @@ const TitleBox = styled.div`
     animation: dash-title-in 0.5s ease both;
 `;
 
-const AccentLine = styled.div`
-    height: 3px;
-    width: 60px;
-    background: linear-gradient(90deg, #0ea5e9, transparent);
-    margin-bottom: 14px;
-    border-radius: 2px;
-    animation: dash-line-expand 0.5s ease both 0.1s;
-`;
+
 
 const Title = styled.h1`
     ${tw`text-5xl md:text-6xl font-black tracking-tighter mb-1`}
@@ -146,7 +139,7 @@ export default () => {
     }, [error]);
 
     return (
-        <PageContentBlock title={'Dashboard'} showFlashKey={'dashboard'} className="!mt-2 sm:!mt-4">
+        <PageContentBlock title={'Dashboard'} showFlashKey={'dashboard'} className="!mt-0 sm:!mt-0">
             <style dangerouslySetInnerHTML={{ __html: dashboardStyles }} />
             <NavigationBar />
             <RootContainer>
@@ -162,12 +155,14 @@ export default () => {
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-                            className="w-full rounded-2xl overflow-hidden shadow-2xl mb-8 relative -mt-6 md:-mt-10"
+                            className="w-screen relative shadow-2xl mb-12 -mt-4"
                             style={{ 
+                                left: '50%',
+                                transform: 'translateX(-50%)',
                                 aspectRatio: '16/9', 
                                 backgroundColor: 'hsl(var(--bg-elevated))', 
-                                border: '1px solid hsl(var(--border))',
-                                maxHeight: '350px' // cap height so it doesn't push content too far down on giant monitors
+                                borderBottom: '1px solid hsl(var(--border))',
+                                maxHeight: '400px'
                             }}
                         >
                             {isVideo ? (
@@ -192,7 +187,6 @@ export default () => {
 
                 <HeaderSection>
                     <TitleBox>
-                        <AccentLine />
                         <Title>Hello, <span>{username}</span></Title>
                         <SubTitle>System online — awaiting your command.</SubTitle>
                     </TitleBox>
