@@ -74,23 +74,26 @@ const SidebarContent = styled.div`
 `;
 
 const NavItem = styled(NavLink)`
-    ${tw`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-all duration-200`}
-    color: hsl(var(--sidebar-text));
-    border-left: 2px solid transparent;
-    border-radius: 12px;
-    margin-bottom: 2px;
+    ${tw`flex items-center gap-3 px-4 py-3 text-sm font-bold transition-all duration-200`}
+    color: hsl(var(--text-primary));
+    background: hsl(var(--bg-elevated));
+    border: 2px solid hsl(var(--border));
+    border-radius: 8px;
+    margin-bottom: 8px;
     text-decoration: none;
+    box-shadow: 3px 3px 0px hsl(var(--border));
 
     &:hover {
-        color: hsl(var(--sidebar-text-active));
-        background: hsl(var(--sidebar-hover-bg));
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0px hsl(var(--border));
+        background: hsl(var(--bg-surface));
     }
 
     &.active {
-        color: hsl(var(--sidebar-text-active));
-        background: hsl(var(--sidebar-active-bg));
-        border-left-color: #0ea5e9;
-        font-weight: 700;
+        background: #0ea5e9;
+        color: #ffffff;
+        border-color: #0284c7;
+        box-shadow: 3px 3px 0px #0284c7;
     }
 `;
 
@@ -100,16 +103,17 @@ const SectionTitle = styled.div`
 `;
 
 const ServerSectionButton = styled.button<{ $open: boolean }>`
-    ${tw`flex items-center justify-between w-full mt-4 mb-1 px-4 py-2.5 text-xs font-bold uppercase tracking-widest transition-all duration-200 outline-none`}
-    color: ${props => props.$open ? '#38bdf8' : 'hsl(var(--sidebar-text))'};
-    background: ${props => props.$open ? 'hsl(var(--sidebar-active-bg))' : 'transparent'};
-    border: none;
-    border-left: 2px solid ${props => props.$open ? '#0ea5e9' : 'transparent'};
-    border-radius: 12px;
+    ${tw`flex items-center justify-between w-full mt-4 mb-2 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all duration-200 outline-none`}
+    color: ${props => props.$open ? '#ffffff' : 'hsl(var(--text-primary))'};
+    background: ${props => props.$open ? '#0ea5e9' : 'hsl(var(--bg-elevated))'};
+    border: 2px solid ${props => props.$open ? '#0284c7' : 'hsl(var(--border))'};
+    border-radius: 8px;
+    box-shadow: 3px 3px 0px ${props => props.$open ? '#0284c7' : 'hsl(var(--border))'};
 
     &:hover {
-        color: hsl(var(--sidebar-text-active));
-        background: hsl(var(--sidebar-hover-bg));
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0px ${props => props.$open ? '#0284c7' : 'hsl(var(--border))'};
+        background: ${props => props.$open ? '#0ea5e9' : 'hsl(var(--bg-surface))'};
     }
 
     .chevron {
@@ -156,18 +160,7 @@ const MenuButton = styled.button`
     }
 `;
 
-const SidebarTitle = styled.div`
-    font-size: 18px;
-    font-weight: 900;
-    letter-spacing: -0.5px;
-    color: hsl(var(--text-primary));
-    span {
-        background: linear-gradient(90deg,#38bdf8,#0ea5e9);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-`;
+
 
 const SidebarCloseBtn = styled.button`
     transition: color 0.2s;
@@ -281,9 +274,9 @@ export default () => {
             <SidebarOverlay $open={isOpen} onClick={() => setIsOpen(false)} />
             <Sidebar $open={isOpen}>
                 <SidebarHeader>
-                    <SidebarTitle>
-                        Main<span>Menu</span>
-                    </SidebarTitle>
+                    <Logo to={'/'}>
+                        {name.substring(0, 3)}<span>{name.substring(3)}</span>
+                    </Logo>
                     <SidebarCloseBtn onClick={() => setIsOpen(false)}>
                         <FontAwesomeIcon icon={faTimes} />
                     </SidebarCloseBtn>

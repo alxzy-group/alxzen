@@ -31,15 +31,24 @@ const InjectStyles = () => <style dangerouslySetInnerHTML={{ __html: globalStyle
 
 const CardWrapper = styled(motion(Link))<{ $status: string }>`
     ${tw`relative block w-full overflow-hidden`}
-    background: hsl(var(--bg-surface));
-    border: 1px solid hsl(var(--border));
-    border-left: 3px solid ${({ $status }) =>
-        $status === 'running'  ? '#4ade80' :
-        $status === 'starting' ? '#0ea5e9' :
-        $status === 'offline'  ? 'hsl(var(--border))' : '#facc15'};
-    border-radius: 16px;
+    background: hsl(var(--bg-elevated));
+    border: 2px solid hsl(var(--border));
+    border-radius: 12px;
+    box-shadow: 4px 4px 0px hsl(var(--border));
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease;
     isolation: isolate;
     text-decoration: none;
+
+    &:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px hsl(var(--border));
+        background: hsl(var(--bg-surface));
+    }
+    
+    border-left: 4px solid ${({ $status }) =>
+        $status === 'running'  ? '#4ade80' :
+        $status === 'starting' ? '#0ea5e9' :
+        $status === 'offline'  ? 'hsl(var(--text-muted))' : '#facc15'};
     
     & > * { position: relative; z-index: 1; }
 `;

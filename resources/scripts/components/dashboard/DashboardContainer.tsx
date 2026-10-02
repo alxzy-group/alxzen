@@ -166,7 +166,8 @@ export default () => {
                             aspectRatio: '16/9', 
                             backgroundColor: 'hsl(var(--bg-elevated))', 
                             borderBottom: '1px solid hsl(var(--border))',
-                            maxHeight: '400px'
+                            minHeight: '300px',
+                            maxHeight: '800px'
                         }}
                     >
                         {isVideo ? (
@@ -229,12 +230,12 @@ export default () => {
                                         {items.map((server, index) => (
                                             <motion.div
                                                 key={server.uuid}
-                                                initial={{ opacity: 0, y: 24 }}
-                                                animate={{ opacity: 1, y: 0 }}
+                                                initial={{ opacity: 0, x: -30, scale: 0.95 }}
+                                                animate={{ opacity: 1, x: 0, scale: 1 }}
                                                 transition={{
-                                                    duration: 0.5,
-                                                    delay: index * 0.08,
-                                                    ease: [0.2, 0.8, 0.2, 1]
+                                                    duration: 0.6,
+                                                    delay: index * 0.05,
+                                                    ease: [0.16, 1, 0.3, 1]
                                                 }}
                                             >
                                                 <ServerRow server={server} />
