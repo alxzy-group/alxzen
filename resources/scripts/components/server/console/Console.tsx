@@ -79,14 +79,18 @@ export default () => {
     const yVelocity = useVelocity(y);
     
     // Smooth out the velocity for natural wobble
-    const springConfig = { damping: 12, stiffness: 120, mass: 0.5 };
+    const springConfig = { damping: 6, stiffness: 100, mass: 1.2 }; // Sangat bouncy/wobbly
     const springX = useSpring(xVelocity, springConfig);
     const springY = useSpring(yVelocity, springConfig);
     
-    // Map velocity to rotation and skew
-    const rotate = useTransform(springX, [-1500, 1500], [-2, 2]);
-    const skewX = useTransform(springX, [-1500, 1500], [3, -3]);
-    const skewY = useTransform(springY, [-1500, 1500], [-3, 3]);
+    // Map velocity to rotation and skew (Exaggerated for Jelly effect)
+    const rotate = useTransform(springX, [-1500, 1500], [-4, 4]);
+    const skewX = useTransform(springX, [-1500, 1500], [8, -8]);
+    const skewY = useTransform(springY, [-1500, 1500], [-8, 8]);
+    
+    // Morph scale to simulate jelly stretching
+    const scaleX = useTransform(springX, [-1500, 0, 1500], [1.03, 1, 1.03]);
+    const scaleY = useTransform(springX, [-1500, 0, 1500], [0.97, 1, 0.97]);
     
     const [isLightMode, setIsLightMode] = useState(
         document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light'
@@ -259,7 +263,7 @@ export default () => {
 
     return (
         <motion.div
-            style={{ x, y, rotate, skewX, skewY, zIndex: 40, backgroundColor: 'hsl(var(--bg-elevated))' }}
+            style={{ x, y, rotate, skewX, skewY, scaleX, scaleY, zIndex: 40, backgroundColor: 'hsl(var(--bg-elevated))' }}
             drag
             dragControls={dragControls}
             dragListener={false}
