@@ -246,13 +246,15 @@ export default () => {
             drag
             dragControls={dragControls}
             dragListener={false}
-            dragMomentum={false}
-            className={classNames(styles.terminal, 'relative rounded-2xl overflow-hidden resize-y transition-shadow duration-500 min-h-[300px] border shadow-2xl', {
-                'ring-1 ring-sky-500/50 shadow-[0_0_40px_rgba(14,165,233,0.3)]': status === 'running',
-                'ring-1 ring-blue-500/50 shadow-[0_0_40px_rgba(59,130,246,0.3)] animate-pulse': status === 'starting',
-                'ring-1 ring-white/5': status === 'offline' || status === 'stopping',
+            dragElastic={0.4}
+            dragTransition={{ power: 0.1, timeConstant: 200 }}
+            whileDrag={{ scale: 1.01, rotate: 1, cursor: 'grabbing' }}
+            className={classNames(styles.terminal, 'relative rounded-xl overflow-hidden resize-y transition-all duration-300 min-h-[300px] border-[3px]', {
+                'border-sky-500 shadow-[8px_8px_0px_#0ea5e9]': status === 'running',
+                'border-blue-500 shadow-[8px_8px_0px_#3b82f6] animate-pulse': status === 'starting',
+                'border-[hsl(var(--text-primary))] shadow-[8px_8px_0px_hsl(var(--text-primary))]': status === 'offline' || status === 'stopping',
             })}
-            style={{ zIndex: 40, backgroundColor: 'hsl(var(--bg-elevated))', borderColor: 'hsl(var(--border))' }}
+            style={{ zIndex: 40, backgroundColor: 'hsl(var(--bg-elevated))' }}
         >
             {/* Drag Handle */}
             <div 

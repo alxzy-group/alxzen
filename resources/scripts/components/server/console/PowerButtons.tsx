@@ -4,10 +4,40 @@ import Can from '@/components/elements/Can';
 import { ServerContext } from '@/state/server';
 import { PowerAction } from '@/components/server/console/ServerConsoleContainer';
 import { Dialog } from '@/components/elements/dialog';
+import tw, { styled } from 'twin.macro';
 
 interface PowerButtonProps {
     className?: string;
 }
+
+const BaseButton = styled(Button)`
+    ${tw`flex-1 font-black transition-all duration-200 rounded-xl`}
+    border: 3px solid hsl(var(--text-primary)) !important;
+    box-shadow: 4px 4px 0px hsl(var(--text-primary)) !important;
+    color: hsl(var(--text-primary)) !important;
+
+    &:hover:not(:disabled) {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px hsl(var(--text-primary)) !important;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+`;
+
+const StartBtn = styled(BaseButton)`
+    background: #4ade80 !important; // Green
+`;
+
+const RestartBtn = styled(BaseButton)`
+    background: #facc15 !important; // Yellow
+`;
+
+const StopBtn = styled(BaseButton)`
+    background: #f87171 !important; // Red
+`;
 
 export default ({ className }: PowerButtonProps) => {
     const [open, setOpen] = useState(false);
@@ -49,30 +79,27 @@ export default ({ className }: PowerButtonProps) => {
                 Forcibly stopping a server can lead to data corruption.
             </Dialog.Confirm>
             <Can action={'control.start'}>
-                <Button
-                    className={'flex-1 !bg-sky-500/20 !border !border-sky-500/50 !text-sky-500 hover:!bg-sky-500/30'}
+                <StartBtn
                     disabled={status !== 'offline'}
                     onClick={onButtonClick.bind(this, 'start')}
                 >
                     Start
-                </Button>
+                </StartBtn>
             </Can>
             <Can action={'control.restart'}>
-                <Button
-                    className={'flex-1 !bg-zinc-500/20 !border !border-zinc-500/50 !text-zinc-400 hover:!bg-zinc-500/30'}
+                <RestartBtn
                     disabled={!status} onClick={onButtonClick.bind(this, 'restart')}
                 >
                     Restart
-                </Button>
+                </RestartBtn>
             </Can>
             <Can action={'control.stop'}>
-                <Button
-                    className={'flex-1 !bg-red-500/20 !border !border-red-500/50 !text-red-500 hover:!bg-red-500/30'}
+                <StopBtn
                     disabled={status === 'offline'}
                     onClick={onButtonClick.bind(this, killable ? 'kill' : 'stop')}
                 >
                     {killable ? 'Kill' : 'Stop'}
-                </Button>
+                </StopBtn>
             </Can>
         </div>
     );

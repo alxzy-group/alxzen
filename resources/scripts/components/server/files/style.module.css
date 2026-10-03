@@ -18,14 +18,15 @@
     @apply cursor-pointer no-underline transition-all duration-200;
     background-color: hsl(var(--bg-elevated) / 0.5);
     backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--border));
+    border: 3px solid hsl(var(--text-primary));
+    box-shadow: 4px 4px 0px hsl(var(--text-primary));
     position: relative;
     overflow: hidden;
 
     &:hover, &:focus-within {
-        background-color: hsl(var(--bg-elevated));
-        border-color: rgba(56, 189, 248, 0.4);
-        box-shadow: 0 4px 16px rgba(56, 189, 248, 0.08);
+        background-color: hsl(var(--bg-surface));
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px hsl(var(--text-primary));
     }
 }
 
@@ -56,7 +57,7 @@
 }
 
 .list_view {
-    @apply flex items-center mb-1.5;
+    @apply flex items-center mb-2.5;
     border-radius: 10px;
     padding: 10px 12px;
     min-width: 0;
@@ -73,8 +74,9 @@
 }
 
 .is_selected {
-    background-color: rgba(56, 189, 248, 0.08) !important;
-    border-color: rgba(56, 189, 248, 0.4) !important;
+    background-color: hsl(var(--bg-surface)) !important;
+    border-color: #0ea5e9 !important;
+    box-shadow: 4px 4px 0px #0ea5e9 !important;
     & > .details {
         color: hsl(var(--gray-100));
     }

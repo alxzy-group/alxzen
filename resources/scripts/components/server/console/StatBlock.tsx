@@ -16,16 +16,16 @@ interface StatBlockProps {
 }
 
 const StatContainer = styled.div`
-    ${tw`relative flex items-center justify-between rounded-full px-4 py-2 overflow-hidden transition-all duration-300 gap-3`}
+    ${tw`relative flex items-center justify-between rounded-xl px-4 py-2 overflow-hidden transition-all duration-200 gap-3`}
     background-color: hsl(var(--bg-elevated));
-    border: 1px solid hsl(var(--border));
-    backdrop-filter: blur(12px);
+    border: 2px solid hsl(var(--text-primary));
+    box-shadow: 3px 3px 0px hsl(var(--text-primary));
     z-index: 1;
 
     &:hover {
         background-color: hsl(var(--bg-surface));
-        border: 1px solid rgba(56, 189, 248, 0.4);
-        box-shadow: 0 4px 15px rgba(56, 189, 248, 0.15);
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0px hsl(var(--text-primary));
     }
 `;
 

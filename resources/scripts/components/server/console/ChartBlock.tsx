@@ -9,17 +9,16 @@ interface ChartBlockProps {
 
 const Container = styled.div`
     background: hsl(var(--bg-elevated));
-    border: 1px solid hsl(var(--border));
-    border-radius: 16px;
+    border: 3px solid hsl(var(--text-primary));
+    border-radius: 12px;
     overflow: hidden;
     position: relative;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 6px 6px 0px hsl(var(--text-primary));
 
     &:hover {
-        border-color: rgba(56, 189, 248, 0.4);
-        box-shadow: 0 8px 30px rgba(56, 189, 248, 0.15);
-        transform: translateY(-2px);
+        transform: translate(3px, 3px);
+        box-shadow: 3px 3px 0px hsl(var(--text-primary));
     }
 `;
 

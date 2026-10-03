@@ -89,9 +89,8 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
     });
 
     return (
-        <div className={classNames('w-full flex items-center overflow-x-auto overflow-y-hidden pb-2 mb-[-8px] gap-2 sm:gap-3', className)} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
-            <div className="flex items-center gap-2 sm:gap-3 flex-nowrap no-scrollbar" style={{ minWidth: 'min-content' }}>
+        <div className={classNames('w-full flex items-center flex-wrap gap-2 sm:gap-3', className)}>
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                 <StatBlock icon={faWifi} title={'Address'} copyOnClick={allocation}>
                     {allocation}
                 </StatBlock>
