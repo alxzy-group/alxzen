@@ -16,7 +16,7 @@ import { usePersistedState } from '@/plugins/usePersistedState';
 import { SocketEvent, SocketRequest } from '@/components/server/events';
 import classNames from 'classnames';
 import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
-import { motion, useDragControls } from 'framer-motion';
+import { motion, useDragControls, useMotionValue, useTransform, useVelocity, useSpring } from 'framer-motion';
 
 import 'xterm/css/xterm.css';
 import styles from './style.module.css';
@@ -71,6 +71,22 @@ export default () => {
     const [history, setHistory] = usePersistedState<string[]>(`${serverId}:command_history`, []);
     const [historyIndex, setHistoryIndex] = useState(-1);
     const dragControls = useDragControls();
+
+    // KDE Plasma Wobbly Windows Effect
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+    const xVelocity = useVelocity(x);
+    const yVelocity = useVelocity(y);
+    
+    // Smooth out the velocity for natural wobble
+    const springConfig = { damping: 12, stiffness: 120, mass: 0.5 };
+    const springX = useSpring(xVelocity, springConfig);
+    const springY = useSpring(yVelocity, springConfig);
+    
+    // Map velocity to rotation and skew
+    const rotate = useTransform(springX, [-1500, 1500], [-2, 2]);
+    const skewX = useTransform(springX, [-1500, 1500], [3, -3]);
+    const skewY = useTransform(springY, [-1500, 1500], [-3, 3]);
     
     const [isLightMode, setIsLightMode] = useState(
         document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light'
@@ -243,18 +259,17 @@ export default () => {
 
     return (
         <motion.div
+            style={{ x, y, rotate, skewX, skewY, zIndex: 40, backgroundColor: 'hsl(var(--bg-elevated))' }}
             drag
             dragControls={dragControls}
             dragListener={false}
-            dragElastic={0.4}
-            dragTransition={{ power: 0.1, timeConstant: 200 }}
-            whileDrag={{ scale: 1.01, rotate: 1, cursor: 'grabbing' }}
-            className={classNames(styles.terminal, 'relative rounded-xl overflow-hidden resize-y transition-all duration-300 min-h-[300px] border-[3px]', {
+            dragMomentum={false}
+            whileDrag={{ scale: 1.02, cursor: 'grabbing', zIndex: 99 }}
+            className={classNames(styles.terminal, 'relative rounded-xl overflow-hidden resize-y transition-colors duration-300 min-h-[300px] border-[3px]', {
                 'border-sky-500 shadow-[8px_8px_0px_#0ea5e9]': status === 'running',
                 'border-blue-500 shadow-[8px_8px_0px_#3b82f6] animate-pulse': status === 'starting',
                 'border-[hsl(var(--text-primary))] shadow-[8px_8px_0px_hsl(var(--text-primary))]': status === 'offline' || status === 'stopping',
             })}
-            style={{ zIndex: 40, backgroundColor: 'hsl(var(--bg-elevated))' }}
         >
             {/* Drag Handle */}
             <div 
