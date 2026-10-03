@@ -77,15 +77,15 @@ const NavItem = styled(NavLink)`
     ${tw`flex items-center gap-3 px-4 py-3 text-sm font-bold transition-all duration-200`}
     color: hsl(var(--text-primary));
     background: hsl(var(--bg-elevated));
-    border: 2px solid hsl(var(--border));
+    border: 3px solid hsl(var(--text-primary));
     border-radius: 8px;
     margin-bottom: 8px;
     text-decoration: none;
-    box-shadow: 3px 3px 0px hsl(var(--border));
+    box-shadow: 4px 4px 0px hsl(var(--text-primary));
 
     &:hover {
         transform: translate(2px, 2px);
-        box-shadow: 1px 1px 0px hsl(var(--border));
+        box-shadow: 2px 2px 0px hsl(var(--text-primary));
         background: hsl(var(--bg-surface));
     }
 
@@ -147,16 +147,16 @@ const UserFooter = styled.div`
 
 const MenuButton = styled.button`
     ${tw`w-10 h-10 flex items-center justify-center transition-all duration-200`}
-    color: hsl(var(--text-secondary));
+    color: hsl(var(--text-primary));
     background: hsl(var(--bg-elevated));
-    border: 1px solid hsl(var(--border));
-    border-radius: 12px;
+    border: 3px solid hsl(var(--text-primary));
+    border-radius: 8px;
+    box-shadow: 4px 4px 0px hsl(var(--text-primary));
 
     &:hover {
-        color: #38bdf8;
-        background: rgba(14, 165, 233, 0.12);
-        border-color: rgba(14, 165, 233, 0.4);
-        box-shadow: 0 0 16px rgba(14, 165, 233, 0.2);
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px hsl(var(--text-primary));
+        background: hsl(var(--bg-surface));
     }
 `;
 
@@ -274,7 +274,7 @@ export default () => {
             <SidebarOverlay $open={isOpen} onClick={() => setIsOpen(false)} />
             <Sidebar $open={isOpen}>
                 <SidebarHeader>
-                    <Logo to={'/'}>
+                    <Logo to={'/'} style={{ marginLeft: '12px', fontSize: '1.75rem' }}>
                         {name.substring(0, 3)}<span>{name.substring(3)}</span>
                     </Logo>
                     <SidebarCloseBtn onClick={() => setIsOpen(false)}>

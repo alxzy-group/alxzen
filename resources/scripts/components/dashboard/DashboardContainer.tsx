@@ -59,11 +59,7 @@ const Title = styled.h1`
     }
 `;
 
-const SubTitle = styled.p`
-    ${tw`text-base font-medium m-0`}
-    color: hsl(var(--text-muted));
-    letter-spacing: 0.3px;
-`;
+
 
 const FilterBar = styled(motion.div)`
     ${tw`flex items-center gap-4 px-5 py-3`}
@@ -194,7 +190,6 @@ export default () => {
                 <HeaderSection>
                     <TitleBox>
                         <Title>Hello, <span>{username}</span></Title>
-                        <SubTitle>System online — awaiting your command.</SubTitle>
                     </TitleBox>
 
                     {rootAdmin && (

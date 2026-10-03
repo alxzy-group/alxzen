@@ -32,16 +32,16 @@ const InjectStyles = () => <style dangerouslySetInnerHTML={{ __html: globalStyle
 const CardWrapper = styled(motion(Link))<{ $status: string }>`
     ${tw`relative block w-full overflow-hidden`}
     background: hsl(var(--bg-elevated));
-    border: 2px solid hsl(var(--border));
+    border: 3px solid hsl(var(--text-primary));
     border-radius: 12px;
-    box-shadow: 4px 4px 0px hsl(var(--border));
+    box-shadow: 6px 6px 0px hsl(var(--text-primary));
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease;
     isolation: isolate;
     text-decoration: none;
 
     &:hover {
-        transform: translate(2px, 2px);
-        box-shadow: 2px 2px 0px hsl(var(--border));
+        transform: translate(3px, 3px);
+        box-shadow: 3px 3px 0px hsl(var(--text-primary));
         background: hsl(var(--bg-surface));
     }
     

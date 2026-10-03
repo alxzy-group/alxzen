@@ -5,28 +5,39 @@ import markAnnouncementRead from '@/api/account/markAnnouncementRead';
 import tw, { styled } from 'twin.macro';
 
 const Container = styled.div<{ $type: string }>`
-    ${tw`relative text-white px-6 py-4 rounded-lg shadow-md mb-6 flex items-start justify-between transition-all duration-300`};
+    ${tw`relative px-6 py-4 rounded-xl mb-6 flex items-start justify-between transition-all duration-200`};
+    border: 3px solid hsl(var(--text-primary));
+    box-shadow: 6px 6px 0px hsl(var(--text-primary));
+    color: hsl(var(--text-primary));
+
     ${(props) => {
         switch (props.$type) {
             case 'critical':
-                return tw`bg-red-600 border border-red-500`;
+                return `background: #f87171;`; // Red
             case 'warning':
-                return tw`bg-yellow-600 border border-yellow-500`;
+                return `background: #facc15;`; // Yellow
             case 'promo':
-                return tw`bg-purple-600 border border-purple-500`;
+                return `background: #c084fc;`; // Purple
             default:
-                return tw`bg-blue-600 border border-blue-500`;
+                return `background: #38bdf8;`; // Blue
         }
     }}
+
+    &:hover {
+        transform: translate(3px, 3px);
+        box-shadow: 3px 3px 0px hsl(var(--text-primary));
+    }
 `;
 
 const Content = styled.div`
     ${tw`flex-1 ml-4`}
     & h3 {
-        ${tw`font-bold text-lg m-0`}
+        ${tw`font-black text-lg m-0`}
+        color: hsl(var(--text-primary));
     }
     & p {
-        ${tw`m-0 mt-1 text-sm opacity-90`}
+        ${tw`m-0 mt-1 text-sm font-medium`}
+        color: hsl(var(--text-primary));
     }
 `;
 
