@@ -185,30 +185,33 @@ const UserRole = styled.div`
 `;
 
 const LogoutBtn = styled.button`
-    transition: color 0.2s;
-    color: hsl(var(--text-muted));
-    background: none;
-    border: none;
-    cursor: pointer;
-    &:hover { color: #38bdf8; }
+    ${tw`w-10 h-10 flex items-center justify-center transition-all duration-200 cursor-pointer outline-none`}
+    color: hsl(var(--text-primary));
+    background: hsl(var(--bg-elevated));
+    border: 3px solid hsl(var(--text-primary));
+    border-radius: 8px;
+    box-shadow: 4px 4px 0px hsl(var(--text-primary));
+
+    &:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px hsl(var(--text-primary));
+        background: hsl(var(--bg-surface));
+    }
 `;
 
 const AdminLink = styled.a`
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    color: #38bdf8;
-    font-weight: 700;
-    font-size: 13px;
+    ${tw`flex items-center gap-3 px-4 py-3 text-sm font-bold transition-all duration-200 mt-2`}
+    color: hsl(var(--text-primary));
+    background: hsl(var(--bg-elevated));
+    border: 3px solid hsl(var(--text-primary));
+    border-radius: 8px;
     text-decoration: none;
-    border-left: 2px solid rgba(14,165,233,0.4);
-    background: rgba(14,165,233,0.06);
-    transition: all 0.2s;
-    border-radius: 12px;
+    box-shadow: 4px 4px 0px hsl(var(--text-primary));
+
     &:hover {
-        background: rgba(14,165,233,0.12);
-        color: #7dd3fc;
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px hsl(var(--text-primary));
+        background: hsl(var(--bg-surface));
     }
 `;
 
