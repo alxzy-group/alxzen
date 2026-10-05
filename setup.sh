@@ -210,7 +210,7 @@ install_panel_dependencies() {
 
     apt-get update -y -qq
     # Updated to avoid brace expansion issues with `sh`
-    apt-get install -y -qq php8.3 php8.3-common php8.3-cli php8.3-gd php8.3-mysql php8.3-mbstring php8.3-bcmath php8.3-xml php8.3-fpm php8.3-curl php8.3-zip php8.3-intl php8.3-sqlite3 mariadb-server nginx redis-server
+    apt-get install -y -qq php8.3 php8.3-common php8.3-cli php8.3-gd php8.3-mysql php8.3-mbstring php8.3-bcmath php8.3-xml php8.3-fpm php8.3-curl php8.3-zip php8.3-intl php8.3-sqlite3 php8.3-redis mariadb-server nginx redis-server
     print_ok "PHP 8.3, MariaDB, Nginx, and Redis installed."
 
     # ── Composer ──
@@ -418,6 +418,7 @@ setup_multiplayer_server() {
     # Start or restart with PM2
     pm2 start server.js --name "dunia-alxzy" --env .env || pm2 restart dunia-alxzy
     pm2 save
+    env PATH=$PATH:/usr/bin pm2 startup systemd -u root --hp /root > /dev/null 2>&1 || true
     
     print_ok "Multiplayer server started on port ${MULTIPLAYER_PORT} with PM2."
 }
