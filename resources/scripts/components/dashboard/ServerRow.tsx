@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrochip, faMemory, faHdd, faNetworkWired, faSignal, faBolt, faServer } from '@fortawesome/free-solid-svg-icons';
+import { faMicrochip, faMemory, faHdd, faNetworkWired, faSignal, faBolt, faServer, faClock } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { Server } from '@/api/server/getServer';
 import getServerResourceUsage, { ServerStats } from '@/api/server/getServerResourceUsage';
@@ -9,6 +9,7 @@ import tw, { styled } from 'twin.macro';
 import Spinner from '@/components/elements/Spinner';
 import isEqual from 'react-fast-compare';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatDistanceToNowStrict, isPast } from 'date-fns';
 
 // Purple design system tokens
 // Primary: #7c3aed / #a78bfa / #c4b5fd
@@ -73,7 +74,7 @@ const ServerName = styled.h3`
 `;
 
 const ConnectionBadge = styled.div`
-    ${tw`flex items-center gap-2 text-[11px] font-mono mt-1.5`}
+    ${tw`flex items-center gap-2 text-[11px] font-mono`}
     color: hsl(var(--text-muted));
     background: hsl(var(--bg-elevated));
     border: 1px solid hsl(var(--border));
@@ -204,10 +205,24 @@ export default memo(({ server, className }: { server: Server; className?: string
                         </ServerIconBox>
                         <div>
                             <ServerName>{server.name}</ServerName>
-                            <ConnectionBadge>
-                                <FontAwesomeIcon icon={faNetworkWired} style={{ fontSize: 9 }} />
-                                {address}:{allocation?.port}
-                            </ConnectionBadge>
+                            <div css={tw`flex flex-wrap items-center gap-2 mt-1.5`}>
+                                <ConnectionBadge>
+                                    <FontAwesomeIcon icon={faNetworkWired} style={{ fontSize: 9 }} />
+                                    {address}:{allocation?.port}
+                                </ConnectionBadge>
+                                {server.expiresAt && (
+                                    <ConnectionBadge style={{ 
+                                        color: isPast(new Date(server.expiresAt)) ? '#ef4444' : 'hsl(var(--text-muted))',
+                                        borderColor: isPast(new Date(server.expiresAt)) ? 'rgba(239, 68, 68, 0.3)' : 'hsl(var(--border))',
+                                        backgroundColor: isPast(new Date(server.expiresAt)) ? 'rgba(239, 68, 68, 0.1)' : 'hsl(var(--bg-elevated))',
+                                    }}>
+                                        <FontAwesomeIcon icon={faClock} style={{ fontSize: 9 }} />
+                                        {isPast(new Date(server.expiresAt)) 
+                                            ? 'Expired' 
+                                            : `Expires in ${formatDistanceToNowStrict(new Date(server.expiresAt))}`}
+                                    </ConnectionBadge>
+                                )}
+                            </div>
                         </div>
                     </div>
                     <StatusBadge $status={status}>
