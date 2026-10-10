@@ -130,6 +130,13 @@
                         </div>
                         <p class="text-muted small">The total number of backups that can be created for this server.</p>
                     </div>
+                    <div class="form-group col-xs-6">
+                        <label for="pDomainLimit" class="control-label">Domain Limit</label>
+                        <div>
+                            <input type="text" id="pDomainLimit" name="domain_limit" class="form-control" value="{{ old('domain_limit', 0) }}"/>
+                        </div>
+                        <p class="text-muted small">The total number of domains a user is allowed to assign to this server.</p>
+                    </div>
                 </div>
             </div>
         </div>
