@@ -48,7 +48,7 @@ class StoreServerRequest extends ApplicationApiRequest
             'feature_limits.databases' => $rules['database_limit'],
             'feature_limits.allocations' => $rules['allocation_limit'],
             'feature_limits.backups' => $rules['backup_limit'],
-            'feature_limits.domains' => $rules['domain_limit'] ?? 'present|nullable|integer|min:0',
+            'feature_limits.domains' => 'sometimes|nullable|integer|min:0',
 
             // Placeholders for rules added in withValidator() function.
             'allocation.default' => '',

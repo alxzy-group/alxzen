@@ -174,7 +174,7 @@ class Server extends Model implements Identifiable
         'database_limit' => 'present|nullable|integer|min:0',
         'allocation_limit' => 'sometimes|nullable|integer|min:0',
         'backup_limit' => 'present|nullable|integer|min:0',
-        'domain_limit' => 'present|nullable|integer|min:0',
+        'domain_limit' => 'sometimes|nullable|integer|min:0',
     ];
 
     /**

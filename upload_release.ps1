@@ -1,11 +1,11 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $token = "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"
-$tag = "v4.1.42"
+$tag = "v4.1.43"
 $repo = "alxzy-group/alxzen"
 $releaseData = @{
     tag_name = $tag
     name = $tag
-    body = "### AlxZen Panel v4.1.42`n`n- Fix: Added `domain_limit` to `ServersController::updateBuild` request handler so saving Build Configuration properly persists the Domain Limit.`n- Enhanced: Enforced `domain_limit` on Subdomain creation API and UI.`n- Fix: Safe migration check for `domain_limit` column."
+    body = "### AlxZen Panel v4.1.43`n`n- Fix: Made `feature_limits.domains` strictly optional (using `sometimes`) so third-party bots and API clients can create servers without validation errors."
 } | ConvertTo-Json
 
 Write-Host "Fetching or Creating GitHub Release $tag..." -ForegroundColor Yellow
