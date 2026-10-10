@@ -1,11 +1,11 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $token = "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"
-$tag = "v4.1.40"
+$tag = "v4.1.42"
 $repo = "alxzy-group/alxzen"
 $releaseData = @{
     tag_name = $tag
     name = $tag
-    body = "### AlxZen Panel v4.1.40`n`n- Server List: Added expiration time display to the server cards (e.g. 'Expires in 5 days' or 'Expired') right next to the IP and Port."
+    body = "### AlxZen Panel v4.1.42`n`n- Fix: Added `domain_limit` to `ServersController::updateBuild` request handler so saving Build Configuration properly persists the Domain Limit.`n- Enhanced: Enforced `domain_limit` on Subdomain creation API and UI.`n- Fix: Safe migration check for `domain_limit` column."
 } | ConvertTo-Json
 
 Write-Host "Fetching or Creating GitHub Release $tag..." -ForegroundColor Yellow

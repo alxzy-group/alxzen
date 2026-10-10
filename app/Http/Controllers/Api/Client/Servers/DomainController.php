@@ -38,6 +38,14 @@ class DomainController extends ClientApiController
             return response()->json(['errors' => [['detail' => 'Subdomain Manager is not configured by the administrator.']]], 503);
         }
 
+        if ($server->domain_limit <= 0) {
+            return response()->json(['errors' => [['detail' => 'Subdomains cannot be created for this server as the domain limit is 0.']]], 422);
+        }
+
+        if ($server->domains()->count() >= $server->domain_limit) {
+            return response()->json(['errors' => [['detail' => 'You have reached the maximum number of subdomains allowed for this server.']]], 422);
+        }
+
         $fullDomain = $prefix . '.' . ltrim($baseDomain, '.');
 
         // Check if the exact subdomain is already taken across all servers

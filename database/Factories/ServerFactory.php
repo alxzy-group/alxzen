@@ -43,6 +43,7 @@ class ServerFactory extends Factory
             'allocation_limit' => null,
             'database_limit' => null,
             'backup_limit' => 0,
+            'domain_limit' => 0,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ];

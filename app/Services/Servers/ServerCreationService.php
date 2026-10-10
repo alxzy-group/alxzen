@@ -161,8 +161,8 @@ class ServerCreationService
             'image' => Arr::get($data, 'image'),
             'database_limit' => Arr::get($data, 'database_limit') ?? 0,
             'allocation_limit' => Arr::get($data, 'allocation_limit') ?? 0,
-            'backup_limit' => Arr::get($data, 'backup_limit') ?? 0,
-            'domain_limit' => Arr::get($data, 'domain_limit') ?? 0,
+            'backup_limit' => is_numeric(Arr::get($data, 'backup_limit')) ? (int) $data['backup_limit'] : 0,
+            'domain_limit' => is_numeric(Arr::get($data, 'domain_limit')) ? (int) $data['domain_limit'] : 0,
             'expires_at' => Carbon::now()->addDays(30),
         ]);
 

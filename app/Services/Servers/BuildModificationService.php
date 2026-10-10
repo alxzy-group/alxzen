@@ -51,8 +51,8 @@ class BuildModificationService
             $server->forceFill(array_merge($merge, [
                 'database_limit' => Arr::get($data, 'database_limit', 0) ?? null,
                 'allocation_limit' => Arr::get($data, 'allocation_limit', 0) ?? null,
-                'backup_limit' => Arr::get($data, 'backup_limit', 0) ?? 0,
-                'domain_limit' => Arr::get($data, 'domain_limit', 0) ?? 0,
+                'backup_limit' => is_numeric(Arr::get($data, 'backup_limit')) ? (int) $data['backup_limit'] : 0,
+                'domain_limit' => is_numeric(Arr::get($data, 'domain_limit')) ? (int) $data['domain_limit'] : 0,
             ]))->saveOrFail();
 
             return $server->refresh();

@@ -14,7 +14,9 @@ class AddDomainLimitToServersTable extends Migration
     public function up()
     {
         Schema::table('servers', function (Blueprint $table) {
-            $table->integer('domain_limit')->default(0)->after('backup_limit');
+            if (!Schema::hasColumn('servers', 'domain_limit')) {
+                $table->integer('domain_limit')->default(0)->after('backup_limit');
+            }
         });
     }
 
@@ -26,7 +28,9 @@ class AddDomainLimitToServersTable extends Migration
     public function down()
     {
         Schema::table('servers', function (Blueprint $table) {
-            $table->dropColumn('domain_limit');
+            if (Schema::hasColumn('servers', 'domain_limit')) {
+                $table->dropColumn('domain_limit');
+            }
         });
     }
 }
