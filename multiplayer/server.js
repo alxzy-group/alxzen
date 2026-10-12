@@ -25,7 +25,7 @@ io.on('connection', (socket) => {
       id: socket.id,
       name: userData.name || 'Anonymous',
       characterType: userData.characterType || 'robot',
-      position: { x: 0, y: 0, z: 0 },
+      position: { x: 0, y: 0, z: 6.0 },
       rotation: { y: 0 },
       ...userData
     };

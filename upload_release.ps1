@@ -1,11 +1,11 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $token = "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"
-$tag = "v4.1.44"
+$tag = "v4.1.45"
 $repo = "alxzy-group/alxzen"
 $releaseData = @{
     tag_name = $tag
     name = $tag
-    body = "### AlxZen Panel v4.1.44`n`n- 🎮 **Dunia Alxzy 3D Overhaul:**`n  - Fixed T-pose / 'salip' animation glitch when stopping movement with smooth cross-fading.`n  - Added Jump feature (Spacebar on PC, on-screen JUMP button on Mobile) with realistic gravity physics and multiplayer vertical sync.`n  - Added sliding wall collision system (anti-tembus) so characters cannot walk through buildings, deep lakes, or central monuments.`n  - Overhauled town architecture with Alxzy Tower HQ, Server Lab, Cyber Cafe, Tech Store, streetlights, curbs, and animated central fountain.`n- 🛡️ **Security & Admin:** Root Admin creation restricted to Super Admin (User ID 1)."
+    body = "### AlxZen Panel v4.1.45`n`n- 🎮 **Dunia Alxzy 3D Camera & Spawn Fix:**`n  - Fixed spawn trap inside the central fountain monument: moved spawn to open plaza and added automatic emergency unstick protection.`n  - Upgraded to cinematic Over-The-Shoulder (OTS) 3rd person camera with true pitch/yaw vector calculations and natural mouse aim.`n  - Improved camera-relative WASD and mobile joystick movement controls."
 } | ConvertTo-Json
 
 Write-Host "Fetching or Creating GitHub Release $tag..." -ForegroundColor Yellow

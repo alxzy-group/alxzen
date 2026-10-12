@@ -138,52 +138,58 @@ for (let i = 0; i < 30; i++) {
     STATIC_ROCKS.push({ x, z, radius: s * 0.85 });
 }
 
-// Unified Collision Detector (anti-tembus)
-export function checkCollision(x, z) {
+// Unified Collision Detector (anti-tembus with outward-movement unstick support)
+export function checkCollision(nextX, nextZ, currX = null, currZ = null) {
     // 1. World Boundaries
-    if (x < -WORLD_HALF + 2 || x > WORLD_HALF - 2 || z < -WORLD_HALF + 2 || z > WORLD_HALF - 2) {
+    if (Math.abs(nextX) > WORLD_HALF - 2 || Math.abs(nextZ) > WORLD_HALF - 2) {
         return true;
     }
 
-    // 2. Buildings (AABB with player radius padding)
+    // 2. Central Fountain in Spawn Plaza (radius 3.0)
+    const fountainRadius = 3.0;
+    const dNext = Math.hypot(nextX, nextZ);
+    if (dNext < fountainRadius) {
+        if (currX !== null && currZ !== null) {
+            const dCurr = Math.hypot(currX, currZ);
+            // If already inside or moving outward away from center, ALLOW!
+            if (dNext >= dCurr) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // 3. Buildings (AABB with player radius padding)
     for (const b of BUILDINGS_DATA) {
         const halfW = b.w / 2 + PLAYER_COLLISION_RADIUS;
         const halfD = b.d / 2 + PLAYER_COLLISION_RADIUS;
-        if (
-            x >= b.pos[0] - halfW &&
-            x <= b.pos[0] + halfW &&
-            z >= b.pos[2] - halfD &&
-            z <= b.pos[2] + halfD
-        ) {
+        const minX = b.pos[0] - halfW;
+        const maxX = b.pos[0] + halfW;
+        const minZ = b.pos[2] - halfD;
+        const maxZ = b.pos[2] + halfD;
+
+        if (nextX >= minX && nextX <= maxX && nextZ >= minZ && nextZ <= maxZ) {
+            if (currX !== null && currZ !== null) {
+                if (currX >= minX && currX <= maxX && currZ >= minZ && currZ <= maxZ) {
+                    return false; // allow unsticking if already inside
+                }
+            }
             return true;
         }
-    }
-
-    // 3. Central Fountain in Spawn Plaza (radius 3.0)
-    if (Math.hypot(x, z) < 3.2) {
-        return true;
     }
 
     // 4. Lakes (deep water boundary)
-    // Lake 1 at [40, 30], radius 14
-    if (Math.hypot(x - 40, z - 30) < 13.0) {
-        return true;
-    }
-    // Lake 2 at [-50, 50], radius 8
-    if (Math.hypot(x - (-50), z - 50) < 7.2) {
-        return true;
-    }
+    if (Math.hypot(nextX - 40, nextZ - 30) < 13.0) return true;
+    if (Math.hypot(nextX - (-50), nextZ - 50) < 7.2) return true;
 
     // 5. Tree trunks
     for (const [tx, tz] of STATIC_TREES) {
-        if (Math.hypot(x - tx, z - tz) < 0.65) {
-            return true;
-        }
+        if (Math.hypot(nextX - tx, nextZ - tz) < 0.65) return true;
     }
 
     // 6. Large Rocks
     for (const r of STATIC_ROCKS) {
-        if (r.radius > 0.6 && Math.hypot(x - r.x, z - r.z) < r.radius + PLAYER_COLLISION_RADIUS * 0.4) {
+        if (r.radius > 0.6 && Math.hypot(nextX - r.x, nextZ - r.z) < r.radius + PLAYER_COLLISION_RADIUS * 0.4) {
             return true;
         }
     }
@@ -774,9 +780,10 @@ function LocalPlayerControls({
 }) {
     const { camera, gl } = useThree();
     const playerGroup = useRef();
-    const playerPos = useRef(new THREE.Vector3(0, 0, 0));
+    // Spawn in open plaza safely outside central fountain (z = 6.0)
+    const playerPos = useRef(new THREE.Vector3(0, 0, 6.0));
     const yaw = useRef(0);
-    const pitch = useRef(0.28);
+    const pitch = useRef(0.2);
     const meshYaw = useRef(0);
 
     const velocityY = useRef(0);
@@ -833,8 +840,9 @@ function LocalPlayerControls({
         };
         const onMouse = (e) => {
             if (!isLocked.current) return;
-            yaw.current -= e.movementX * 0.003;
-            pitch.current = THREE.MathUtils.clamp(pitch.current + e.movementY * 0.002, -0.6, 1.0);
+            yaw.current -= e.movementX * 0.0028;
+            // Standard non-inverted pitch (mouse up -> look up)
+            pitch.current = THREE.MathUtils.clamp(pitch.current - e.movementY * 0.0024, -0.65, 0.7);
         };
 
         cvs.addEventListener('mousedown', onDown);
@@ -857,7 +865,7 @@ function LocalPlayerControls({
             for (const t of e.changedTouches) {
                 if (t.identifier === tid) {
                     yaw.current -= (t.clientX - lx) * 0.005;
-                    pitch.current = THREE.MathUtils.clamp(pitch.current + (t.clientY - ly) * 0.005, -0.6, 1.0);
+                    pitch.current = THREE.MathUtils.clamp(pitch.current - (t.clientY - ly) * 0.004, -0.65, 0.7);
                     lx = t.clientX;
                     ly = t.clientY;
                     break;
@@ -888,7 +896,7 @@ function LocalPlayerControls({
 
     // ---------- Frame Loop ----------
     useFrame((_, delta) => {
-        // Clamp delta to prevent huge jumps on tab lag
+        // Clamp delta to prevent huge jumps on lag spike
         const dt = Math.min(delta, 0.1);
 
         // Check external jump triggers (Mobile button, etc.)
@@ -897,20 +905,40 @@ function LocalPlayerControls({
             jumpTriggerRef.current = false;
         }
 
+        // Emergency Unstick: If player is ever trapped inside the central fountain (< 3.1)
+        const dFountain = Math.hypot(playerPos.current.x, playerPos.current.z);
+        if (dFountain < 3.1) {
+            if (dFountain < 0.2) {
+                playerPos.current.set(0, 0, 6.0);
+            } else {
+                const factor = 3.3 / dFountain;
+                playerPos.current.x *= factor;
+                playerPos.current.z *= factor;
+            }
+        }
+
         const keys = keysRef.current;
-        const yawQ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw.current);
+        const sinY = Math.sin(yaw.current);
+        const cosY = Math.cos(yaw.current);
+        const sinP = Math.sin(pitch.current);
+        const cosP = Math.cos(pitch.current);
+
+        // Horizontal camera-relative vectors for movement
+        const forwardXZ = new THREE.Vector3(-sinY, 0, -cosY);
+        const rightXZ = new THREE.Vector3(cosY, 0, -sinY);
 
         // Movement velocity (XZ plane)
         const vel = new THREE.Vector3();
-        if (keys.w) vel.add(new THREE.Vector3(0, 0, -1).applyQuaternion(yawQ));
-        if (keys.s) vel.add(new THREE.Vector3(0, 0, 1).applyQuaternion(yawQ));
-        if (keys.a) vel.add(new THREE.Vector3(-1, 0, 0).applyQuaternion(yawQ));
-        if (keys.d) vel.add(new THREE.Vector3(1, 0, 0).applyQuaternion(yawQ));
+        if (keys.w) vel.add(forwardXZ);
+        if (keys.s) vel.addScaledVector(forwardXZ, -1);
+        if (keys.a) vel.addScaledVector(rightXZ, -1);
+        if (keys.d) vel.add(rightXZ);
 
-        // Joystick Input
+        // Mobile Joystick Input (Camera-relative)
         const ji = joystickInput.current;
         if (ji && (Math.abs(ji.x) > 0.1 || Math.abs(ji.y) > 0.1)) {
-            vel.add(new THREE.Vector3(ji.x, 0, ji.y).applyQuaternion(yawQ));
+            vel.addScaledVector(rightXZ, ji.x);
+            vel.addScaledVector(forwardXZ, -ji.y);
         }
 
         const isWalk = vel.lengthSq() > 0.001;
@@ -920,18 +948,20 @@ function LocalPlayerControls({
             let diff = targetAngle - meshYaw.current;
             while (diff > Math.PI) diff -= Math.PI * 2;
             while (diff < -Math.PI) diff += Math.PI * 2;
-            meshYaw.current += diff * 0.18;
+            meshYaw.current += diff * 0.2;
 
             vel.normalize().multiplyScalar(SPEED * dt);
 
-            // Wall-Sliding Collision Detection (Checks X and Z axes independently)
-            const nextX = playerPos.current.x + vel.x;
-            const nextZ = playerPos.current.z + vel.z;
+            // Wall-Sliding Collision Detection with outward unstick support
+            const currX = playerPos.current.x;
+            const currZ = playerPos.current.z;
+            const nextX = currX + vel.x;
+            const nextZ = currZ + vel.z;
 
-            if (!checkCollision(nextX, playerPos.current.z)) {
+            if (!checkCollision(nextX, currZ, currX, currZ)) {
                 playerPos.current.x = nextX;
             }
-            if (!checkCollision(playerPos.current.x, nextZ)) {
+            if (!checkCollision(currX, nextZ, currX, currZ)) {
                 playerPos.current.z = nextZ;
             }
         }
@@ -949,31 +979,46 @@ function LocalPlayerControls({
             }
         }
 
-        // Update local character group
+        // Update local character group transform
         if (playerGroup.current) {
             playerGroup.current.position.copy(playerPos.current);
             playerGroup.current.rotation.set(0, meshYaw.current, 0);
         }
 
-        // OTS Camera setup
-        const dist = 4.2;
-        const baseH = 1.8;
-        const bx = Math.sin(yaw.current) * dist;
-        const bz = Math.cos(yaw.current) * dist;
-        const rx = Math.cos(yaw.current) * 0.65;
-        const rz = -Math.sin(yaw.current) * 0.65;
+        // ---- True Over-The-Shoulder (OTS) Camera ----
+        // 3D forward direction of camera gaze
+        const camForward = new THREE.Vector3(
+            -sinY * cosP,
+            -sinP,
+            -cosY * cosP
+        ).normalize();
 
-        const targetCam = new THREE.Vector3(
-            playerPos.current.x + bx + rx,
-            playerPos.current.y + baseH + pitch.current * 2.5,
-            playerPos.current.z + bz + rz
+        const camRight = new THREE.Vector3(cosY, 0, -sinY).normalize();
+        const worldUp = new THREE.Vector3(0, 1, 0);
+
+        // Player upper torso anchor
+        const playerChest = new THREE.Vector3(
+            playerPos.current.x,
+            playerPos.current.y + 1.45,
+            playerPos.current.z
         );
-        camera.position.lerp(targetCam, 0.14);
 
-        // Camera looks forward past the player shoulder
-        const lx2 = playerPos.current.x - Math.sin(yaw.current) * 3;
-        const lz2 = playerPos.current.z - Math.cos(yaw.current) * 3;
-        camera.lookAt(lx2, playerPos.current.y + 1.35, lz2);
+        // Over-the-right-shoulder configuration
+        const camDist = 3.2;          // distance behind
+        const shoulderOffset = 0.75;   // right shoulder shift
+        const heightOffset = 0.3;      // height above torso
+
+        const targetCamPos = playerChest.clone()
+            .addScaledVector(camForward, -camDist)
+            .addScaledVector(camRight, shoulderOffset)
+            .addScaledVector(worldUp, heightOffset);
+
+        // Smooth camera damping
+        camera.position.lerp(targetCamPos, 0.16);
+
+        // Look straight ahead along camera gaze line (character stays in left third of screen)
+        const lookTarget = targetCamPos.clone().addScaledVector(camForward, 25);
+        camera.lookAt(lookTarget);
 
         // Network Synchronization
         const isJumpState = !isGrounded.current;
