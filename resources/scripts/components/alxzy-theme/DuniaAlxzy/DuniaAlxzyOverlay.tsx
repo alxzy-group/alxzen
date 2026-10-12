@@ -106,10 +106,19 @@ const JoystickZone = styled.div`
     ${tw`absolute bottom-24 left-10 w-32 h-32 pointer-events-auto opacity-70 z-50`}
 `;
 
+const JumpButton = styled.button`
+    ${tw`absolute bottom-28 right-8 w-16 h-16 rounded-2xl bg-cyan-500/30 active:bg-cyan-500/70 hover:bg-cyan-500/50 border-2 border-cyan-400/80 text-white font-bold flex flex-col items-center justify-center pointer-events-auto backdrop-blur-xl shadow-2xl transition-all select-none z-50`}
+    
+    &:active {
+        transform: scale(0.92);
+    }
+`;
+
 export default function DuniaAlxzyOverlay({ onClose }) {
     const user = useStoreState(state => state.user.data);
     const joystickRef = useRef(null);
     const joystickInput = useRef({ x: 0, y: 0 });
+    const jumpTriggerRef = useRef(false);
     
     const [chatText, setChatText] = useState('');
     const [hasJoined, setHasJoined] = useState(false);
@@ -283,11 +292,24 @@ export default function DuniaAlxzyOverlay({ onClose }) {
                 sendMovement={sendMovement}
                 updateSpatialAudio={updateSpatialAudio}
                 joystickInput={joystickInput}
+                jumpTriggerRef={jumpTriggerRef}
                 currentUserData={extendedUser}
             />
 
             {/* Mobile Joystick Zone */}
             <JoystickZone ref={joystickRef} />
+
+            {/* Jump Button (Touch / Mobile / Click) */}
+            <JumpButton
+                onTouchStart={(e) => { e.preventDefault(); jumpTriggerRef.current = true; }}
+                onMouseDown={() => { jumpTriggerRef.current = true; }}
+                title="Lompat (Space)"
+            >
+                <svg className="w-6 h-6 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+                <span className="text-[10px] tracking-wider font-extrabold text-cyan-200 mt-0.5">JUMP</span>
+            </JumpButton>
 
             <HUD>
                 <ChatContainer>

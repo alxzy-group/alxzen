@@ -117,8 +117,14 @@ class UserController extends Controller
      */
     public function store(NewUserFormRequest $request): RedirectResponse
     {
-        // Tetap izinkan pembuatan user agar bot billing lancar.
-        $user = $this->creationService->handle($request->normalize());
+        $data = $request->normalize();
+        
+        // Hanya Super Admin (ID 1) yang berhak membuat akun Root Admin baru
+        if ($request->user()->id !== 1) {
+            $data['root_admin'] = false;
+        }
+
+        $user = $this->creationService->handle($data);
         $this->alert->success($this->translator->get('admin/user.notices.account_created'))->flash();
 
         return redirect()->route('admin.users.view', $user->id);

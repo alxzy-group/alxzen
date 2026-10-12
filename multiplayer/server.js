@@ -43,6 +43,7 @@ io.on('connection', (socket) => {
       players[socket.id].position = movementData.position;
       players[socket.id].rotation = movementData.rotation;
       players[socket.id].isWalking = movementData.isWalking;
+      players[socket.id].isJumping = !!movementData.isJumping;
       
       // Broadcast to all OTHER players
       socket.broadcast.emit('player_moved', players[socket.id]);

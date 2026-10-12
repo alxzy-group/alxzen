@@ -48,6 +48,7 @@ export default function useMultiplayerSync(userData, hasJoined) {
                 playersRef.current[player.id].position = player.position;
                 playersRef.current[player.id].rotation = player.rotation;
                 playersRef.current[player.id].isWalking = player.isWalking;
+                playersRef.current[player.id].isJumping = player.isJumping;
             }
         });
 
@@ -74,9 +75,9 @@ export default function useMultiplayerSync(userData, hasJoined) {
         };
     }, [hasJoined]);
 
-    const sendMovement = (position, rotation, isWalking) => {
+    const sendMovement = (position, rotation, isWalking, isJumping = false) => {
         if (socket && socket.connected) {
-            socket.emit('move', { position, rotation, isWalking });
+            socket.emit('move', { position, rotation, isWalking, isJumping });
         }
     };
 
