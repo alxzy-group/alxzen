@@ -985,38 +985,36 @@ function LocalPlayerControls({
             playerGroup.current.rotation.set(0, meshYaw.current, 0);
         }
 
-        // ---- True Over-The-Shoulder (OTS) Camera ----
-        // 3D forward direction of camera gaze
+        // ---- True Over-The-Shoulder (OTS) Camera (Resident Evil 4 Remake Style) ----
+        // 3D forward direction of camera gaze (+sinP = looking up towards sky, -sinP = looking down towards ground)
         const camForward = new THREE.Vector3(
             -sinY * cosP,
-            -sinP,
+            sinP,
             -cosY * cosP
         ).normalize();
 
-        const camRight = new THREE.Vector3(cosY, 0, -sinY).normalize();
-        const worldUp = new THREE.Vector3(0, 1, 0);
-
-        // Player upper torso anchor
+        // Player upper torso anchor (shoulder height ~1.45m)
         const playerChest = new THREE.Vector3(
             playerPos.current.x,
             playerPos.current.y + 1.45,
             playerPos.current.z
         );
 
-        // Over-the-right-shoulder configuration
-        const camDist = 3.2;          // distance behind
-        const shoulderOffset = 0.75;   // right shoulder shift
-        const heightOffset = 0.3;      // height above torso
+        // RE4 Remake over-the-right-shoulder configuration:
+        // Tight 2.5m distance behind, 0.65m right shoulder shift, 0.2m height offset
+        const camDist = 2.5;
+        const shoulderOffset = 0.65;
+        const heightOffset = 0.2;
 
         const targetCamPos = playerChest.clone()
             .addScaledVector(camForward, -camDist)
-            .addScaledVector(camRight, shoulderOffset)
-            .addScaledVector(worldUp, heightOffset);
+            .addScaledVector(rightXZ, shoulderOffset)
+            .add(new THREE.Vector3(0, heightOffset, 0));
 
-        // Smooth camera damping
-        camera.position.lerp(targetCamPos, 0.16);
+        // Direct crisp camera update (Zero lag / floatiness, 100% tight 1:1 mouse tracking like RE4 Remake)
+        camera.position.copy(targetCamPos);
 
-        // Look straight ahead along camera gaze line (character stays in left third of screen)
+        // Aim forward into the world (keeps character perfectly framed in the left third of screen)
         const lookTarget = targetCamPos.clone().addScaledVector(camForward, 25);
         camera.lookAt(lookTarget);
 

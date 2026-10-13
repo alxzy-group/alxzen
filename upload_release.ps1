@@ -1,11 +1,11 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $token = "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"
-$tag = "v4.1.45"
+$tag = "v4.1.46"
 $repo = "alxzy-group/alxzen"
 $releaseData = @{
     tag_name = $tag
     name = $tag
-    body = "### AlxZen Panel v4.1.45`n`n- 🎮 **Dunia Alxzy 3D Camera & Spawn Fix:**`n  - Fixed spawn trap inside the central fountain monument: moved spawn to open plaza and added automatic emergency unstick protection.`n  - Upgraded to cinematic Over-The-Shoulder (OTS) 3rd person camera with true pitch/yaw vector calculations and natural mouse aim.`n  - Improved camera-relative WASD and mobile joystick movement controls."
+    body = "### AlxZen Panel v4.1.46`n`n- 🎮 **Dunia Alxzy 3D Camera Fix (RE4 Remake Style):**`n  - Fixed inverted vertical camera pitch: dragging mouse up now looks up to the sky, and dragging down looks down to the ground naturally.`n  - Fixed camera lag & floatiness: eliminated lerp latency for instantaneous, tight, 1:1 camera tracking matching Resident Evil 4 Remake.`n  - Calibrated true Over-The-Shoulder framing (tight 2.5m orbit, 0.65m right shoulder shift, keeping character naturally in the left third of the view)."
 } | ConvertTo-Json
 
 Write-Host "Fetching or Creating GitHub Release $tag..." -ForegroundColor Yellow
