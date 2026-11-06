@@ -11,32 +11,54 @@ interface PowerButtonProps {
 }
 
 const BaseButton = styled(Button)`
-    ${tw`flex-1 font-black transition-all duration-200 rounded-xl`}
-    border: 3px solid hsl(var(--text-primary)) !important;
-    box-shadow: 4px 4px 0px hsl(var(--text-primary)) !important;
-    color: hsl(var(--text-primary)) !important;
+    ${tw`flex-1 font-bold py-2.5 px-4 transition-all duration-200 rounded-xl tracking-wide text-xs sm:text-sm text-white`}
+    border: 1px solid transparent !important;
 
     &:hover:not(:disabled) {
-        transform: translate(2px, 2px);
-        box-shadow: 2px 2px 0px hsl(var(--text-primary)) !important;
+        transform: translateY(-1px);
+        filter: brightness(1.1);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+        filter: brightness(0.95);
     }
 
     &:disabled {
-        opacity: 0.5;
+        opacity: 0.4;
         cursor: not-allowed;
+        filter: grayscale(0.5);
     }
 `;
 
 const StartBtn = styled(BaseButton)`
-    background: #4ade80 !important; // Green
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25) !important;
+
+    &:hover:not(:disabled) {
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
+    }
 `;
 
 const RestartBtn = styled(BaseButton)`
-    background: #facc15 !important; // Yellow
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25) !important;
+
+    &:hover:not(:disabled) {
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4) !important;
+    }
 `;
 
 const StopBtn = styled(BaseButton)`
-    background: #f87171 !important; // Red
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    border-color: rgba(239, 68, 68, 0.4) !important;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25) !important;
+
+    &:hover:not(:disabled) {
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    }
 `;
 
 export default ({ className }: PowerButtonProps) => {

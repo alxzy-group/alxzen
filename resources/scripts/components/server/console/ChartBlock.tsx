@@ -8,17 +8,20 @@ interface ChartBlockProps {
 }
 
 const Container = styled.div`
-    background: hsl(var(--bg-elevated));
-    border: 3px solid hsl(var(--text-primary));
-    border-radius: 12px;
+    background: hsl(var(--bg-surface) / 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border) / 0.8);
+    border-radius: 16px;
     overflow: hidden;
     position: relative;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 6px 6px 0px hsl(var(--text-primary));
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.3);
 
     &:hover {
-        transform: translate(3px, 3px);
-        box-shadow: 3px 3px 0px hsl(var(--text-primary));
+        border-color: rgba(14, 165, 233, 0.4);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px -2px rgba(14, 165, 233, 0.15);
     }
 `;
 
@@ -26,29 +29,29 @@ const Header = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 20px;
-    border-bottom: 1px solid hsl(var(--border));
-    background: transparent;
+    padding: 12px 18px;
+    border-bottom: 1px solid hsl(var(--border) / 0.7);
+    background: hsl(var(--bg-elevated) / 0.5);
 `;
 
 const Title = styled.h3`
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.05em;
     color: hsl(var(--text-primary));
     margin: 0;
 `;
 
 const ChartArea = styled.div`
-    padding: 8px 4px 4px;
+    padding: 10px 8px 6px;
 `;
 
 export default ({ title, legend, children }: ChartBlockProps) => (
     <Container>
         <Header>
             <Title>{title}</Title>
-            {legend && <div style={{ display: 'flex', alignItems: 'center' }}>{legend}</div>}
+            {legend}
         </Header>
         <ChartArea>{children}</ChartArea>
     </Container>

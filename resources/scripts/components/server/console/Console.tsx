@@ -10,7 +10,6 @@ import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import { ServerContext } from '@/state/server';
 import { usePermissions } from '@/plugins/usePermissions';
 import { theme as th } from 'twin.macro';
-import useEventListener from '@/plugins/useEventListener';
 import { debounce } from 'debounce';
 import { usePersistedState } from '@/plugins/usePersistedState';
 import { SocketEvent, SocketRequest } from '@/components/server/events';
@@ -43,11 +42,16 @@ const theme = {
     selection: '#FAF089',
 };
 
+const isMobileScreen = () => typeof window !== 'undefined' && window.innerWidth < 768;
+
+const initialFontSize = isMobileScreen() ? 11 : 13;
+
 const terminalProps: ITerminalOptions = {
     disableStdin: true,
     cursorStyle: 'underline',
     allowTransparency: true,
-    fontSize: 12,
+    fontSize: initialFontSize,
+    lineHeight: 1.25,
     fontFamily: th('fontFamily.mono'),
     rows: 30,
     theme: theme,
@@ -56,13 +60,16 @@ const terminalProps: ITerminalOptions = {
 export default () => {
     const TERMINAL_PRELUDE = '\u001b[1m\u001b[33mcontainer@alxzen~ \u001b[0m';
     const ref = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
     const terminal = useMemo(() => new Terminal({ ...terminalProps }), []);
-    const fitAddon = new FitAddon();
-    const searchAddon = new SearchAddon();
-    const searchBar = new SearchBarAddon({ searchAddon });
-    const webLinksAddon = new WebLinksAddon();
-    const unicode11Addon = new Unicode11Addon();
-    const scrollDownHelperAddon = new ScrollDownHelperAddon();
+    const fitAddon = useMemo(() => new FitAddon(), []);
+    const searchAddon = useMemo(() => new SearchAddon(), []);
+    const searchBar = useMemo(() => new SearchBarAddon({ searchAddon }), [searchAddon]);
+    const webLinksAddon = useMemo(() => new WebLinksAddon(), []);
+    const unicode11Addon = useMemo(() => new Unicode11Addon(), []);
+    const scrollDownHelperAddon = useMemo(() => new ScrollDownHelperAddon(), []);
+
     const { connected, instance } = ServerContext.useStoreState((state) => state.socket);
     const status = ServerContext.useStoreState((state) => state.status.value);
     const [canSendCommands] = usePermissions(['control.console']);
@@ -72,25 +79,24 @@ export default () => {
     const [historyIndex, setHistoryIndex] = useState(-1);
     const dragControls = useDragControls();
 
+    const [isMobile, setIsMobile] = useState<boolean>(isMobileScreen);
+    const [fontSize, setFontSize] = useState<number>(initialFontSize);
+
     // KDE Plasma Wobbly Windows Effect
     const x = useMotionValue(0);
     const y = useMotionValue(0);
     const xVelocity = useVelocity(x);
     const yVelocity = useVelocity(y);
     
-    // Smooth out the velocity for natural wobble
-    const springConfig = { damping: 6, stiffness: 100, mass: 1.2 }; // Sangat bouncy/wobbly
+    const springConfig = { damping: 10, stiffness: 120, mass: 1 };
     const springX = useSpring(xVelocity, springConfig);
     const springY = useSpring(yVelocity, springConfig);
     
-    // Map velocity to rotation and skew (Exaggerated for Jelly effect)
-    const rotate = useTransform(springX, [-1500, 1500], [-4, 4]);
-    const skewX = useTransform(springX, [-1500, 1500], [8, -8]);
-    const skewY = useTransform(springY, [-1500, 1500], [-8, 8]);
-    
-    // Morph scale to simulate jelly stretching
-    const scaleX = useTransform(springX, [-1500, 0, 1500], [1.03, 1, 1.03]);
-    const scaleY = useTransform(springX, [-1500, 0, 1500], [0.97, 1, 0.97]);
+    const rotate = useTransform(springX, [-1500, 1500], [-3, 3]);
+    const skewX = useTransform(springX, [-1500, 1500], [6, -6]);
+    const skewY = useTransform(springY, [-1500, 1500], [-6, 6]);
+    const scaleX = useTransform(springX, [-1500, 0, 1500], [1.02, 1, 1.02]);
+    const scaleY = useTransform(springX, [-1500, 0, 1500], [0.98, 1, 0.98]);
     
     const [isLightMode, setIsLightMode] = useState(
         document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light'
@@ -118,7 +124,6 @@ export default () => {
         }
     }, [isLightMode, terminal]);
 
-    // SearchBarAddon has hardcoded z-index: 999 :(
     const zIndex = `
     .xterm-search-bar__addon {
         z-index: 10;
@@ -129,7 +134,6 @@ export default () => {
 
     const handleTransferStatus = (status: string) => {
         switch (status) {
-            // Sent by either the source or target node if a failure occurs.
             case 'failure':
                 terminal.writeln(TERMINAL_PRELUDE + 'Transfer has failed.\u001b[0m');
                 return;
@@ -147,18 +151,13 @@ export default () => {
     const handleCommandKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'ArrowUp') {
             const newIndex = Math.min(historyIndex + 1, history!.length - 1);
-
             setHistoryIndex(newIndex);
             e.currentTarget.value = history![newIndex] || '';
-
-            // By default up arrow will also bring the cursor to the start of the line,
-            // so we'll preventDefault to keep it at the end.
             e.preventDefault();
         }
 
         if (e.key === 'ArrowDown') {
             const newIndex = Math.max(historyIndex - 1, -1);
-
             setHistoryIndex(newIndex);
             e.currentTarget.value = history![newIndex] || '';
         }
@@ -183,14 +182,14 @@ export default () => {
             terminal.loadAddon(scrollDownHelperAddon);
 
             terminal.open(ref.current);
-
-            // Activate Unicode 11 for proper emoji and special character width handling
             terminal.unicode.activeVersion = '11';
 
-            fitAddon.fit();
+            try {
+                fitAddon.fit();
+            } catch (e) {}
+
             searchBar.addNewStyle(zIndex);
 
-            // Add support for capturing keys
             terminal.attachCustomKeyEventHandler((e: KeyboardEvent) => {
                 if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
                     document.execCommand('copy');
@@ -207,27 +206,53 @@ export default () => {
         }
     }, [terminal, connected]);
 
-    useEventListener(
-        'resize',
-        debounce(() => {
-            if (terminal.element) {
-                fitAddon.fit();
-            }
-        }, 100)
-    );
-
+    // Auto-detect mobile vs desktop on screen resize and adapt font & fit
     useEffect(() => {
-        if (!ref.current) return;
+        const handleResize = debounce(() => {
+            const mobile = isMobileScreen();
+            setIsMobile(mobile);
+            const targetSize = mobile ? 11 : 13;
+            setFontSize(targetSize);
+
+            if (terminal && terminal.element) {
+                terminal.options.fontSize = targetSize;
+                try {
+                    fitAddon.fit();
+                } catch (e) {}
+            }
+        }, 120);
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [terminal, fitAddon]);
+
+    // Observe outer container resizing (e.g. user drags resize-y handle)
+    useEffect(() => {
+        if (!containerRef.current) return;
+
         const resizeObserver = new ResizeObserver(
             debounce(() => {
-                if (terminal.element) {
-                    fitAddon.fit();
+                if (terminal && terminal.element) {
+                    try {
+                        fitAddon.fit();
+                    } catch (e) {}
                 }
-            }, 50)
+            }, 30)
         );
-        resizeObserver.observe(ref.current);
+
+        resizeObserver.observe(containerRef.current);
         return () => resizeObserver.disconnect();
     }, [terminal, fitAddon]);
+
+    // Handle manual font size adjustment
+    useEffect(() => {
+        if (terminal && terminal.element) {
+            terminal.options.fontSize = fontSize;
+            try {
+                fitAddon.fit();
+            } catch (e) {}
+        }
+    }, [fontSize, terminal, fitAddon]);
 
     useEffect(() => {
         const listeners: Record<string, (s: string) => void> = {
@@ -241,7 +266,6 @@ export default () => {
         };
 
         if (connected && instance) {
-            // Do not clear the console if the server is being transferred.
             if (!isTransferring) {
                 terminal.clear();
             }
@@ -261,37 +285,112 @@ export default () => {
         };
     }, [connected, instance]);
 
+    const handleZoomIn = () => setFontSize((s) => Math.min(18, s + 1));
+    const handleZoomOut = () => setFontSize((s) => Math.max(9, s - 1));
+    const handleRefit = () => {
+        try {
+            fitAddon.fit();
+        } catch (e) {}
+    };
+
     return (
         <motion.div
+            ref={containerRef}
             style={{ x, y, rotate, skewX, skewY, scaleX, scaleY, zIndex: 40, backgroundColor: 'hsl(var(--bg-elevated))' }}
-            drag
+            drag={!isMobile}
             dragControls={dragControls}
             dragListener={false}
             dragMomentum={false}
-            whileDrag={{ scale: 1.02, cursor: 'grabbing', zIndex: 99 }}
-            className={classNames(styles.terminal, 'relative rounded-xl overflow-hidden resize-y transition-colors duration-300 min-h-[300px] border-[3px]', {
-                'border-sky-500 shadow-[8px_8px_0px_#0ea5e9]': status === 'running',
-                'border-blue-500 shadow-[8px_8px_0px_#3b82f6] animate-pulse': status === 'starting',
-                'border-[hsl(var(--text-primary))] shadow-[8px_8px_0px_hsl(var(--text-primary))]': status === 'offline' || status === 'stopping',
-            })}
+            whileDrag={{ scale: 1.01, cursor: 'grabbing', zIndex: 99 }}
+            className={classNames(
+                styles.terminal,
+                'relative rounded-2xl overflow-hidden resize-y transition-all duration-300 min-h-[340px] border shadow-2xl',
+                {
+                    'border-sky-500/50 shadow-[0_4px_25px_-5px_rgba(14,165,233,0.3)]': status === 'running',
+                    'border-blue-500/50 shadow-[0_4px_25px_-5px_rgba(59,130,246,0.3)] animate-pulse': status === 'starting',
+                    'border-white/10 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.5)]': status === 'offline' || status === 'stopping',
+                }
+            )}
         >
-            {/* Drag Handle */}
+            {/* Top Toolbar: macOS dots, Drag Handle, Device Mode & Font Zoom */}
             <div 
-                className="w-full h-8 transition-colors cursor-move flex items-center justify-center border-b select-none"
-                style={{ backgroundColor: 'hsl(var(--bg-overlay))', borderBottomColor: 'hsl(var(--border))' }}
-                onPointerDown={(e) => dragControls.start(e)}
+                className="w-full h-9 transition-colors flex items-center justify-between px-3 select-none border-b"
+                style={{ backgroundColor: 'hsl(var(--bg-overlay) / 0.9)', borderBottomColor: 'hsl(var(--border) / 0.8)' }}
             >
-                <div className="w-16 h-1.5 rounded-full opacity-50" style={{ backgroundColor: 'hsl(var(--text-disabled))' }}></div>
+                {/* Left: Window Dots & Status */}
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 mr-1">
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80 inline-block" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-green-500/80 inline-block" />
+                    </div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 hidden sm:inline-block">
+                        Terminal Console
+                    </span>
+                    <span 
+                        className={classNames('text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full', {
+                            'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30': status === 'running',
+                            'bg-blue-500/10 text-blue-400 border border-blue-500/30': status === 'starting',
+                            'bg-gray-500/10 text-gray-400 border border-gray-500/30': status === 'offline' || status === 'stopping',
+                        })}
+                    >
+                        {status || 'Connecting'}
+                    </span>
+                </div>
+
+                {/* Center: Drag Bar */}
+                <div 
+                    className="flex-1 h-full cursor-move flex items-center justify-center px-2"
+                    onPointerDown={(e) => !isMobile && dragControls.start(e)}
+                >
+                    <div className="w-12 h-1 rounded-full opacity-40 bg-gray-500" />
+                </div>
+
+                {/* Right: Device Detection Badge & Zoom Controls */}
+                <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-medium text-gray-400 px-2 py-0.5 rounded bg-white/[0.04] border border-white/5 hidden xs:inline-block">
+                        {isMobile ? '📱 Mobile' : '💻 Desktop'} ({fontSize}px)
+                    </span>
+                    <div className="flex items-center bg-white/[0.04] border border-white/10 rounded-lg p-0.5">
+                        <button
+                            type="button"
+                            onClick={handleZoomOut}
+                            className="px-2 py-0.5 text-xs text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
+                            title="Perkecil Font Terminal"
+                        >
+                            A-
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleZoomIn}
+                            className="px-2 py-0.5 text-xs text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
+                            title="Perbesar Font Terminal"
+                        >
+                            A+
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleRefit}
+                            className="px-2 py-0.5 text-[10px] font-bold text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 rounded transition-colors"
+                            title="Auto Fit Layar"
+                        >
+                            Fit
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <SpinnerOverlay visible={!connected} size={'large'} />
+            
+            {/* Terminal Viewport Container */}
             <div
-                className={classNames(styles.container, styles.overflows_container, 'bg-transparent', { 'rounded-b': !canSendCommands })}
+                className={classNames(styles.container, styles.overflows_container, 'bg-transparent flex-1', { 'rounded-b': !canSendCommands })}
             >
-                <div className={'h-full'}>
+                <div className={'h-full flex-1 w-full'}>
                     <div id={styles.terminal} ref={ref} />
                 </div>
             </div>
+
             {canSendCommands && (
                 <div className={classNames('relative', styles.overflows_container)}>
                     <input
@@ -304,9 +403,7 @@ export default () => {
                         autoCorrect={'off'}
                         autoCapitalize={'none'}
                     />
-                    <div
-                        className={styles.command_icon}
-                    >
+                    <div className={styles.command_icon}>
                         <ChevronDoubleRightIcon className={'w-4 h-4'} />
                     </div>
                 </div>

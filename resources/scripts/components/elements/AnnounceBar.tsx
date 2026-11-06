@@ -5,27 +5,43 @@ import markAnnouncementRead from '@/api/account/markAnnouncementRead';
 import tw, { styled } from 'twin.macro';
 
 const Container = styled.div<{ $type: string }>`
-    ${tw`relative px-6 py-4 rounded-xl mb-6 flex items-start justify-between transition-all duration-200`};
-    border: 3px solid hsl(var(--text-primary));
-    box-shadow: 6px 6px 0px hsl(var(--text-primary));
+    ${tw`relative px-5 py-4 rounded-2xl mb-6 flex items-start justify-between transition-all duration-200`};
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     color: hsl(var(--text-primary));
 
     ${(props) => {
         switch (props.$type) {
             case 'critical':
-                return `background: #f87171;`; // Red
+                return `
+                    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.08) 100%);
+                    border: 1px solid rgba(239, 68, 68, 0.4);
+                    box-shadow: 0 8px 25px -4px rgba(239, 68, 68, 0.25);
+                `;
             case 'warning':
-                return `background: #facc15;`; // Yellow
+                return `
+                    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.08) 100%);
+                    border: 1px solid rgba(245, 158, 11, 0.4);
+                    box-shadow: 0 8px 25px -4px rgba(245, 158, 11, 0.25);
+                `;
             case 'promo':
-                return `background: #c084fc;`; // Purple
+                return `
+                    background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(147, 51, 234, 0.08) 100%);
+                    border: 1px solid rgba(168, 85, 247, 0.4);
+                    box-shadow: 0 8px 25px -4px rgba(168, 85, 247, 0.25);
+                `;
             default:
-                return `background: #38bdf8;`; // Blue
+                return `
+                    background: linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(2, 132, 199, 0.08) 100%);
+                    border: 1px solid rgba(14, 165, 233, 0.4);
+                    box-shadow: 0 8px 25px -4px rgba(14, 165, 233, 0.25);
+                `;
         }
     }}
 
     &:hover {
-        transform: translate(3px, 3px);
-        box-shadow: 3px 3px 0px hsl(var(--text-primary));
+        transform: translateY(-1px);
+        filter: brightness(1.03);
     }
 `;
 
