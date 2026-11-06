@@ -62,10 +62,11 @@ const Title = styled.h1`
 
 
 const FilterBar = styled(motion.div)`
-    ${tw`flex items-center gap-4 px-5 py-3`}
+    ${tw`flex items-center gap-4 px-5 py-2.5`}
     background: hsl(var(--bg-elevated) / 0.6);
     backdrop-filter: blur(16px);
-    border: 1px solid hsl(var(--border));
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--border) / 0.7);
     border-radius: 12px;
 `;
 
@@ -74,8 +75,37 @@ const FilterLabel = styled.span`
     color: hsl(var(--accent));
 `;
 
+const DuniaAlxzyTopButton = styled(motion.button)`
+    ${tw`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 outline-none cursor-pointer`}
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(2, 132, 199, 0.25) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #ffffff;
+
+    &:hover {
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(2, 132, 199, 0.38) 100%);
+        border-color: rgba(56, 189, 248, 0.55);
+        box-shadow: 0 6px 20px rgba(14, 165, 233, 0.25);
+    }
+
+    .icon-wrapper {
+        ${tw`flex items-center justify-center w-6 h-6 rounded-lg text-sky-400`}
+        background: rgba(14, 165, 233, 0.2);
+    }
+
+    .pulse-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #38bdf8;
+        box-shadow: 0 0 8px #38bdf8;
+    }
+`;
+
 const Grid = styled.div`
-    ${tw`grid grid-cols-1 lg:grid-cols-2 gap-5 pb-20`}
+    ${tw`grid grid-cols-1 lg:grid-cols-2 gap-5 pb-16`}
 `;
 
 const SkeletonCard = styled.div`
@@ -92,22 +122,6 @@ const EmptyState = styled(motion.div)`
     border: 1px dashed hsl(var(--border));
     background: hsl(var(--bg-surface));
     border-radius: 16px;
-`;
-
-const FloatingActionButton = styled(motion.button)`
-    ${tw`fixed bottom-8 right-8 z-40 p-4 rounded-full flex items-center gap-3 shadow-2xl backdrop-blur-xl border`}
-    background: rgba(14, 165, 233, 0.15);
-    border-color: rgba(14, 165, 233, 0.4);
-    box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
-    
-    &:hover {
-        background: rgba(14, 165, 233, 0.25);
-        transform: translateY(-2px);
-    }
-    
-    span {
-        ${tw`font-bold text-cyan-400 hidden md:block`}
-    }
 `;
 
 export default () => {
@@ -137,7 +151,7 @@ export default () => {
     return (
         <PageContentBlock title={'Dashboard'} showFlashKey={'dashboard'} className="!mt-0 sm:!mt-0">
             <style dangerouslySetInnerHTML={{ __html: dashboardStyles }} />
-            
+
             {/* Banner Section */}
             {(() => {
                 const bannerUrl = (window as any).SiteConfiguration?.dashboard_banner;
@@ -151,32 +165,32 @@ export default () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
                         className="relative shadow-2xl mb-12 -mt-4"
-                        style={{ 
+                        style={{
                             width: '100vw',
                             position: 'relative',
                             left: '50%',
                             right: '50%',
                             marginLeft: '-50vw',
                             marginRight: '-50vw',
-                            aspectRatio: '16/9', 
-                            backgroundColor: 'hsl(var(--bg-elevated))', 
+                            aspectRatio: '16/9',
+                            backgroundColor: 'hsl(var(--bg-elevated))',
                             borderBottom: '1px solid hsl(var(--border))',
                             maxHeight: '400px'
                         }}
                     >
                         {isVideo ? (
-                            <video 
-                                src={bannerUrl} 
-                                autoPlay 
-                                loop 
-                                muted 
+                            <video
+                                src={bannerUrl}
+                                autoPlay
+                                loop
+                                muted
                                 playsInline
                                 className="w-full h-full object-cover"
                             />
                         ) : (
-                            <img 
-                                src={bannerUrl} 
-                                alt="Dashboard Banner" 
+                            <img
+                                src={bannerUrl}
+                                alt="Dashboard Banner"
                                 className="w-full h-full object-cover"
                             />
                         )}
@@ -192,20 +206,37 @@ export default () => {
                         <Title>Hello, <span>{username}</span></Title>
                     </TitleBox>
 
-                    {rootAdmin && (
-                        <FilterBar
-                            initial={{ opacity: 0, x: 12 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.4, delay: 0.1 }}
+                    <div css={tw`flex flex-wrap items-center gap-3`}>
+                        <DuniaAlxzyTopButton
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            whileHover={{ scale: 1.03, y: -1 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ duration: 0.3 }}
+                            onClick={() => setIsWorldOpen(true)}
                         >
-                            <FilterLabel>Admin View</FilterLabel>
-                            <Switch
-                                name={'show_all_servers'}
-                                defaultChecked={showOnlyAdmin}
-                                onChange={() => setShowOnlyAdmin((s) => !s)}
-                            />
-                        </FilterBar>
-                    )}
+                            <div className="icon-wrapper">
+                                <GlobeIcon className="w-4 h-4 text-sky-400" />
+                            </div>
+                            <span>Masuk Dunia Alxzy</span>
+                            <span className="pulse-dot" />
+                        </DuniaAlxzyTopButton>
+
+                        {rootAdmin && (
+                            <FilterBar
+                                initial={{ opacity: 0, x: 12 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.4, delay: 0.1 }}
+                            >
+                                <FilterLabel>Admin View</FilterLabel>
+                                <Switch
+                                    name={'show_all_servers'}
+                                    defaultChecked={showOnlyAdmin}
+                                    onChange={() => setShowOnlyAdmin((s) => !s)}
+                                />
+                            </FilterBar>
+                        )}
+                    </div>
                 </HeaderSection>
 
                 <AnnounceBar displayLocation="dashboard" />
@@ -254,16 +285,6 @@ export default () => {
                         </Pagination>
                     )}
                 </AnimatePresence>
-
-                <FloatingActionButton 
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.5, type: 'spring' }}
-                    onClick={() => setIsWorldOpen(true)}
-                >
-                    <GlobeIcon className="w-8 h-8 text-sky-400" />
-                    <span>Masuk Dunia Alxzy</span>
-                </FloatingActionButton>
 
                 <AnimatePresence>
                     {isWorldOpen && (
