@@ -24,7 +24,7 @@
             <meta name="theme-color" content="#0ea5e9">
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Inter:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
         @show
 
         @section('user-data')
@@ -54,7 +54,7 @@
             {!! $asset->js('main.js') !!}
         @show
 
-        <div id="tsparticles-bg" style="position: fixed; inset: 0; z-index: -1;"></div>
+        <div id="tsparticles-bg" style="position: fixed; inset: 0; z-index: 0; pointer-events: auto;"></div>
         <script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2.0.6/tsparticles.slim.bundle.min.js"></script>
         <script>
             document.addEventListener("DOMContentLoaded", function() {

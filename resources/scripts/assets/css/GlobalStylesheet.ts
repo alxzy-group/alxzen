@@ -15,13 +15,15 @@ export default createGlobalStyle`
 
     body {
         ${tw`font-sans`};
+        font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         background-color: hsl(var(--bg-page));
         color: hsl(var(--text-primary));
-        letter-spacing: 0.015em;
+        letter-spacing: -0.01em;
     }
 
     h1, h2, h3, h4, h5, h6 {
         ${tw`font-medium tracking-normal font-header`};
+        font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
     p {

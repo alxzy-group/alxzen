@@ -8,7 +8,7 @@ const Label = styled.label<{ isLight?: boolean }>`
     text-transform: uppercase;
     color: hsl(var(--text-muted));
     margin-bottom: 6px;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
 
     ${(props) => props.isLight && `color: hsl(var(--text-secondary));`};
 `;

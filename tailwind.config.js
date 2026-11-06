@@ -20,7 +20,8 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                header: ['"IBM Plex Sans"', '"Roboto"', 'system-ui', 'sans-serif'],
+                sans: ['"Plus Jakarta Sans"', '"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
+                header: ['"Plus Jakarta Sans"', '"Inter"', 'system-ui', 'sans-serif'],
             },
             colors: {
                 black: 'hsl(var(--black) / <alpha-value>)',
@@ -30,6 +31,7 @@ module.exports = {
                 gray: gray,
                 neutral: gray,
                 cyan: colors.cyan,
+                sky: colors.sky,
             },
             fontSize: {
                 '2xs': '0.625rem',

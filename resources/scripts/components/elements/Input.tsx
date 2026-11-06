@@ -14,7 +14,7 @@ const inputStyle = css<Props>`
     outline: none;
     padding: 10px 14px;
     font-size: 0.875rem;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     font-weight: 400;
     line-height: 1.5;
     letter-spacing: -0.01em;
@@ -23,6 +23,16 @@ const inputStyle = css<Props>`
     background: hsl(var(--input-bg));
     color: hsl(var(--input-text));
     transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0px 1000px hsl(var(--input-bg)) inset !important;
+        -webkit-text-fill-color: hsl(var(--input-text)) !important;
+        caret-color: hsl(var(--input-text));
+        transition: background-color 5000s ease-in-out 0s;
+    }
 
     &::placeholder {
         color: hsl(var(--input-placeholder));
