@@ -24,16 +24,18 @@ export default () => {
                 <button
                     onClick={() => setVisible(true)}
                     css={`
-                        ${tw`w-10 h-10 flex items-center justify-center transition-all duration-200 cursor-pointer`}
+                        ${tw`w-10 h-10 flex items-center justify-center transition-all duration-200 cursor-pointer rounded-full outline-none`}
                         color: hsl(var(--text-primary));
-                        background: hsl(var(--bg-elevated));
-                        border: 3px solid hsl(var(--text-primary));
-                        border-radius: 50%;
-                        box-shadow: 4px 4px 0px hsl(var(--text-primary));
+                        background: hsl(var(--bg-elevated) / 0.6);
+                        border: 1px solid hsl(var(--border) / 0.8);
+                        backdrop-filter: blur(8px);
+                        -webkit-backdrop-filter: blur(8px);
                         &:hover {
-                            transform: translate(2px, 2px);
-                            box-shadow: 2px 2px 0px hsl(var(--text-primary));
-                            background: hsl(var(--bg-surface));
+                            color: #38bdf8;
+                            background: hsl(var(--bg-elevated));
+                            border-color: rgba(14, 165, 233, 0.4);
+                            transform: translateY(-1px);
+                            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
                         }
                     `}
                 >
