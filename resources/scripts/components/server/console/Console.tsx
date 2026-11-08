@@ -15,7 +15,6 @@ import { usePersistedState } from '@/plugins/usePersistedState';
 import { SocketEvent, SocketRequest } from '@/components/server/events';
 import classNames from 'classnames';
 import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
-import { motion, useDragControls, useMotionValue, useTransform, useVelocity, useSpring } from 'framer-motion';
 
 import 'xterm/css/xterm.css';
 import styles from './style.module.css';
@@ -77,27 +76,10 @@ export default () => {
     const isTransferring = ServerContext.useStoreState((state) => state.server.data!.isTransferring);
     const [history, setHistory] = usePersistedState<string[]>(`${serverId}:command_history`, []);
     const [historyIndex, setHistoryIndex] = useState(-1);
-    const dragControls = useDragControls();
 
     const [isMobile, setIsMobile] = useState<boolean>(isMobileScreen);
     const [fontSize, setFontSize] = useState<number>(initialFontSize);
 
-    // KDE Plasma Wobbly Windows Effect
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    const xVelocity = useVelocity(x);
-    const yVelocity = useVelocity(y);
-    
-    const springConfig = { damping: 10, stiffness: 120, mass: 1 };
-    const springX = useSpring(xVelocity, springConfig);
-    const springY = useSpring(yVelocity, springConfig);
-    
-    const rotate = useTransform(springX, [-1500, 1500], [-3, 3]);
-    const skewX = useTransform(springX, [-1500, 1500], [6, -6]);
-    const skewY = useTransform(springY, [-1500, 1500], [-6, 6]);
-    const scaleX = useTransform(springX, [-1500, 0, 1500], [1.02, 1, 1.02]);
-    const scaleY = useTransform(springX, [-1500, 0, 1500], [0.98, 1, 0.98]);
-    
     const [isLightMode, setIsLightMode] = useState(
         document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light'
     );
@@ -294,25 +276,20 @@ export default () => {
     };
 
     return (
-        <motion.div
+        <div
             ref={containerRef}
-            style={{ x, y, rotate, skewX, skewY, scaleX, scaleY, zIndex: 40, backgroundColor: 'hsl(var(--bg-elevated))' }}
-            drag={!isMobile}
-            dragControls={dragControls}
-            dragListener={false}
-            dragMomentum={false}
-            whileDrag={{ scale: 1.01, cursor: 'grabbing', zIndex: 99 }}
+            style={{ zIndex: 40, backgroundColor: 'hsl(var(--bg-elevated))' }}
             className={classNames(
                 styles.terminal,
-                'relative rounded-2xl overflow-hidden resize-y transition-all duration-300 min-h-[340px] border shadow-2xl',
+                'relative rounded-2xl overflow-hidden resize-y transition-colors duration-200 min-h-[340px] border shadow-2xl',
                 {
-                    'border-sky-500/50 shadow-[0_4px_25px_-5px_rgba(14,165,233,0.3)]': status === 'running',
-                    'border-blue-500/50 shadow-[0_4px_25px_-5px_rgba(59,130,246,0.3)] animate-pulse': status === 'starting',
+                    'border-sky-500/40 shadow-[0_4px_25px_-5px_rgba(14,165,233,0.2)]': status === 'running',
+                    'border-blue-500/40 shadow-[0_4px_25px_-5px_rgba(59,130,246,0.2)]': status === 'starting',
                     'border-white/10 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.5)]': status === 'offline' || status === 'stopping',
                 }
             )}
         >
-            {/* Top Toolbar: macOS dots, Drag Handle, Device Mode & Font Zoom */}
+            {/* Top Toolbar: macOS dots, Accent Bar, Device Mode & Font Zoom */}
             <div 
                 className="w-full h-9 transition-colors flex items-center justify-between px-3 select-none border-b"
                 style={{ backgroundColor: 'hsl(var(--bg-overlay) / 0.9)', borderBottomColor: 'hsl(var(--border) / 0.8)' }}
@@ -338,12 +315,9 @@ export default () => {
                     </span>
                 </div>
 
-                {/* Center: Drag Bar */}
-                <div 
-                    className="flex-1 h-full cursor-move flex items-center justify-center px-2"
-                    onPointerDown={(e) => !isMobile && dragControls.start(e)}
-                >
-                    <div className="w-12 h-1 rounded-full opacity-40 bg-gray-500" />
+                {/* Center: Accent Bar */}
+                <div className="flex-1 h-full flex items-center justify-center px-2">
+                    <div className="w-12 h-1 rounded-full opacity-30 bg-gray-500" />
                 </div>
 
                 {/* Right: Device Detection Badge & Zoom Controls */}
@@ -408,6 +382,6 @@ export default () => {
                     </div>
                 </div>
             )}
-        </motion.div>
+        </div>
     );
 };
