@@ -1,7 +1,7 @@
-﻿[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-param(
+﻿param(
     [string]$token = $env:GITHUB_TOKEN
 )
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
