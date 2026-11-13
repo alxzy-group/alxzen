@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Pterodactyl\Services\Eggs\Sharing\EggExporterService;
 use Pterodactyl\Services\Eggs\Sharing\EggImporterService;
 use Pterodactyl\Http\Requests\Admin\Egg\EggImportFormRequest;
+use Pterodactyl\Exceptions\Model\DataValidationException;
 use Pterodactyl\Services\Eggs\Sharing\EggUpdateImporterService;
 
 class EggShareController extends Controller
@@ -50,10 +51,18 @@ class EggShareController extends Controller
      */
     public function import(EggImportFormRequest $request): RedirectResponse
     {
-        $egg = $this->importerService->handle($request->file('import_file'), $request->input('import_to_nest'));
-        $this->alert->success(trans('admin/nests.eggs.notices.imported'))->flash();
+        try {
+            $egg = $this->importerService->handle($request->file('import_file'), $request->input('import_to_nest'));
+            $this->alert->success(trans('admin/nests.eggs.notices.imported'))->flash();
 
-        return redirect()->route('admin.nests.egg.view', ['egg' => $egg->id]);
+            return redirect()->route('admin.nests.egg.view', ['egg' => $egg->id]);
+        } catch (DataValidationException $e) {
+            $this->alert->danger('Gagal memvalidasi data egg: ' . $e->getMessageBag()->first())->flash();
+            return redirect()->back();
+        } catch (\Throwable $e) {
+            $this->alert->danger('Gagal mengimpor egg: ' . $e->getMessage())->flash();
+            return redirect()->back();
+        }
     }
 
     /**
@@ -66,9 +75,17 @@ class EggShareController extends Controller
      */
     public function update(EggImportFormRequest $request, Egg $egg): RedirectResponse
     {
-        $this->updateImporterService->handle($egg, $request->file('import_file'));
-        $this->alert->success(trans('admin/nests.eggs.notices.updated_via_import'))->flash();
+        try {
+            $this->updateImporterService->handle($egg, $request->file('import_file'));
+            $this->alert->success(trans('admin/nests.eggs.notices.updated_via_import'))->flash();
 
-        return redirect()->route('admin.nests.egg.view', ['egg' => $egg]);
+            return redirect()->route('admin.nests.egg.view', ['egg' => $egg]);
+        } catch (DataValidationException $e) {
+            $this->alert->danger('Gagal memvalidasi data egg: ' . $e->getMessageBag()->first())->flash();
+            return redirect()->back();
+        } catch (\Throwable $e) {
+            $this->alert->danger('Gagal memperbarui egg: ' . $e->getMessage())->flash();
+            return redirect()->back();
+        }
     }
 }

@@ -66,9 +66,9 @@ class EggVariable extends Model
     public static array $validationRules = [
         'egg_id' => 'exists:eggs,id',
         'name' => 'required|string|between:1,191',
-        'description' => 'string',
+        'description' => 'nullable|string',
         'env_variable' => 'required|regex:/^[\w]{1,191}$/|notIn:' . self::RESERVED_ENV_NAMES,
-        'default_value' => 'string',
+        'default_value' => 'nullable|string',
         'user_viewable' => 'boolean',
         'user_editable' => 'boolean',
         'rules' => 'required|string',

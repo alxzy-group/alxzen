@@ -127,7 +127,7 @@ class Egg extends Model implements Identifiable
         'name' => 'required|string|max:191',
         'description' => 'string|nullable',
         'features' => 'array|nullable',
-        'author' => 'required|string|email',
+        'author' => 'required|string|max:191',
         'file_denylist' => 'array|nullable',
         'file_denylist.*' => 'string',
         'docker_images' => 'required|array|min:1',

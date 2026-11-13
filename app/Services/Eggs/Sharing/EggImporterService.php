@@ -30,10 +30,15 @@ class EggImporterService
         $nest = Nest::query()->with('eggs', 'eggs.variables')->findOrFail($nest);
 
         return $this->connection->transaction(function () use ($nest, $parsed) {
+            $author = Arr::get($parsed, 'author');
+            if (empty($author) || !is_string($author)) {
+                $author = config('pterodactyl.service.author', 'support@pterodactyl.io');
+            }
+
             $egg = (new Egg())->forceFill([
                 'uuid' => Uuid::uuid4()->toString(),
                 'nest_id' => $nest->id,
-                'author' => Arr::get($parsed, 'author'),
+                'author' => $author,
                 'copy_script_from' => null,
             ]);
 
@@ -41,7 +46,18 @@ class EggImporterService
             $egg->save();
 
             foreach ($parsed['variables'] ?? [] as $variable) {
-                EggVariable::query()->forceCreate(array_merge($variable, ['egg_id' => $egg->id]));
+                $cleanVar = [
+                    'egg_id' => $egg->id,
+                    'name' => Arr::get($variable, 'name', 'Variable'),
+                    'description' => (string) (Arr::get($variable, 'description') ?? ''),
+                    'env_variable' => Arr::get($variable, 'env_variable'),
+                    'default_value' => (string) (Arr::get($variable, 'default_value') ?? ''),
+                    'user_viewable' => (bool) Arr::get($variable, 'user_viewable', false),
+                    'user_editable' => (bool) Arr::get($variable, 'user_editable', false),
+                    'rules' => (string) (Arr::get($variable, 'rules') ?? 'nullable|string'),
+                ];
+
+                EggVariable::query()->create($cleanVar);
             }
 
             return $egg;
