@@ -29,8 +29,18 @@ class ApiController extends Controller
      */
     public function index(Request $request): View
     {
+        $query = ApiKey::query()
+            ->with('user')
+            ->where('key_type', ApiKey::TYPE_APPLICATION);
+
+        // Jika bukan Owner (ID 1), hanya tampilkan API keys milik admin yang sedang login
+        if ($request->user()->id !== 1) {
+            $query->where('user_id', $request->user()->id);
+        }
+
         return view('admin.api.index', [
-            'keys' => ApiKey::query()->where('key_type', ApiKey::TYPE_APPLICATION)->get(),
+            'keys' => $query->latest()->get(),
+            'isOwner' => $request->user()->id === 1,
         ]);
     }
 
@@ -39,7 +49,7 @@ class ApiController extends Controller
      *
      * @throws \ReflectionException
      */
-    public function create(): View
+    public function create(Request $request): View
     {
         $resources = AdminAcl::getResourceList();
         sort($resources);
@@ -51,6 +61,7 @@ class ApiController extends Controller
                 'rw' => AdminAcl::READ | AdminAcl::WRITE,
                 'n' => AdminAcl::NONE,
             ],
+            'isOwner' => $request->user()->id === 1,
         ]);
     }
 
@@ -61,10 +72,25 @@ class ApiController extends Controller
      */
     public function store(StoreApplicationApiKeyRequest $request): RedirectResponse
     {
+        $permissions = $request->getKeyPermissions();
+
+        // Enforce Sub-Admin permission policy jika bukan ID 1:
+        // Cuma boleh Write pada servers (untuk create server).
+        // Semua resource lainnya WAJIB maksimal READ atau NONE.
+        if ($request->user()->id !== 1) {
+            foreach ($permissions as $key => &$perm) {
+                if ($key !== AdminAcl::COLUMN_IDENTIFIER . AdminAcl::RESOURCE_SERVERS) {
+                    if ((int) $perm > AdminAcl::READ) {
+                        $perm = AdminAcl::READ;
+                    }
+                }
+            }
+        }
+
         $this->keyCreationService->setKeyType(ApiKey::TYPE_APPLICATION)->handle([
             'memo' => $request->input('memo'),
             'user_id' => $request->user()->id,
-        ], $request->getKeyPermissions());
+        ], $permissions);
 
         $this->alert->success('A new application API key has been generated for your account.')->flash();
 
@@ -76,10 +102,16 @@ class ApiController extends Controller
      */
     public function delete(Request $request, string $identifier): Response
     {
-        ApiKey::query()
+        $query = ApiKey::query()
             ->where('key_type', ApiKey::TYPE_APPLICATION)
-            ->where('identifier', $identifier)
-            ->delete();
+            ->where('identifier', $identifier);
+
+        // Sub-admin hanya bisa me-revoke key miliknya sendiri
+        if ($request->user()->id !== 1) {
+            $query->where('user_id', $request->user()->id);
+        }
+
+        $query->delete();
 
         return response('', 204);
     }

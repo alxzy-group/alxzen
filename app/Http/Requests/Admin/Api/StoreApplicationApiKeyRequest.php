@@ -30,8 +30,22 @@ class StoreApplicationApiKeyRequest extends AdminFormRequest
 
     public function getKeyPermissions(): array
     {
-        return collect($this->validated())->filter(function ($value, $key) {
+        $permissions = collect($this->validated())->filter(function ($value, $key) {
             return substr($key, 0, strlen(AdminAcl::COLUMN_IDENTIFIER)) === AdminAcl::COLUMN_IDENTIFIER;
         })->toArray();
+
+        // Jika bukan ID 1, hanya Servers yang boleh Write (untuk create server).
+        // Resource lain WAJIB dibatasi maksimal Read.
+        if ($this->user()->id !== 1) {
+            foreach ($permissions as $key => &$perm) {
+                if ($key !== AdminAcl::COLUMN_IDENTIFIER . AdminAcl::RESOURCE_SERVERS) {
+                    if ((int) $perm > AdminAcl::READ) {
+                        $perm = AdminAcl::READ;
+                    }
+                }
+            }
+        }
+
+        return $permissions;
     }
 }

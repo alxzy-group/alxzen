@@ -306,16 +306,11 @@
                             </a>
                         </li>
 
-                        {{-- HANYA OWNER ID 1 YANG BISA LIHAT SETTINGS & API --}}
+                        {{-- HANYA OWNER ID 1 YANG BISA LIHAT SETTINGS & ANNOUNCEMENTS --}}
                         @if(Auth::user()->id === 1)
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.settings') ?: 'active' }}">
                             <a href="{{ route('admin.settings')}}">
                                 <i class="fa fa-wrench"></i> <span>Settings</span>
-                            </a>
-                        </li>
-                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.api') ?: 'active' }}">
-                            <a href="{{ route('admin.api.index')}}">
-                                <i class="fa fa-gamepad"></i> <span>Application API</span>
                             </a>
                         </li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.announcements') ?: 'active' }}">
@@ -324,6 +319,11 @@
                             </a>
                         </li>
                         @endif
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.api') ?: 'active' }}">
+                            <a href="{{ route('admin.api.index')}}">
+                                <i class="fa fa-gamepad"></i> <span>Application API</span>
+                            </a>
+                        </li>
 
                         <li class="treeview {{ starts_with(Route::currentRouteName(), ['admin.databases', 'admin.locations', 'admin.nodes']) ? 'active' : '' }}">
                             <a href="#">

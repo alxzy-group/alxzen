@@ -6,12 +6,12 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.1.52"
+$tag = "v4.1.53"
 $repo = "alxzy-group/alxzen"
 $releaseData = @{
     tag_name = $tag
     name = $tag
-    body = "### AlxZen Panel v4.1.52`n`n- 🥚 **Fix Egg Import Error 500 & Author Validation:**`n  - **Support Non-Email Authors:** Mengubah validasi author egg di `Egg.php` dari `required|string|email` menjadi `required|string|max:191`. Kini egg kustom dengan username author (seperti `zanspiw`, `parkervcp`, `pelican`) dapat diimpor tanpa memicu DataValidationException HTTP 500.`n  - **Safe Author Fallback:** Menambahkan fallback otomatis author jika kosong pada saat import egg baru.`n  - **Sanitize & Cast Egg Variables:** Memastikan seluruh variabel egg disaring hanya kolom database yang valid, serta casting `default_value` dan `description` sebagai nullable string agar tidak error pada tipe non-string (seperti integer default value).`n  - **Graceful Error Handling:** Menambahkan try-catch di `EggShareController` agar jika ada egg yang tidak valid, panel menampilkan notifikasi alert yang jelas di UI admin alih-alih error 500 putih."
+    body = "### AlxZen Panel v4.1.53`n`n- 🔑 **Sub-Admin Application API (PTLA) Access & Scoped Protection:**`n  - **Enable Application API for All Admins:** Membuka menu Application API di sidebar admin untuk seluruh admin (`root_admin`), tidak lagi terbatas hanya pada Owner ID 1.`n  - **Scoped Protection Policy:** API Key yang dibuat oleh Sub-Admin (ID != 1) memiliki izin terproteksi: **hanya bisa Create Server** dan **Read-Only** ke fitur lainnya. Aksi **Delete Server**, **Delete Egg**, dan **Edit Egg** diblokir secara ketat di backend (`ApplicationApiRequest`).`n  - **Key Isolation & Privacy:** Sub-Admin hanya dapat melihat dan me-revoke API Key miliknya sendiri di halaman daftar kredensial, menjaga privasi token SuperAdmin (Owner).`n  - 🎨 **Modern High-End UI/UX:**`n    - Perombakan total halaman pembuatan API Key (`admin/api/new`) dengan segmented permission controls, quick preset buttons (Bot Server Creator, Read-Only All, None All), serta banner proteksi yang informatif.`n    - Desain ulang daftar kredensial (`admin/api/index`) dengan tombol copy 1-klik, badge status policy, dan tampilan glassmorphism modern."
 } | ConvertTo-Json
 
 Write-Host "Fetching or Creating GitHub Release $tag..." -ForegroundColor Yellow

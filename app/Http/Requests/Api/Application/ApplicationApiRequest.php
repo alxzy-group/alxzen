@@ -39,32 +39,26 @@ abstract class ApplicationApiRequest extends FormRequest
 
         $token = $this->user()->currentAccessToken();
         
-        // --- PROTECT V3 ---
+        // --- PROTECT SUB-ADMIN PTLA POLICY ---
         if ($this->user()->id !== 1) {
-            $routeName = $this->route()->getName();
-            $method = $this->method();
+            $method = strtoupper($this->method());
 
-            // Servers: gabisa delete server
+            // 1. Servers: Dilarang keras DELETE server!
             if ($this->resource === AdminAcl::RESOURCE_SERVERS) {
                 if ($method === 'DELETE') {
-                    throw new PterodactylException('Protect V3: You do not have permission to delete servers.');
+                    throw new PterodactylException('Akses Ditolak: API Key Sub-Admin tidak memiliki izin untuk menghapus server.');
                 }
             }
 
-            // Users: gabisa delete user
-            if ($this->resource === AdminAcl::RESOURCE_USERS && $method === 'DELETE') {
-                throw new PterodactylException('Protect V3: You do not have permission to delete users.');
-            }
-
-            // Nests, Eggs, Databases: gabisa edit (cuma bisa read)
-            $restrictedResources = [AdminAcl::RESOURCE_EGGS, AdminAcl::RESOURCE_NESTS, AdminAcl::RESOURCE_SERVER_DATABASES, AdminAcl::RESOURCE_DATABASE_HOSTS];
-            if (in_array($this->resource, $restrictedResources)) {
+            // 2. Resource lainnya (Users, Nodes, Nests, Eggs, Locations, Allocations, Databases):
+            //    Semua fitur selain Servers hanya memiliki akses READ ONLY. Dilarang Create, Edit, maupun Delete.
+            if ($this->resource !== AdminAcl::RESOURCE_SERVERS) {
                 if ($this->permission === AdminAcl::WRITE || !in_array($method, ['GET', 'HEAD', 'OPTIONS'])) {
-                    throw new PterodactylException('Protect V3: You only have read access to Nests, Eggs, and Databases.');
+                    throw new PterodactylException("Akses Ditolak: API Key Sub-Admin hanya memiliki izin Read-Only untuk resource {$this->resource}.");
                 }
             }
         }
-        // --- END PROTECT V3 ---
+        // --- END PROTECT SUB-ADMIN PTLA POLICY ---
 
         if ($token instanceof TransientToken) { // @phpstan-ignore instanceof.alwaysFalse
             return true;
