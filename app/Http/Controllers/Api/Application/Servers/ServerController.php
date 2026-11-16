@@ -15,6 +15,8 @@ use Pterodactyl\Http\Requests\Api\Application\Servers\ServerWriteRequest;
 use Pterodactyl\Http\Requests\Api\Application\Servers\StoreServerRequest;
 use Pterodactyl\Http\Controllers\Api\Application\ApplicationApiController;
 
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+
 class ServerController extends ApplicationApiController
 {
     /**
@@ -32,7 +34,13 @@ class ServerController extends ApplicationApiController
      */
     public function index(GetServersRequest $request): array
     {
-        $servers = QueryBuilder::for(Server::query())
+        $query = Server::query();
+        // ANTI-INTIP: Sub-admin (ID != 1) HANYA diizinkan melihat server milik mereka sendiri
+        if ($request->user()->id !== 1) {
+            $query->where('owner_id', $request->user()->id);
+        }
+
+        $servers = QueryBuilder::for($query)
             ->allowedFilters(['uuid', 'uuidShort', 'name', 'description', 'image', 'external_id'])
             ->allowedSorts(['id', 'uuid'])
             ->paginate($request->query('per_page') ?? 50);
@@ -67,6 +75,10 @@ class ServerController extends ApplicationApiController
      */
     public function view(GetServerRequest $request, Server $server): array
     {
+        if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses ditolak: Anda tidak diizinkan mengakses server milik pengguna lain.');
+        }
+
         return $this->fractal->item($server)
             ->transformWith($this->getTransformer(ServerTransformer::class))
             ->toArray();

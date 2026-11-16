@@ -46,10 +46,10 @@ class ClientController extends ClientApiController
         // server. If ?type=admin-all is passed all servers on the system will be returned to the user, rather
         // than only servers they can see because they are an admin.
         if (in_array($type, ['admin', 'admin-all'])) {
-            // If they aren't an admin but want all the admin servers don't fail the request, just
-            // make it a query that will never return any results back.
-            if (!$user->root_admin) {
-                $builder->whereRaw('1 = 2');
+            // ANTI-INTIP: Hanya Super Admin (ID 1) yang diizinkan melihat daftar server global admin.
+            // Jika sub-admin (ID != 1) meminta type=admin / admin-all, paksa hanya ke accessible servers miliknya!
+            if ($user->id !== 1) {
+                $builder = $builder->whereIn('servers.id', $user->accessibleServers()->pluck('id')->all());
             } else {
                 $builder = $type === 'admin-all'
                     ? $builder

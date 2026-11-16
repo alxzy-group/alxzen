@@ -62,7 +62,7 @@ const SearchWatcher = () => {
 
 export default ({ ...props }: Props) => {
     const ref = useRef<HTMLInputElement>(null);
-    const isAdmin = useStoreState((state) => state.user.data!.rootAdmin);
+    const isOwner = useStoreState((state) => (state.user.data as any)?.isOwner ?? false);
     const [servers, setServers] = useState<Server[]>([]);
     const { clearAndAddHttpError, clearFlashes } = useStoreActions(
         (actions: Actions<ApplicationStore>) => actions.flashes
@@ -72,7 +72,7 @@ export default ({ ...props }: Props) => {
         clearFlashes('search');
 
         // if (ref.current) ref.current.focus();
-        getServers({ query: term, type: isAdmin ? 'admin-all' : undefined })
+        getServers({ query: term, type: isOwner ? 'admin-all' : undefined })
             .then((servers) => setServers(servers.items.filter((_, index) => index < 5)))
             .catch((error) => {
                 console.error(error);

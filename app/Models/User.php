@@ -199,7 +199,10 @@ class User extends Model implements
     public function toVueObject(): array
     {
         return Collection::make($this->toArray())->except(['id', 'external_id'])
-            ->merge(['identifier' => $this->identifier])
+            ->merge([
+                'identifier' => $this->identifier,
+                'is_owner' => $this->id === 1,
+            ])
             ->toArray();
     }
 

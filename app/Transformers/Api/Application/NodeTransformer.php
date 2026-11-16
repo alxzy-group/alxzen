@@ -101,10 +101,17 @@ class NodeTransformer extends BaseTransformer
             return $this->null();
         }
 
+        $requestUser = $this->request->user();
         $node->loadMissing('servers');
+        $servers = $node->getRelation('servers');
+
+        // ANTI-INTIP: Sub-admin (ID != 1) hanya boleh melihat server miliknya sendiri
+        if ($requestUser && $requestUser->id !== 1) {
+            $servers = $servers->where('owner_id', $requestUser->id);
+        }
 
         return $this->collection(
-            $node->getRelation('servers'),
+            $servers,
             $this->makeTransformer(ServerTransformer::class),
             'server'
         );

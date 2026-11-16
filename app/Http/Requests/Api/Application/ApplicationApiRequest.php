@@ -43,10 +43,15 @@ abstract class ApplicationApiRequest extends FormRequest
         if ($this->user()->id !== 1) {
             $method = strtoupper($this->method());
 
-            // 1. Servers: Dilarang keras DELETE server!
+            // 1. Servers: Dilarang keras DELETE server dan dilarang mengintip server orang lain!
             if ($this->resource === AdminAcl::RESOURCE_SERVERS) {
                 if ($method === 'DELETE') {
                     throw new PterodactylException('Akses Ditolak: API Key Sub-Admin tidak memiliki izin untuk menghapus server.');
+                }
+
+                $server = $this->route()->parameter('server');
+                if ($server instanceof \Pterodactyl\Models\Server && $server->owner_id !== $this->user()->id) {
+                    throw new PterodactylException('Akses Ditolak: Anda tidak diizinkan mengakses atau mengintip server milik pengguna lain.');
                 }
             }
 

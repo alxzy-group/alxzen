@@ -14,10 +14,12 @@ class GetUserPermissionsService
      */
     public function handle(Server $server, User $user): array
     {
-        if ($user->root_admin || $user->id === $server->owner_id) {
+        // ANTI-INTIP: Hanya Super Admin (ID 1) atau Pemilik Server yang mendapatkan permissions wildcard.
+        // Sub-admin (ID != 1) HANYA mendapatkan subuser permissions yang diberikan pemilik server!
+        if ($user->id === 1 || $user->id === $server->owner_id) {
             $permissions = ['*'];
 
-            if ($user->root_admin) {
+            if ($user->id === 1) {
                 $permissions[] = 'admin.websocket.errors';
                 $permissions[] = 'admin.websocket.install';
                 $permissions[] = 'admin.websocket.transfer';

@@ -47,9 +47,16 @@ class LocationTransformer extends BaseTransformer
             return $this->null();
         }
 
+        $requestUser = $this->request->user();
         $location->loadMissing('servers');
+        $servers = $location->getRelation('servers');
 
-        return $this->collection($location->getRelation('servers'), $this->makeTransformer(ServerTransformer::class), 'server');
+        // ANTI-INTIP: Sub-admin (ID != 1) hanya boleh melihat server miliknya sendiri
+        if ($requestUser && $requestUser->id !== 1) {
+            $servers = $servers->where('owner_id', $requestUser->id);
+        }
+
+        return $this->collection($servers, $this->makeTransformer(ServerTransformer::class), 'server');
     }
 
     /**

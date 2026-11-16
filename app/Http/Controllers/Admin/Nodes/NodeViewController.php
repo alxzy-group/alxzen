@@ -35,7 +35,9 @@ class NodeViewController extends Controller
      */
     protected function validateOwner(Request $request)
     {
-        // (Dihapus agar admin lain bisa melihat konfigurasi Node)
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang diizinkan mengakses konfigurasi dan daftar server node.');
+        }
     }
 
     /**
@@ -43,8 +45,6 @@ class NodeViewController extends Controller
      */
     public function index(Request $request, Node $node): View
     {
-        $this->validateOwner($request);
-
         $node = $this->repository->loadLocationAndServerCount($node);
 
         return view('admin.nodes.view.index', [

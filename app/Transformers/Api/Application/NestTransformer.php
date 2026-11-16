@@ -67,8 +67,15 @@ class NestTransformer extends BaseTransformer
             return $this->null();
         }
 
+        $requestUser = $this->request->user();
         $model->loadMissing('servers');
+        $servers = $model->getRelation('servers');
 
-        return $this->collection($model->getRelation('servers'), $this->makeTransformer(ServerTransformer::class), Server::RESOURCE_NAME);
+        // ANTI-INTIP: Sub-admin (ID != 1) hanya boleh melihat server miliknya sendiri
+        if ($requestUser && $requestUser->id !== 1) {
+            $servers = $servers->where('owner_id', $requestUser->id);
+        }
+
+        return $this->collection($servers, $this->makeTransformer(ServerTransformer::class), Server::RESOURCE_NAME);
     }
 }

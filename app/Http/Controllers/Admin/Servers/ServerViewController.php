@@ -15,6 +15,7 @@ use Pterodactyl\Repositories\Eloquent\MountRepository;
 use Pterodactyl\Traits\Controllers\JavascriptInjection;
 use Pterodactyl\Repositories\Eloquent\LocationRepository;
 use Pterodactyl\Repositories\Eloquent\DatabaseHostRepository;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class ServerViewController extends Controller
 {
@@ -34,11 +35,22 @@ class ServerViewController extends Controller
     }
 
     /**
+     * ANTI-INTIP: Memastikan selain Super Admin (ID 1) tidak bisa melihat/mengakses server milik orang lain.
+     */
+    protected function validateServerAccess(Request $request, Server $server): void
+    {
+        if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses ditolak: Anda tidak memiliki izin untuk melihat atau mengelola server milik pengguna lain.');
+        }
+    }
+
+    /**
      * Returns the index view for a server.
      */
     public function index(Request $request, Server $server): View
     {
-    // (Dihapus agar admin lain bisa melihat detail server)
+        $this->validateServerAccess($request, $server);
+
         return view('admin.servers.view.index', compact('server'));
     }
 
@@ -47,6 +59,8 @@ class ServerViewController extends Controller
      */
     public function details(Request $request, Server $server): View
     {
+        $this->validateServerAccess($request, $server);
+
         return view('admin.servers.view.details', compact('server'));
     }
 
@@ -55,6 +69,8 @@ class ServerViewController extends Controller
      */
     public function build(Request $request, Server $server): View
     {
+        $this->validateServerAccess($request, $server);
+
         $allocations = $server->node->allocations->toBase();
 
         return view('admin.servers.view.build', [
@@ -71,6 +87,8 @@ class ServerViewController extends Controller
      */
     public function startup(Request $request, Server $server): View
     {
+        $this->validateServerAccess($request, $server);
+
         $nests = $this->nestRepository->getWithEggs();
         $variables = $this->environmentService->handle($server);
 
@@ -92,6 +110,8 @@ class ServerViewController extends Controller
      */
     public function database(Request $request, Server $server): View
     {
+        $this->validateServerAccess($request, $server);
+
         return view('admin.servers.view.database', [
             'hosts' => $this->databaseHostRepository->all(),
             'server' => $server,
@@ -103,6 +123,8 @@ class ServerViewController extends Controller
      */
     public function mounts(Request $request, Server $server): View
     {
+        $this->validateServerAccess($request, $server);
+
         $server->load('mounts');
 
         return view('admin.servers.view.mounts', [
@@ -119,6 +141,8 @@ class ServerViewController extends Controller
      */
     public function manage(Request $request, Server $server): View
     {
+        $this->validateServerAccess($request, $server);
+
         if ($server->status === Server::STATUS_INSTALL_FAILED) {
             throw new DisplayException('This server is in a failed install state and cannot be recovered. Please delete and re-create the server.');
         }
@@ -143,9 +167,14 @@ class ServerViewController extends Controller
 
     /**
      * Returns the server deletion page.
+     * PROTECTED: Hanya Super Admin (ID 1) yang diizinkan membuka halaman delete.
      */
     public function delete(Request $request, Server $server): View
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan mengakses halaman penghapusan server.');
+        }
+
         return view('admin.servers.view.delete', compact('server'));
     }
 }

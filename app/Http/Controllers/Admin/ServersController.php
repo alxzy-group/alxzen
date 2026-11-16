@@ -34,6 +34,7 @@ use Pterodactyl\Contracts\Repository\DatabaseRepositoryInterface;
 use Pterodactyl\Contracts\Repository\AllocationRepositoryInterface;
 use Pterodactyl\Services\Servers\ServerConfigurationStructureService;
 use Pterodactyl\Http\Requests\Admin\Servers\Databases\StoreServerDatabaseRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class ServersController extends Controller
 {
@@ -63,10 +64,22 @@ class ServersController extends Controller
     }
 
     /**
+     * ANTI-INTIP: Memastikan selain Super Admin (ID 1) tidak bisa memodifikasi server milik pengguna lain.
+     */
+    protected function validateServerAccess(Request $request, Server $server): void
+    {
+        if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses ditolak: Anda tidak memiliki izin untuk mengelola server milik pengguna lain.');
+        }
+    }
+
+    /**
      * Update the details for a server.
      */
     public function setDetails(Request $request, Server $server): RedirectResponse
     {
+        $this->validateServerAccess($request, $server);
+
         $this->detailsModificationService->handle($server, $request->only([
             'owner_id', 'external_id', 'name', 'description',
         ]));
@@ -79,8 +92,10 @@ class ServersController extends Controller
     /**
      * Toggles the installation status for a server.
      */
-    public function toggleInstall(Server $server): RedirectResponse
+    public function toggleInstall(Request $request, Server $server): RedirectResponse
     {
+        $this->validateServerAccess($request, $server);
+
         if ($server->status === Server::STATUS_INSTALL_FAILED) {
             throw new DisplayException(trans('admin/server.exceptions.marked_as_failed'));
         }
@@ -135,6 +150,8 @@ class ServersController extends Controller
      */
     public function updateBuild(Request $request, Server $server): RedirectResponse
     {
+        $this->validateServerAccess($request, $server);
+
         try {
             $this->buildModificationService->handle($server, $request->only([
                 'allocation_id', 'add_allocations', 'remove_allocations',
@@ -172,6 +189,8 @@ class ServersController extends Controller
      */
     public function saveStartup(Request $request, Server $server): RedirectResponse
     {
+        $this->validateServerAccess($request, $server);
+
         $data = $request->except('_token');
         if (!empty($data['custom_docker_image'])) {
             $data['docker_image'] = $data['custom_docker_image'];
@@ -196,6 +215,8 @@ class ServersController extends Controller
      */
     public function newDatabase(StoreServerDatabaseRequest $request, Server $server): RedirectResponse
     {
+        $this->validateServerAccess($request, $server);
+
         $this->databaseManagementService->create($server, [
             'database' => DatabaseManagementService::generateUniqueDatabaseName($request->input('database'), $server->id),
             'remote' => $request->input('remote'),
@@ -211,6 +232,8 @@ class ServersController extends Controller
      */
     public function resetDatabasePassword(Request $request, Server $server): Response
     {
+        $this->validateServerAccess($request, $server);
+
         /** @var Database $database */
         $database = $server->databases()->findOrFail($request->input('database'));
 
@@ -238,6 +261,8 @@ class ServersController extends Controller
      */
     public function addMount(Request $request, Server $server): RedirectResponse
     {
+        $this->validateServerAccess($request, $server);
+
         $mountServer = (new MountServer())->forceFill([
             'mount_id' => $request->input('mount_id'),
             'server_id' => $server->id,

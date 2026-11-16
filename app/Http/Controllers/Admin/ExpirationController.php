@@ -6,7 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Pterodactyl\Models\Server;
 use Pterodactyl\Http\Controllers\Controller;
-use Pterodactyl\Services\Servers\SuspensionService; // Tambahkan ini
+use Pterodactyl\Services\Servers\SuspensionService;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class ExpirationController extends Controller
 {
@@ -15,6 +16,11 @@ class ExpirationController extends Controller
         $query = Server::query()
             ->select('id', 'name', 'expires_at', 'uuidShort', 'status', 'owner_id', 'node_id', 'allocation_id')
             ->with(['user', 'node', 'allocation']);
+
+        // ANTI-INTIP: Sub-admin (ID != 1) hanya boleh melihat masa aktif server miliknya sendiri
+        if ($request->user()->id !== 1) {
+            $query->where('servers.owner_id', $request->user()->id);
+        }
 
         if ($request->filled('filter.name')) {
             $query->where('servers.name', 'LIKE', '%' . $request->input('filter.name') . '%');
@@ -29,6 +35,11 @@ class ExpirationController extends Controller
     public function update(Request $request, $id)
     {
         $server = Server::findOrFail($id);
+
+        // ANTI-INTIP: Sub-admin (ID != 1) dilarang mengubah masa aktif server milik orang lain
+        if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses ditolak: Anda tidak memiliki izin untuk memperpanjang server milik orang lain.');
+        }
 
         $request->validate([
             'new_date' => 'nullable|date',
@@ -68,8 +79,13 @@ class ExpirationController extends Controller
         return redirect()->back()->with('success', "Server {$server->name} diperpanjang sampai {$newDate->format('d-m-Y H:i')}.");
     }
 
-    public function deleteAllExpired()
+    public function deleteAllExpired(Request $request)
     {
+        // ANTI-INTIP / PROTEKSI: Hanya Super Admin (ID 1) yang berhak menghapus massal server expired
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan menghapus server expired.');
+        }
+
         $servers = Server::query()
             ->whereNotNull('expires_at')
             ->where('expires_at', '<', Carbon::now())

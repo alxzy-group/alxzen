@@ -11,6 +11,7 @@ use Pterodactyl\Http\Controllers\Controller;
 use Pterodactyl\Services\Eggs\Scripts\InstallScriptService;
 use Pterodactyl\Contracts\Repository\EggRepositoryInterface;
 use Pterodactyl\Http\Requests\Admin\Egg\EggScriptFormRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class EggScriptController extends Controller
 {
@@ -57,6 +58,10 @@ class EggScriptController extends Controller
      */
     public function update(EggScriptFormRequest $request, Egg $egg): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang diizinkan mengubah script Egg.');
+        }
+
         $this->installScriptService->handle($egg, $request->normalize());
         $this->alert->success(trans('admin/nests.eggs.notices.script_updated'))->flash();
 

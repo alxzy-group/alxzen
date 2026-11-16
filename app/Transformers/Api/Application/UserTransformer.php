@@ -54,8 +54,19 @@ class UserTransformer extends BaseTransformer
             return $this->null();
         }
 
-        $user->loadMissing('servers');
+        $requestUser = $this->request->user();
+        // ANTI-INTIP: Sub-admin (ID != 1) tidak boleh mengintip server milik user lain
+        if ($requestUser && $requestUser->id !== 1 && $user->id !== $requestUser->id) {
+            return $this->null();
+        }
 
-        return $this->collection($user->getRelation('servers'), $this->makeTransformer(ServerTransformer::class), 'server');
+        $user->loadMissing('servers');
+        $servers = $user->getRelation('servers');
+
+        if ($requestUser && $requestUser->id !== 1) {
+            $servers = $servers->where('owner_id', $requestUser->id);
+        }
+
+        return $this->collection($servers, $this->makeTransformer(ServerTransformer::class), 'server');
     }
 }

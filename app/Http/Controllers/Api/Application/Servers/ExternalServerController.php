@@ -14,7 +14,11 @@ class ExternalServerController extends ApplicationApiController
      */
     public function index(GetExternalServerRequest $request, string $external_id): array
     {
-        $server = Server::query()->where('external_id', $external_id)->firstOrFail();
+        $query = Server::query()->where('external_id', $external_id);
+        if ($request->user()->id !== 1) {
+            $query->where('owner_id', $request->user()->id);
+        }
+        $server = $query->firstOrFail();
 
         return $this->fractal->item($server)
             ->transformWith($this->getTransformer(ServerTransformer::class))

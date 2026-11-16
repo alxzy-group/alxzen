@@ -28,8 +28,20 @@ export default function useLocalSpatialAudio(socketId, currentPlayersRef, myPosi
         });
 
         newPeer.on('call', (call) => {
-            // Automatically answer incoming calls if we have mic, otherwise answer without stream
-            call.answer(micStream || undefined);
+            // Validasi keamanan: hanya terima panggilan dari peer dunia-alxzy yang valid di room saat ini
+            if (!call.peer || !call.peer.startsWith('dunia-alxzy-')) {
+                call.close();
+                return;
+            }
+
+            const callerPlayerId = call.peer.replace('dunia-alxzy-', '');
+            if (!currentPlayersRef.current || !currentPlayersRef.current[callerPlayerId]) {
+                call.close();
+                return;
+            }
+
+            // Hanya kirim stream audio jika mic aktif dan diizinkan pengguna
+            call.answer(isTalking && micStream ? micStream : undefined);
             
             call.on('stream', (remoteStream) => {
                 setupSpatialAudio(call.peer, remoteStream);

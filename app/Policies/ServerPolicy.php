@@ -25,7 +25,9 @@ class ServerPolicy
      */
     public function before(User $user, string $ability, Server $server): bool
     {
-        if ($user->root_admin || $server->owner_id === $user->id) {
+        // ANTI-INTIP: Hanya Super Admin (ID 1) atau Pemilik Server yang bebas dari pembatasan subuser.
+        // Sub-admin (ID != 1) HANYA mendapatkan izin jika mereka adalah pemilik atau subuser terdaftar.
+        if ($user->id === 1 || $server->owner_id === $user->id) {
             return true;
         }
 

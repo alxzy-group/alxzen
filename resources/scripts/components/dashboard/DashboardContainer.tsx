@@ -133,12 +133,13 @@ export default () => {
     const uuid = useStoreState((state) => state.user.data!.uuid);
     const username = useStoreState((state) => state.user.data!.username);
     const rootAdmin = useStoreState((state) => state.user.data!.rootAdmin);
+    const isOwner = useStoreState((state) => (state.user.data as any)?.isOwner ?? false);
     const [showOnlyAdmin, setShowOnlyAdmin] = usePersistedState(`${uuid}:show_all_servers`, false);
     const [isWorldOpen, setIsWorldOpen] = useState(false);
 
     const { data: servers, error } = useSWR<PaginatedResult<Server>>(
-        ['/api/client/servers', showOnlyAdmin && rootAdmin, page],
-        () => getServers({ page, type: showOnlyAdmin && rootAdmin ? 'admin' : undefined })
+        ['/api/client/servers', showOnlyAdmin && isOwner, page],
+        () => getServers({ page, type: showOnlyAdmin && isOwner ? 'admin' : undefined })
     );
 
     useEffect(() => { setPage(1); }, [showOnlyAdmin]);
@@ -222,7 +223,7 @@ export default () => {
                             <span className="pulse-dot" />
                         </DuniaAlxzyTopButton>
 
-                        {rootAdmin && (
+                        {isOwner && (
                             <FilterBar
                                 initial={{ opacity: 0, x: 12 }}
                                 animate={{ opacity: 1, x: 0 }}

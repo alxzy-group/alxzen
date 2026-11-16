@@ -14,6 +14,7 @@ use Pterodactyl\Services\Eggs\Variables\VariableUpdateService;
 use Pterodactyl\Http\Requests\Admin\Egg\EggVariableFormRequest;
 use Pterodactyl\Services\Eggs\Variables\VariableCreationService;
 use Pterodactyl\Contracts\Repository\EggVariableRepositoryInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class EggVariableController extends Controller
 {
@@ -51,6 +52,10 @@ class EggVariableController extends Controller
      */
     public function store(EggVariableFormRequest $request, Egg $egg): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang diizinkan menambah variabel Egg.');
+        }
+
         $this->creationService->handle($egg->id, $request->normalize());
         $this->alert->success(trans('admin/nests.variables.notices.variable_created'))->flash();
 
@@ -67,6 +72,10 @@ class EggVariableController extends Controller
      */
     public function update(EggVariableFormRequest $request, Egg $egg, EggVariable $variable): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang diizinkan mengubah variabel Egg.');
+        }
+
         $this->updateService->handle($variable, $request->normalize());
         $this->alert->success(trans('admin/nests.variables.notices.variable_updated', [
             'variable' => htmlspecialchars($variable->name),
@@ -80,6 +89,10 @@ class EggVariableController extends Controller
      */
     public function destroy(int $egg, EggVariable $variable): RedirectResponse
     {
+        if (request()->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang diizinkan menghapus variabel Egg.');
+        }
+
         $this->variableRepository->delete($variable->id);
         $this->alert->success(trans('admin/nests.variables.notices.variable_deleted', [
             'variable' => htmlspecialchars($variable->name),

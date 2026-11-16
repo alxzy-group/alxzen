@@ -12,6 +12,7 @@ use Pterodactyl\Services\Eggs\Sharing\EggImporterService;
 use Pterodactyl\Http\Requests\Admin\Egg\EggImportFormRequest;
 use Pterodactyl\Exceptions\Model\DataValidationException;
 use Pterodactyl\Services\Eggs\Sharing\EggUpdateImporterService;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class EggShareController extends Controller
 {
@@ -51,6 +52,10 @@ class EggShareController extends Controller
      */
     public function import(EggImportFormRequest $request): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang diizinkan mengimpor Egg.');
+        }
+
         try {
             $egg = $this->importerService->handle($request->file('import_file'), $request->input('import_to_nest'));
             $this->alert->success(trans('admin/nests.eggs.notices.imported'))->flash();
@@ -75,6 +80,10 @@ class EggShareController extends Controller
      */
     public function update(EggImportFormRequest $request, Egg $egg): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang diizinkan memperbarui Egg.');
+        }
+
         try {
             $this->updateImporterService->handle($egg, $request->file('import_file'));
             $this->alert->success(trans('admin/nests.eggs.notices.updated_via_import'))->flash();

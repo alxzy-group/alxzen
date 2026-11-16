@@ -21,7 +21,10 @@ class ServerController extends Controller
         // 1. Siapkan query dasar
         $query = Server::query()->with('node', 'user', 'allocation');
 
-        // 2. LOGIC TAMBAHAN: (Dihapus agar admin lain bisa melihat list server)
+        // 2. ANTI-INTIP: Sub-admin (ID != 1) HANYA diizinkan melihat server milik mereka sendiri
+        if ($request->user()->id !== 1) {
+            $query->where('owner_id', $request->user()->id);
+        }
 
         // 3. Masukkan query yang sudah difilter ke QueryBuilder
         $servers = QueryBuilder::for($query)
