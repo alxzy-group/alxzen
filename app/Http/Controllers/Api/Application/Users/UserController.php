@@ -14,6 +14,7 @@ use Pterodactyl\Http\Requests\Api\Application\Users\StoreUserRequest;
 use Pterodactyl\Http\Requests\Api\Application\Users\DeleteUserRequest;
 use Pterodactyl\Http\Requests\Api\Application\Users\UpdateUserRequest;
 use Pterodactyl\Http\Controllers\Api\Application\ApplicationApiController;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class UserController extends ApplicationApiController
 {
@@ -107,6 +108,16 @@ class UserController extends ApplicationApiController
      */
     public function delete(DeleteUserRequest $request, User $user): JsonResponse
     {
+        // 1. Akun Super Admin (ID 1) tidak boleh dihapus sama sekali
+        if ($user->id === 1) {
+            throw new AccessDeniedHttpException('Aksi Ilegal: Akun Owner Utama tidak dapat dihapus.');
+        }
+
+        // 2. Admin lain (ID != 1) dilarang menghapus sesama Admin
+        if ($request->user()->id !== 1 && $user->root_admin) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Anda tidak memiliki izin untuk menghapus akun Administrator.');
+        }
+
         $this->deletionService->handle($user);
 
         return new JsonResponse([], JsonResponse::HTTP_NO_CONTENT);

@@ -34,11 +34,14 @@ class StoreApplicationApiKeyRequest extends AdminFormRequest
             return substr($key, 0, strlen(AdminAcl::COLUMN_IDENTIFIER)) === AdminAcl::COLUMN_IDENTIFIER;
         })->toArray();
 
-        // Jika bukan ID 1, hanya Servers yang boleh Write (untuk create server).
+        // Jika bukan ID 1, hanya Servers dan Users yang boleh Write (untuk create server & create user bot).
         // Resource lain WAJIB dibatasi maksimal Read.
         if ($this->user()->id !== 1) {
             foreach ($permissions as $key => &$perm) {
-                if ($key !== AdminAcl::COLUMN_IDENTIFIER . AdminAcl::RESOURCE_SERVERS) {
+                if (!in_array($key, [
+                    AdminAcl::COLUMN_IDENTIFIER . AdminAcl::RESOURCE_SERVERS,
+                    AdminAcl::COLUMN_IDENTIFIER . AdminAcl::RESOURCE_USERS,
+                ])) {
                     if ((int) $perm > AdminAcl::READ) {
                         $perm = AdminAcl::READ;
                     }

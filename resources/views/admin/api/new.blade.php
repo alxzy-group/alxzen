@@ -325,7 +325,7 @@
                         'servers' => ['icon' => 'fa-server', 'desc' => $isOwner ? 'View, create, configure and delete game servers.' : 'Deploy new game servers. (Delete Server is strictly protected).'],
                         'nodes' => ['icon' => 'fa-sitemap', 'desc' => 'Daemon host nodes and system infrastructure health.'],
                         'allocations' => ['icon' => 'fa-plug', 'desc' => 'IP addresses and networking ports for server allocation.'],
-                        'users' => ['icon' => 'fa-users', 'desc' => 'User client accounts and credentials lookup.'],
+                        'users' => ['icon' => 'fa-users', 'desc' => $isOwner ? 'User client accounts and credentials lookup.' : 'Create client user accounts for new servers and lookup credentials.'],
                         'locations' => ['icon' => 'fa-globe', 'desc' => 'Geographical clustering for node organization.'],
                         'nests' => ['icon' => 'fa-th-large', 'desc' => 'Game packages and parent service groups.'],
                         'eggs' => ['icon' => 'fa-cubes', 'desc' => 'Docker egg configurations and environment variables.'],
@@ -338,7 +338,7 @@
                     @foreach($resources as $resource)
                         @php
                             $meta = $resMeta[$resource] ?? ['icon' => 'fa-folder', 'desc' => 'Manage ' . $resource];
-                            $canWrite = $isOwner || ($resource === 'servers');
+                            $canWrite = $isOwner || in_array($resource, ['servers', 'users']);
                         @endphp
                         <div class="alx-resource-item">
                             <div class="alx-res-info">
@@ -371,6 +371,8 @@
                                         <span>
                                             @if(!$isOwner && $resource === 'servers')
                                                 <i class="fa fa-plus-circle"></i> Create Only <span class="alx-sub-badge">No Delete</span>
+                                            @elseif(!$isOwner && $resource === 'users')
+                                                <i class="fa fa-user-plus"></i> Create User
                                             @else
                                                 Read &amp; Write
                                             @endif
@@ -427,11 +429,12 @@
     <script>
         function applyPreset(preset) {
             if (preset === 'server-bot') {
-                // Servers: Read & Write (3)
+                // Servers & Users: Read & Write (3) for automated deployment bots (create user + create server)
                 $('input[name="r_servers"][value="3"]').prop('checked', true).trigger('change');
+                $('input[name="r_users"][value="3"]').prop('checked', true).trigger('change');
                 
                 // Read on all other read-accessible resources
-                ['users', 'nodes', 'allocations', 'locations', 'nests', 'eggs'].forEach(function(res) {
+                ['nodes', 'allocations', 'locations', 'nests', 'eggs'].forEach(function(res) {
                     $('input[name="r_' + res + '"][value="1"]').prop('checked', true).trigger('change');
                 });
                 

@@ -55,9 +55,28 @@ abstract class ApplicationApiRequest extends FormRequest
                 }
             }
 
-            // 2. Resource lainnya (Users, Nodes, Nests, Eggs, Locations, Allocations, Databases):
-            //    Semua fitur selain Servers hanya memiliki akses READ ONLY. Dilarang Create, Edit, maupun Delete.
-            if ($this->resource !== AdminAcl::RESOURCE_SERVERS) {
+            // 2. Users: Izinkan Create User (POST) agar bot create server (seperti cpanel alxzy) bisa membuat user customer.
+            //    Dilarang keras menghapus SuperAdmin (ID 1) atau sesama admin.
+            if ($this->resource === AdminAcl::RESOURCE_USERS) {
+                if ($method === 'DELETE') {
+                    $targetUser = $this->route()->parameter('user');
+                    if ($targetUser instanceof \Pterodactyl\Models\User) {
+                        if ($targetUser->id === 1 || $targetUser->root_admin) {
+                            throw new PterodactylException('Akses Ditolak: API Key Sub-Admin tidak diizinkan menghapus akun Administrator.');
+                        }
+                    }
+                }
+                if (in_array($method, ['PUT', 'PATCH'])) {
+                    $targetUser = $this->route()->parameter('user');
+                    if ($targetUser instanceof \Pterodactyl\Models\User && $targetUser->id === 1) {
+                        throw new PterodactylException('Akses Ditolak: API Key Sub-Admin tidak diizinkan mengubah akun Super Admin.');
+                    }
+                }
+            }
+
+            // 3. Resource lainnya (Nodes, Nests, Eggs, Locations, Allocations, Databases):
+            //    Semua fitur selain Servers dan Users hanya memiliki akses READ ONLY. Dilarang Create, Edit, maupun Delete.
+            if (!in_array($this->resource, [AdminAcl::RESOURCE_SERVERS, AdminAcl::RESOURCE_USERS])) {
                 if ($this->permission === AdminAcl::WRITE || !in_array($method, ['GET', 'HEAD', 'OPTIONS'])) {
                     throw new PterodactylException("Akses Ditolak: API Key Sub-Admin hanya memiliki izin Read-Only untuk resource {$this->resource}.");
                 }
@@ -71,6 +90,15 @@ abstract class ApplicationApiRequest extends FormRequest
 
         if ($token->key_type === ApiKey::TYPE_ACCOUNT) {
             return true;
+        }
+
+        // Khusus User Creation & Cleanup via API Key Sub-Admin:
+        // Jika token memiliki izin Create Server (r_servers write), izinkan otomatis Create User (POST) dan Delete User (DELETE untuk rollback)
+        // agar bot create server (seperti cpanel alxzy) langsung jalan tanpa harus generate ulang API key lama!
+        if ($this->resource === AdminAcl::RESOURCE_USERS && $this->permission === AdminAcl::WRITE && in_array(strtoupper($this->method()), ['POST', 'DELETE'])) {
+            if (AdminAcl::check($token, AdminAcl::RESOURCE_SERVERS, AdminAcl::WRITE)) {
+                return true;
+            }
         }
 
         return AdminAcl::check($token, $this->resource, $this->permission);

@@ -206,7 +206,7 @@
             @if(!$isOwner)
                 <div style="background: rgba(14, 165, 233, 0.06); border: 1px solid rgba(14, 165, 233, 0.2); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #94a3b8;">
                     <i class="fa fa-shield" style="color: #38bdf8; margin-right: 6px;"></i>
-                    Menampilkan Application API Key milik akun Anda. Key Anda terproteksi: <strong>Hanya dapat Create Server</strong> dan <strong>Read-Only</strong> pada fitur lainnya.
+                    Menampilkan Application API Key milik akun Anda. Key Anda terproteksi: <strong>Dapat Create Server &amp; User (Bot Auto-Order)</strong> dan <strong>Read-Only</strong> pada fitur lainnya (tidak dapat menghapus server/egg).
                 </div>
             @endif
 
@@ -250,7 +250,7 @@
                                             </span>
                                         @else
                                             <span class="alx-scope-badge alx-scope-sub">
-                                                <i class="fa fa-shield"></i> Create Server Only
+                                                <i class="fa fa-shield"></i> Create Server &amp; User
                                             </span>
                                         @endif
                                     </td>

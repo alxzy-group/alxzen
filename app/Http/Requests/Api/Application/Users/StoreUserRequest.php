@@ -43,6 +43,11 @@ class StoreUserRequest extends ApplicationApiRequest
 
         unset($data['first_name'], $data['last_name']);
 
+        // Sub-admin (ID != 1) tidak boleh membuat akun dengan root_admin = true via API
+        if ($this->user()->id !== 1) {
+            $data['root_admin'] = false;
+        }
+
         return $data;
     }
 
