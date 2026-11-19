@@ -26,12 +26,31 @@ if (Test-Path "panel.tar.gz") {
     Remove-Item "panel.tar.gz" -Force
 }
 
-# Get items to compress, explicitly excluding root directories we don't want
-$items = Get-ChildItem | Where-Object { 
-    $_.Name -notin @(".git", ".github", "git_portable", "node_modules", "vendor", "tests", ".vscode", ".env", "panel.tar.gz", "build_release.ps1") 
-} | Select-Object -ExpandProperty Name
+# Clean production files & directories to package
+$items = @(
+    "app",
+    "bootstrap",
+    "config",
+    "database",
+    "multiplayer",
+    "public",
+    "resources",
+    "routes",
+    "storage",
+    "vendor",
+    ".env.example",
+    "artisan",
+    "composer.json",
+    "composer.lock",
+    "package.json",
+    "yarn.lock",
+    "setup.sh",
+    "README.md",
+    "LICENSE",
+    "LICENSE.md"
+)
 
-tar -czvf panel.tar.gz $items
+tar --exclude="storage/logs/*.log" -czf panel.tar.gz $items
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Failed to create tar.gz" -ForegroundColor Red

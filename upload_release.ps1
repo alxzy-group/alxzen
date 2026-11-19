@@ -25,6 +25,15 @@ try {
     $response = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/tags/$tag" -Method Get -Headers $headers
 }
 
+if ($response.assets) {
+    foreach ($asset in $response.assets) {
+        if ($asset.name -eq "panel.tar.gz") {
+            Write-Host "Deleting old panel.tar.gz asset ($($asset.id))..." -ForegroundColor Yellow
+            Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/assets/$($asset.id)" -Method Delete -Headers $headers
+        }
+    }
+}
+
 $uploadUrl = $response.upload_url -replace '\{.*\}', '?name=panel.tar.gz'
 
 Write-Host "Uploading panel.tar.gz ($([math]::Round((Get-Item 'panel.tar.gz').Length / 1MB, 2)) MB) to Release $tag..." -ForegroundColor Yellow
