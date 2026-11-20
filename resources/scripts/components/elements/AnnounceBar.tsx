@@ -75,14 +75,14 @@ export default ({ displayLocation }: Props) => {
             let dismissed: Record<number, string> = {};
             try {
                 dismissed = JSON.parse(localStorage.getItem('alx_dismissed_announcements') || '{}');
-            } catch (e) {}
+            } catch (e) { }
 
             const filtered = data.filter((a) => {
                 const isTargetLocation = a.target_display.includes(displayLocation);
                 const isDismissedToday = dismissed[a.id] === today;
                 return isTargetLocation && !isDismissedToday;
             });
-            
+
             setAnnouncements(filtered);
             setVisible(filtered);
         }).catch(console.error);
@@ -90,13 +90,13 @@ export default ({ displayLocation }: Props) => {
 
     const handleDismiss = (id: number) => {
         setVisible((s) => s.filter((a) => a.id !== id));
-        
+
         const today = new Date().toDateString();
         let dismissed: Record<number, string> = {};
         try {
             dismissed = JSON.parse(localStorage.getItem('alx_dismissed_announcements') || '{}');
-        } catch (e) {}
-        
+        } catch (e) { }
+
         dismissed[id] = today;
         localStorage.setItem('alx_dismissed_announcements', JSON.stringify(dismissed));
     };

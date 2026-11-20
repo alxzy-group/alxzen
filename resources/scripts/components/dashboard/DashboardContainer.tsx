@@ -16,7 +16,7 @@ import NavigationBar from '@/components/NavigationBar';
 import AnnounceBar from '@/components/elements/AnnounceBar';
 import { motion, AnimatePresence } from 'framer-motion';
 import DuniaAlxzyOverlay from '@/components/alxzy-theme/DuniaAlxzy/DuniaAlxzyOverlay';
-import { GlobeIcon } from '@heroicons/react/solid';
+import { GlobeIcon, EyeIcon } from '@heroicons/react/solid';
 const dashboardStyles = `
 @keyframes dash-title-in {
     from { opacity: 0; transform: translateX(-16px); }
@@ -129,7 +129,14 @@ export default () => {
     const uuid = useStoreState((state) => state.user.data!.uuid);
     const username = useStoreState((state) => state.user.data!.username);
     const rootAdmin = useStoreState((state) => state.user.data!.rootAdmin);
-    const isOwner = useStoreState((state) => (state.user.data as any)?.isOwner ?? false);
+    const isOwner = useStoreState((state) => 
+        Boolean(
+            (state.user.data as any)?.isOwner || 
+            (state.user.data as any)?.is_owner || 
+            (window as any).PterodactylUser?.is_owner || 
+            (window as any).PterodactylUser?.isOwner
+        )
+    );
     const [showOnlyAdmin, setShowOnlyAdmin] = usePersistedState(`${uuid}:show_all_servers`, false);
     const [isWorldOpen, setIsWorldOpen] = useState(false);
 
@@ -223,9 +230,12 @@ export default () => {
                             <FilterBar
                                 initial={{ opacity: 0, x: 12 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.4, delay: 0.1 }}
+                                transition={{ duration: 0.3 }}
                             >
-                                <FilterLabel>Admin View</FilterLabel>
+                                <div css={tw`flex items-center gap-1.5`}>
+                                    <EyeIcon className="w-4 h-4 text-sky-400" />
+                                    <FilterLabel>Lihat Server Lain</FilterLabel>
+                                </div>
                                 <Switch
                                     name={'show_all_servers'}
                                     defaultChecked={showOnlyAdmin}

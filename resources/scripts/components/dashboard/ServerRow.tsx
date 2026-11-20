@@ -12,16 +12,16 @@ import { formatDistanceToNowStrict, isPast } from 'date-fns';
 
 const toPercent = (val: number, max: number) => max > 0 ? Math.min((val / max) * 100, 100) : 0;
 
-const CardWrapper = styled(Link)<{ $status: string }>`
+const CardWrapper = styled(Link) <{ $status: string }>`
     ${tw`relative block w-full overflow-hidden rounded-2xl no-underline`}
     background: hsl(var(--bg-card));
     border: 1px solid hsl(var(--border) / 0.8);
     border-left: 3.5px solid ${({ $status }) =>
-        $status === 'running'   ? '#22c55e' :
-        $status === 'starting'  ? '#38bdf8' :
-        $status === 'stopping'  ? '#f59e0b' :
-        $status === 'suspended' ? '#ef4444' :
-        'hsl(var(--text-muted) / 0.3)'};
+        $status === 'running' ? '#22c55e' :
+            $status === 'starting' ? '#38bdf8' :
+                $status === 'stopping' ? '#f59e0b' :
+                    $status === 'suspended' ? '#ef4444' :
+                        'hsl(var(--text-muted) / 0.3)'};
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     transform: translateZ(0);
@@ -71,23 +71,23 @@ const ConnectionBadge = styled.div`
 const StatusBadge = styled.div<{ $status: string }>`
     ${tw`flex items-center gap-2 font-bold text-[10px] uppercase tracking-wider flex-shrink-0 px-3 py-1.5 rounded-full`}
     background: ${({ $status }) =>
-        $status === 'running'   ? 'rgba(34, 197, 94, 0.12)'   :
-        $status === 'starting'  ? 'rgba(14, 165, 233, 0.12)'  :
-        $status === 'stopping'  ? 'rgba(245, 158, 11, 0.12)'  :
-        $status === 'suspended' ? 'rgba(239, 68, 68, 0.12)'   :
-        'hsl(var(--bg-surface) / 0.8)'};
+        $status === 'running' ? 'rgba(34, 197, 94, 0.12)' :
+            $status === 'starting' ? 'rgba(14, 165, 233, 0.12)' :
+                $status === 'stopping' ? 'rgba(245, 158, 11, 0.12)' :
+                    $status === 'suspended' ? 'rgba(239, 68, 68, 0.12)' :
+                        'hsl(var(--bg-surface) / 0.8)'};
     color: ${({ $status }) =>
-        $status === 'running'   ? '#4ade80' :
-        $status === 'starting'  ? '#38bdf8' :
-        $status === 'stopping'  ? '#fbbf24' :
-        $status === 'suspended' ? '#f87171' :
-        'hsl(var(--text-muted))'};
+        $status === 'running' ? '#4ade80' :
+            $status === 'starting' ? '#38bdf8' :
+                $status === 'stopping' ? '#fbbf24' :
+                    $status === 'suspended' ? '#f87171' :
+                        'hsl(var(--text-muted))'};
     border: 1px solid ${({ $status }) =>
-        $status === 'running'   ? 'rgba(34, 197, 94, 0.3)'   :
-        $status === 'starting'  ? 'rgba(14, 165, 233, 0.3)'  :
-        $status === 'stopping'  ? 'rgba(245, 158, 11, 0.3)'  :
-        $status === 'suspended' ? 'rgba(239, 68, 68, 0.3)'   :
-        'hsl(var(--border) / 0.7)'};
+        $status === 'running' ? 'rgba(34, 197, 94, 0.3)' :
+            $status === 'starting' ? 'rgba(14, 165, 233, 0.3)' :
+                $status === 'stopping' ? 'rgba(245, 158, 11, 0.3)' :
+                    $status === 'suspended' ? 'rgba(239, 68, 68, 0.3)' :
+                        'hsl(var(--border) / 0.7)'};
 
     .dot {
         width: 6px;
@@ -156,7 +156,7 @@ export default memo(({ server, className }: { server: Server; className?: string
     const interval = useRef<any>(null);
     const [stats, setStats] = useState<ServerStats | null>(null);
 
-    const getStats = () => getServerResourceUsage(server.uuid).then(d => setStats(d)).catch(() => {});
+    const getStats = () => getServerResourceUsage(server.uuid).then(d => setStats(d)).catch(() => { });
 
     useEffect(() => {
         getStats();
@@ -186,8 +186,8 @@ export default memo(({ server, className }: { server: Server; className?: string
     const status = computeStatus();
     const isRunning = status === 'running';
 
-    const cpuPct  = stats ? Math.min(stats.cpuUsagePercent, 100) : 0;
-    const memPct  = stats ? toPercent(stats.memoryUsageInBytes, server.limits.memory * 1024 * 1024) : 0;
+    const cpuPct = stats ? Math.min(stats.cpuUsagePercent, 100) : 0;
+    const memPct = stats ? toPercent(stats.memoryUsageInBytes, server.limits.memory * 1024 * 1024) : 0;
     const diskPct = stats ? toPercent(stats.diskUsageInBytes, server.limits.disk * 1024 * 1024) : 0;
 
     // Color: low → sky blue, mid → amber, high → red
@@ -217,14 +217,14 @@ export default memo(({ server, className }: { server: Server; className?: string
                                 {address}:{allocation?.port}
                             </ConnectionBadge>
                             {server.expiresAt && (
-                                <ConnectionBadge style={{ 
+                                <ConnectionBadge style={{
                                     color: isPast(new Date(server.expiresAt)) ? '#ef4444' : 'hsl(var(--text-muted))',
                                     borderColor: isPast(new Date(server.expiresAt)) ? 'rgba(239, 68, 68, 0.3)' : 'hsl(var(--border) / 0.6)',
                                     backgroundColor: isPast(new Date(server.expiresAt)) ? 'rgba(239, 68, 68, 0.1)' : 'hsl(var(--bg-surface) / 0.6)',
                                 }}>
                                     <FontAwesomeIcon icon={faClock} style={{ fontSize: 9 }} />
-                                    {isPast(new Date(server.expiresAt)) 
-                                        ? 'Expired' 
+                                    {isPast(new Date(server.expiresAt))
+                                        ? 'Expired'
                                         : `Expires in ${formatDistanceToNowStrict(new Date(server.expiresAt))}`}
                                 </ConnectionBadge>
                             )}
@@ -243,7 +243,7 @@ export default memo(({ server, className }: { server: Server; className?: string
                         <StatLabel><FontAwesomeIcon icon={faMicrochip} /> CPU</StatLabel>
                         <StatValue>{stats.cpuUsagePercent.toFixed(1)}%</StatValue>
                         <BarTrack>
-                            <BarFill 
+                            <BarFill
                                 $color={barColor(cpuPct)}
                                 style={{ width: `${cpuPct}%` }}
                             />
@@ -260,7 +260,7 @@ export default memo(({ server, className }: { server: Server; className?: string
                             )}
                         </StatValue>
                         <BarTrack>
-                            <BarFill 
+                            <BarFill
                                 $color={barColor(memPct)}
                                 style={{ width: `${memPct}%` }}
                             />
@@ -277,7 +277,7 @@ export default memo(({ server, className }: { server: Server; className?: string
                             )}
                         </StatValue>
                         <BarTrack>
-                            <BarFill 
+                            <BarFill
                                 $color={barColor(diskPct)}
                                 style={{ width: `${diskPct}%` }}
                             />
@@ -297,7 +297,7 @@ export default memo(({ server, className }: { server: Server; className?: string
                     </div>
                 </div>
             ) : status === 'suspended' ? (
-                <div 
+                <div
                     css={tw`px-6 py-4 flex items-center justify-between text-xs`}
                     style={{ backgroundColor: 'rgba(239, 68, 68, 0.08)' }}
                 >

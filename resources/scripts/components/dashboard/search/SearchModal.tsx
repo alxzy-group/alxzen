@@ -62,7 +62,14 @@ const SearchWatcher = () => {
 
 export default ({ ...props }: Props) => {
     const ref = useRef<HTMLInputElement>(null);
-    const isOwner = useStoreState((state) => (state.user.data as any)?.isOwner ?? false);
+    const isOwner = useStoreState((state) => 
+        Boolean(
+            (state.user.data as any)?.isOwner || 
+            (state.user.data as any)?.is_owner || 
+            (window as any).PterodactylUser?.is_owner || 
+            (window as any).PterodactylUser?.isOwner
+        )
+    );
     const [servers, setServers] = useState<Server[]>([]);
     const { clearAndAddHttpError, clearFlashes } = useStoreActions(
         (actions: Actions<ApplicationStore>) => actions.flashes

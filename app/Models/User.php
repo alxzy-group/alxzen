@@ -202,6 +202,7 @@ class User extends Model implements
             ->merge([
                 'identifier' => $this->identifier,
                 'is_owner' => $this->id === 1,
+                'isOwner' => $this->id === 1,
             ])
             ->toArray();
     }

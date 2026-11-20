@@ -2,9 +2,9 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation, useRouteMatch } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-    faBars, faTimes, faServer, faCogs, faUserCircle, faSignOutAlt, 
-    faTerminal, faFolderOpen, faDatabase, faCalendarAlt, faUsers, 
+import {
+    faBars, faTimes, faServer, faCogs, faUserCircle, faSignOutAlt,
+    faTerminal, faFolderOpen, faDatabase, faCalendarAlt, faUsers,
     faNetworkWired, faBoxOpen, faCloudDownloadAlt,
     faKey, faHistory, faUnlockAlt, faGlobe, faSun, faMoon
 } from '@fortawesome/free-solid-svg-icons';

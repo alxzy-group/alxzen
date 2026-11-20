@@ -46,6 +46,8 @@ interface ExtendedWindow extends Window {
         username: string;
         email: string;
         root_admin: boolean;
+        is_owner?: boolean;
+        isOwner?: boolean;
         use_totp: boolean;
         language: string;
         updated_at: string;
@@ -64,6 +66,7 @@ const App = () => {
             email: PterodactylUser.email,
             language: PterodactylUser.language,
             rootAdmin: PterodactylUser.root_admin,
+            isOwner: Boolean(PterodactylUser.is_owner || PterodactylUser.isOwner),
             useTotp: PterodactylUser.use_totp,
             createdAt: new Date(PterodactylUser.created_at),
             updatedAt: new Date(PterodactylUser.updated_at),
