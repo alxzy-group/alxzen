@@ -54,7 +54,7 @@
             {!! $asset->js('main.js') !!}
         @show
 
-        <div id="tsparticles-bg" style="position: fixed; inset: 0; z-index: 0; pointer-events: auto;"></div>
+        <div id="tsparticles-bg" style="position: fixed; inset: 0; z-index: 0; pointer-events: none !important;"></div>
         <script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2.0.6/tsparticles.slim.bundle.min.js"></script>
         <script>
             document.addEventListener("DOMContentLoaded", function() {
@@ -63,43 +63,42 @@
                 function loadParticles() {
                     var isLight = document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light';
                     var particleBg = "transparent";
-                    var particleColor = isLight ? "rgba(14,165,233,0.5)" : "#0ea5e9";
-                    var particleOpacity = isLight ? 0.4 : 0.6;
+                    var particleColor = isLight ? "rgba(14,165,233,0.4)" : "#0ea5e9";
+                    var particleOpacity = isLight ? 0.3 : 0.45;
                     
                     var configs = {
                         network: {
                             background: { color: { value: particleBg } },
-                            fpsLimit: 60,
+                            fpsLimit: 30,
                             interactivity: {
-                                events: { onHover: { enable: true, mode: "grab" }, resize: true },
-                                modes: { grab: { distance: 200, links: { opacity: 0.8, color: "#0ea5e9" } } }
+                                events: { onHover: { enable: false }, resize: true }
                             },
                             particles: {
                                 color: { value: particleColor },
-                                links: { color: particleColor, distance: 160, enable: true, opacity: isLight ? 0.2 : 0.35, width: 1.5 },
-                                move: { enable: true, speed: 1, direction: "none", outModes: { default: "bounce" } },
-                                number: { density: { enable: true, area: 600 }, value: isLight ? 50 : 80 },
+                                links: { color: particleColor, distance: 140, enable: true, opacity: isLight ? 0.15 : 0.25, width: 1 },
+                                move: { enable: true, speed: 0.6, direction: "none", outModes: { default: "bounce" } },
+                                number: { density: { enable: true, area: 900 }, value: isLight ? 20 : 35 },
                                 opacity: { value: particleOpacity },
-                                size: { value: { min: 1.5, max: 3.5 } }
+                                size: { value: { min: 1, max: 2.5 } }
                             },
-                            detectRetina: true
+                            detectRetina: false
                         },
                         bubbles: {
                             background: { color: { value: particleBg } },
-                            fpsLimit: 60,
+                            fpsLimit: 30,
                             interactivity: { events: { resize: true } },
                             particles: {
                                 color: { value: "#38bdf8" },
-                                move: { enable: true, speed: 1.5, direction: "top", outModes: { default: "out" } },
-                                number: { density: { enable: true, area: 600 }, value: isLight ? 35 : 60 },
-                                opacity: { value: { min: isLight ? 0.08 : 0.15, max: isLight ? 0.3 : 0.6 } },
-                                size: { value: { min: 3, max: 14 } }
+                                move: { enable: true, speed: 0.8, direction: "top", outModes: { default: "out" } },
+                                number: { density: { enable: true, area: 900 }, value: isLight ? 15 : 25 },
+                                opacity: { value: { min: isLight ? 0.05 : 0.1, max: isLight ? 0.2 : 0.4 } },
+                                size: { value: { min: 2, max: 8 } }
                             },
-                            detectRetina: true
+                            detectRetina: false
                         }
                     };
 
-                    if (configs[themeType] && typeof tsParticles !== 'undefined') {
+                    if ((themeType === 'network' || themeType === 'bubbles') && typeof tsParticles !== 'undefined') {
                         var instances = tsParticles.dom ? tsParticles.dom() : [];
                         if (instances.length > 0) {
                             instances[0].options.load(configs[themeType]);
@@ -107,10 +106,10 @@
                         } else {
                             tsParticles.load("tsparticles-bg", configs[themeType]);
                         }
-                    } else if (themeType === 'saweria' && typeof tsParticles !== 'undefined') {
+                    } else if (typeof tsParticles !== 'undefined') {
                         var instances = tsParticles.dom ? tsParticles.dom() : [];
                         if (instances.length > 0) {
-                            instances[0].destroy();
+                            instances.forEach(function(inst) { inst.destroy(); });
                         }
                     }
                 }

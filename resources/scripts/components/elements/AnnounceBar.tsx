@@ -6,9 +6,9 @@ import tw, { styled } from 'twin.macro';
 
 const Container = styled.div<{ $type: string }>`
     ${tw`relative px-5 py-4 rounded-2xl mb-6 flex items-start justify-between transition-all duration-200`};
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background-color: hsl(var(--bg-elevated));
     color: hsl(var(--text-primary));
+    transform: translateZ(0);
 
     ${(props) => {
         switch (props.$type) {

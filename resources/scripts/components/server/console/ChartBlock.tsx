@@ -8,20 +8,19 @@ interface ChartBlockProps {
 }
 
 const Container = styled.div`
-    background: hsl(var(--bg-surface) / 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--border) / 0.8);
+    background: hsl(var(--bg-surface));
+    border: 1px solid hsl(var(--border) / 0.85);
     border-radius: 16px;
     overflow: hidden;
     position: relative;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.25);
+    transform: translateZ(0);
 
     &:hover {
         border-color: rgba(14, 165, 233, 0.4);
         transform: translateY(-1px);
-        box-shadow: 0 6px 20px -2px rgba(14, 165, 233, 0.15);
+        box-shadow: 0 6px 16px -2px rgba(14, 165, 233, 0.12);
     }
 `;
 

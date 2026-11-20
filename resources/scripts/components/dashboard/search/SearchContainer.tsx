@@ -26,13 +26,11 @@ export default () => {
                     css={`
                         ${tw`w-10 h-10 flex items-center justify-center transition-all duration-200 cursor-pointer rounded-full outline-none`}
                         color: hsl(var(--text-primary));
-                        background: hsl(var(--bg-elevated) / 0.6);
+                        background: hsl(var(--bg-elevated));
                         border: 1px solid hsl(var(--border) / 0.8);
-                        backdrop-filter: blur(8px);
-                        -webkit-backdrop-filter: blur(8px);
                         &:hover {
                             color: #38bdf8;
-                            background: hsl(var(--bg-elevated));
+                            background: hsl(var(--bg-surface));
                             border-color: rgba(14, 165, 233, 0.4);
                             transform: translateY(-1px);
                             box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);

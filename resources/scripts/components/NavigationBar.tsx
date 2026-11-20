@@ -19,11 +19,12 @@ import Avatar from '@/components/Avatar';
 
 const NavContainer = styled.div`
     ${tw`fixed top-0 left-0 right-0 z-50 h-20`}
-    background-color: hsl(var(--bg-surface) / 0.85) !important;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background-color: hsl(var(--bg-surface) / 0.9) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid hsl(var(--border) / 0.6);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+    transform: translateZ(0);
 `;
 
 const NavInner = styled.div`
@@ -51,22 +52,19 @@ const Logo = styled(Link)`
 
 const SidebarOverlay = styled.div<{ $open: boolean }>`
     ${tw`fixed inset-0 z-[60] transition-opacity duration-300`}
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: rgba(0, 0, 0, 0.7);
     opacity: ${props => props.$open ? 1 : 0};
     pointer-events: ${props => props.$open ? 'auto' : 'none'};
 `;
 
 const Sidebar = styled.div<{ $open: boolean }>`
     ${tw`fixed top-0 left-0 bottom-0 w-[300px] z-[70] flex flex-col`}
-    background-color: hsl(var(--sidebar-bg) / 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background-color: hsl(var(--sidebar-bg));
     border-right: 1px solid hsl(var(--border) / 0.7);
     box-shadow: ${props => props.$open ? '0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(14, 165, 233, 0.1)' : 'none'};
     transform: translateX(${props => props.$open ? '0%' : '-100%'});
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, background-color 0.3s ease;
+    will-change: transform;
 `;
 
 const SidebarHeader = styled.div`
@@ -164,22 +162,18 @@ const SubMenu = styled.div<{ $open: boolean }>`
 const UserFooter = styled.div`
     ${tw`p-4`}
     border-top: 1px solid hsl(var(--border) / 0.7);
-    background: hsl(var(--bg-elevated) / 0.6);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: hsl(var(--bg-elevated));
 `;
 
 const MenuButton = styled.button`
     ${tw`w-10 h-10 flex items-center justify-center transition-all duration-200 cursor-pointer outline-none rounded-xl`}
     color: hsl(var(--text-primary));
-    background: hsl(var(--bg-elevated) / 0.6);
+    background: hsl(var(--bg-elevated));
     border: 1px solid hsl(var(--border) / 0.8);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
 
     &:hover {
         color: #38bdf8;
-        background: hsl(var(--bg-elevated));
+        background: hsl(var(--bg-surface));
         border-color: rgba(14, 165, 233, 0.4);
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);

@@ -2,10 +2,10 @@ import styled from 'styled-components/macro';
 import tw from 'twin.macro';
 
 export default styled.div<{ $hoverable?: boolean }>`
-    ${tw`flex rounded-2xl mb-2 items-center p-4 transition-all duration-300 relative overflow-hidden`}
+    ${tw`flex rounded-2xl mb-2 items-center p-4 transition-all duration-200 relative overflow-hidden`}
     background-color: hsl(var(--bg-elevated));
     border: 1px solid hsl(var(--border));
-    backdrop-filter: blur(12px);
+    transform: translateZ(0);
 
     ${(props) =>
         props.$hoverable !== false &&
@@ -13,9 +13,9 @@ export default styled.div<{ $hoverable?: boolean }>`
         &:hover {
             background-color: hsl(var(--bg-surface));
             border: 1px solid rgba(56, 189, 248, 0.4);
-            transform: scale(1.01) translateY(-1px);
-            box-shadow: 0 8px 30px rgba(56, 189, 248, 0.15);
-            z-index: 50;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(14, 165, 233, 0.12);
+            z-index: 20;
         }
     `}
 

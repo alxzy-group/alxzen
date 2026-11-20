@@ -4,9 +4,8 @@ import tw, { theme } from 'twin.macro';
 const SubNavigation = styled.div`
     ${tw`w-full border-b border-white/5 overflow-x-auto hidden md:block`}; 
     
-    /* FIX: Ganti bg-[#09090b]/50 jadi RGBA manual */
-    background-color: rgba(9, 9, 11, 0.5);
-    backdrop-filter: blur(16px);
+    background-color: hsl(var(--bg-surface));
+    border-bottom: 1px solid hsl(var(--border) / 0.7);
 
     & > div {
         ${tw`flex items-center text-sm mx-auto px-4 md:px-8`};

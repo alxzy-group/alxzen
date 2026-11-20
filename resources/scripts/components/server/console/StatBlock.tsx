@@ -15,17 +15,16 @@ interface StatBlockProps {
 
 const StatContainer = styled.div<{ $statusColor?: string }>`
     ${tw`relative flex items-center rounded-xl px-3 sm:px-3.5 py-2.5 overflow-hidden transition-all duration-200 gap-2.5 sm:gap-3 min-w-0 w-full`}
-    background: hsl(var(--bg-surface) / 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--border) / 0.8);
-    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.3);
+    background: hsl(var(--bg-surface));
+    border: 1px solid hsl(var(--border) / 0.85);
+    box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.25);
+    transform: translateZ(0);
 
     &:hover {
         background: hsl(var(--bg-elevated));
         border-color: rgba(14, 165, 233, 0.4);
         transform: translateY(-1px);
-        box-shadow: 0 4px 14px -2px rgba(14, 165, 233, 0.2);
+        box-shadow: 0 4px 12px -2px rgba(14, 165, 233, 0.15);
     }
 `;
 

@@ -30,7 +30,10 @@ const Particle = styled.div<{ $left: string; $size: string; $delay: string; $dur
     border-radius: 50%;
     animation: ${moveAnimation} ${(props) => props.$duration} linear infinite;
     animation-delay: ${(props) => props.$delay};
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+    backface-visibility: hidden;
     
     &::after {
         content: '';

@@ -8,31 +8,34 @@ import { bytesToString, ip } from '@/lib/formatters';
 import tw, { styled } from 'twin.macro';
 import Spinner from '@/components/elements/Spinner';
 import isEqual from 'react-fast-compare';
-import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNowStrict, isPast } from 'date-fns';
 
 const toPercent = (val: number, max: number) => max > 0 ? Math.min((val / max) * 100, 100) : 0;
 
-const CardWrapper = styled(motion(Link))<{ $status: string }>`
+const CardWrapper = styled(Link)<{ $status: string }>`
     ${tw`relative block w-full overflow-hidden rounded-2xl no-underline`}
-    background: hsl(var(--bg-elevated) / 0.65);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid hsl(var(--border) / 0.7);
+    background: hsl(var(--bg-card));
+    border: 1px solid hsl(var(--border) / 0.8);
     border-left: 3.5px solid ${({ $status }) =>
         $status === 'running'   ? '#22c55e' :
         $status === 'starting'  ? '#38bdf8' :
         $status === 'stopping'  ? '#f59e0b' :
         $status === 'suspended' ? '#ef4444' :
         'hsl(var(--text-muted) / 0.3)'};
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-    isolation: isolate;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
 
     &:hover {
-        transform: translateY(-3px);
-        border-color: rgba(14, 165, 233, 0.4);
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), 0 0 24px rgba(14, 165, 233, 0.12);
+        transform: translateY(-2px);
+        border-color: rgba(14, 165, 233, 0.45);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 16px rgba(14, 165, 233, 0.1);
+    }
+
+    &:hover .hover-glow {
+        opacity: 1;
     }
 
     & > * { position: relative; z-index: 1; }
@@ -129,18 +132,22 @@ const BarTrack = styled.div`
     overflow: hidden;
 `;
 
-const BarFill = styled(motion.div)<{ $color: string }>`
+const BarFill = styled.div<{ $color: string }>`
     height: 100%;
     border-radius: 9999px;
     background: ${({ $color }) => $color};
-    box-shadow: 0 0 8px ${({ $color }) => $color};
+    box-shadow: 0 0 6px ${({ $color }) => $color};
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: width;
+    transform: translateZ(0);
 `;
 
-const HoverGlow = styled(motion.div)`
+const HoverGlow = styled.div`
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 50% 110%, rgba(14, 165, 233, 0.12) 0%, transparent 70%);
+    background: radial-gradient(ellipse at 50% 110%, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
     opacity: 0;
+    transition: opacity 0.2s ease;
     pointer-events: none;
     z-index: 0;
 `;
@@ -148,7 +155,6 @@ const HoverGlow = styled(motion.div)`
 export default memo(({ server, className }: { server: Server; className?: string }) => {
     const interval = useRef<any>(null);
     const [stats, setStats] = useState<ServerStats | null>(null);
-    const [hovered, setHovered] = useState(false);
 
     const getStats = () => getServerResourceUsage(server.uuid).then(d => setStats(d)).catch(() => {});
 
@@ -195,10 +201,8 @@ export default memo(({ server, className }: { server: Server; className?: string
             to={`/server/${server.id}`}
             className={className}
             $status={status}
-            onHoverStart={() => setHovered(true)}
-            onHoverEnd={() => setHovered(false)}
         >
-            <HoverGlow animate={{ opacity: hovered ? 1 : 0 }} transition={{ duration: 0.3 }} />
+            <HoverGlow className="hover-glow" />
 
             <Header>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -233,102 +237,94 @@ export default memo(({ server, className }: { server: Server; className?: string
                 </StatusBadge>
             </Header>
 
-            <AnimatePresence mode="wait">
-                {isRunning && stats ? (
-                    <StatsGrid key="stats">
-                        <StatBox>
-                            <StatLabel><FontAwesomeIcon icon={faMicrochip} /> CPU</StatLabel>
-                            <StatValue>{stats.cpuUsagePercent.toFixed(1)}%</StatValue>
-                            <BarTrack>
-                                <BarFill 
-                                    $color={barColor(cpuPct)}
-                                    initial={{ width: '0%' }} 
-                                    animate={{ width: `${cpuPct}%` }}
-                                    transition={{ duration: 0.8, ease: 'easeOut' }} 
-                                />
-                            </BarTrack>
-                        </StatBox>
-                        <StatBox>
-                            <StatLabel><FontAwesomeIcon icon={faMemory} /> RAM</StatLabel>
-                            <StatValue>
-                                {bytesToString(stats.memoryUsageInBytes)}
-                                {server.limits.memory > 0 && (
-                                    <span css={tw`text-[10px] text-neutral-400 font-normal`}>
-                                        / {bytesToString(server.limits.memory * 1024 * 1024)}
-                                    </span>
-                                )}
-                            </StatValue>
-                            <BarTrack>
-                                <BarFill 
-                                    $color={barColor(memPct)}
-                                    initial={{ width: '0%' }} 
-                                    animate={{ width: `${memPct}%` }}
-                                    transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }} 
-                                />
-                            </BarTrack>
-                        </StatBox>
-                        <StatBox>
-                            <StatLabel><FontAwesomeIcon icon={faHdd} /> Disk</StatLabel>
-                            <StatValue>
-                                {bytesToString(stats.diskUsageInBytes)}
-                                {server.limits.disk > 0 && (
-                                    <span css={tw`text-[10px] text-neutral-400 font-normal`}>
-                                        / {bytesToString(server.limits.disk * 1024 * 1024)}
-                                    </span>
-                                )}
-                            </StatValue>
-                            <BarTrack>
-                                <BarFill 
-                                    $color={barColor(diskPct)}
-                                    initial={{ width: '0%' }} 
-                                    animate={{ width: `${diskPct}%` }}
-                                    transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }} 
-                                />
-                            </BarTrack>
-                        </StatBox>
-                    </StatsGrid>
-                ) : status === 'starting' ? (
-                    <div css={tw`px-6 py-4 flex items-center justify-between`}>
-                        <div css={tw`flex items-center gap-2.5 text-sky-400 font-semibold text-xs`}>
-                            <FontAwesomeIcon icon={faBolt} className="animate-pulse" />
-                            <span>Memulai Container Server...</span>
-                        </div>
-                        <div css={tw`flex items-center gap-3 text-neutral-400 font-mono text-[11px]`}>
-                            <span>{server.limits.memory ? `${server.limits.memory / 1024} GB RAM` : '∞ RAM'}</span>
-                            <span className="text-neutral-600">•</span>
-                            <span>{server.limits.disk ? `${server.limits.disk / 1024} GB Disk` : '∞ Disk'}</span>
-                        </div>
-                    </div>
-                ) : status === 'suspended' ? (
-                    <div 
-                        css={tw`px-6 py-4 flex items-center justify-between text-xs`}
-                        style={{ backgroundColor: 'rgba(239, 68, 68, 0.08)' }}
-                    >
-                        <div css={tw`flex items-center gap-2 text-red-400 font-semibold`}>
-                            <div css={tw`w-2 h-2 rounded-full bg-red-500`} />
-                            <span>Server Ditangguhkan (Suspended)</span>
-                        </div>
-                    </div>
-                ) : (
-                    <div css={tw`px-6 py-4 flex items-center justify-between text-xs`}>
-                        <div css={tw`flex items-center gap-2 text-neutral-400`}>
-                            <FontAwesomeIcon icon={faSignal} className="text-neutral-500 text-xs" />
-                            <span className="font-medium text-neutral-400">Server Offline</span>
-                        </div>
-                        <div css={tw`flex items-center gap-3 text-neutral-400 font-mono text-[11px]`}>
-                            <span>{server.limits.memory ? `${server.limits.memory / 1024} GB RAM` : '∞ RAM'}</span>
-                            <span className="text-neutral-600">•</span>
-                            <span>{server.limits.disk ? `${server.limits.disk / 1024} GB Disk` : '∞ Disk'}</span>
-                            {server.limits.cpu > 0 && (
-                                <>
-                                    <span className="text-neutral-600">•</span>
-                                    <span>{server.limits.cpu}% CPU</span>
-                                </>
+            {isRunning && stats ? (
+                <StatsGrid key="stats">
+                    <StatBox>
+                        <StatLabel><FontAwesomeIcon icon={faMicrochip} /> CPU</StatLabel>
+                        <StatValue>{stats.cpuUsagePercent.toFixed(1)}%</StatValue>
+                        <BarTrack>
+                            <BarFill 
+                                $color={barColor(cpuPct)}
+                                style={{ width: `${cpuPct}%` }}
+                            />
+                        </BarTrack>
+                    </StatBox>
+                    <StatBox>
+                        <StatLabel><FontAwesomeIcon icon={faMemory} /> RAM</StatLabel>
+                        <StatValue>
+                            {bytesToString(stats.memoryUsageInBytes)}
+                            {server.limits.memory > 0 && (
+                                <span css={tw`text-[10px] text-neutral-400 font-normal`}>
+                                    / {bytesToString(server.limits.memory * 1024 * 1024)}
+                                </span>
                             )}
-                        </div>
+                        </StatValue>
+                        <BarTrack>
+                            <BarFill 
+                                $color={barColor(memPct)}
+                                style={{ width: `${memPct}%` }}
+                            />
+                        </BarTrack>
+                    </StatBox>
+                    <StatBox>
+                        <StatLabel><FontAwesomeIcon icon={faHdd} /> Disk</StatLabel>
+                        <StatValue>
+                            {bytesToString(stats.diskUsageInBytes)}
+                            {server.limits.disk > 0 && (
+                                <span css={tw`text-[10px] text-neutral-400 font-normal`}>
+                                    / {bytesToString(server.limits.disk * 1024 * 1024)}
+                                </span>
+                            )}
+                        </StatValue>
+                        <BarTrack>
+                            <BarFill 
+                                $color={barColor(diskPct)}
+                                style={{ width: `${diskPct}%` }}
+                            />
+                        </BarTrack>
+                    </StatBox>
+                </StatsGrid>
+            ) : status === 'starting' ? (
+                <div css={tw`px-6 py-4 flex items-center justify-between`}>
+                    <div css={tw`flex items-center gap-2.5 text-sky-400 font-semibold text-xs`}>
+                        <FontAwesomeIcon icon={faBolt} className="animate-pulse" />
+                        <span>Memulai Container Server...</span>
                     </div>
-                )}
-            </AnimatePresence>
+                    <div css={tw`flex items-center gap-3 text-neutral-400 font-mono text-[11px]`}>
+                        <span>{server.limits.memory ? `${server.limits.memory / 1024} GB RAM` : '∞ RAM'}</span>
+                        <span className="text-neutral-600">•</span>
+                        <span>{server.limits.disk ? `${server.limits.disk / 1024} GB Disk` : '∞ Disk'}</span>
+                    </div>
+                </div>
+            ) : status === 'suspended' ? (
+                <div 
+                    css={tw`px-6 py-4 flex items-center justify-between text-xs`}
+                    style={{ backgroundColor: 'rgba(239, 68, 68, 0.08)' }}
+                >
+                    <div css={tw`flex items-center gap-2 text-red-400 font-semibold`}>
+                        <div css={tw`w-2 h-2 rounded-full bg-red-500`} />
+                        <span>Server Ditangguhkan (Suspended)</span>
+                    </div>
+                </div>
+            ) : (
+                <div css={tw`px-6 py-4 flex items-center justify-between text-xs`}>
+                    <div css={tw`flex items-center gap-2 text-neutral-400`}>
+                        <FontAwesomeIcon icon={faSignal} className="text-neutral-500 text-xs" />
+                        <span className="font-medium text-neutral-400">Server Offline</span>
+                    </div>
+                    <div css={tw`flex items-center gap-3 text-neutral-400 font-mono text-[11px]`}>
+                        <span>{server.limits.memory ? `${server.limits.memory / 1024} GB RAM` : '∞ RAM'}</span>
+                        <span className="text-neutral-600">•</span>
+                        <span>{server.limits.disk ? `${server.limits.disk / 1024} GB Disk` : '∞ Disk'}</span>
+                        {server.limits.cpu > 0 && (
+                            <>
+                                <span className="text-neutral-600">•</span>
+                                <span>{server.limits.cpu}% CPU</span>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
         </CardWrapper>
     );
 }, isEqual);

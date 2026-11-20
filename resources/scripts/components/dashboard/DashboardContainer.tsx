@@ -63,10 +63,8 @@ const Title = styled.h1`
 
 const FilterBar = styled(motion.div)`
     ${tw`flex items-center gap-4 px-5 py-2.5`}
-    background: hsl(var(--bg-elevated) / 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid hsl(var(--border) / 0.7);
+    background: hsl(var(--bg-elevated));
+    border: 1px solid hsl(var(--border));
     border-radius: 12px;
 `;
 
@@ -77,15 +75,13 @@ const FilterLabel = styled.span`
 
 const DuniaAlxzyTopButton = styled(motion.button)`
     ${tw`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 outline-none cursor-pointer`}
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(2, 132, 199, 0.25) 100%);
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.18) 0%, rgba(2, 132, 199, 0.28) 100%);
     border: 1px solid rgba(56, 189, 248, 0.35);
     box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     color: #ffffff;
 
     &:hover {
-        background: linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(2, 132, 199, 0.38) 100%);
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.28) 0%, rgba(2, 132, 199, 0.42) 100%);
         border-color: rgba(56, 189, 248, 0.55);
         box-shadow: 0 6px 20px rgba(14, 165, 233, 0.25);
     }
@@ -253,18 +249,17 @@ export default () => {
                                 items.length > 0 ? (
                                     <Grid>
                                         {items.map((server, index) => (
-                                            <motion.div
+                                            <div
                                                 key={server.uuid}
-                                                initial={{ opacity: 0, x: -30, scale: 0.95 }}
-                                                animate={{ opacity: 1, x: 0, scale: 1 }}
-                                                transition={{
-                                                    duration: 0.6,
-                                                    delay: index * 0.05,
-                                                    ease: [0.16, 1, 0.3, 1]
+                                                style={{
+                                                    animation: 'dash-title-in 0.3s ease both',
+                                                    animationDelay: `${Math.min(index * 0.04, 0.3)}s`,
+                                                    transform: 'translateZ(0)',
+                                                    willChange: 'transform, opacity',
                                                 }}
                                             >
                                                 <ServerRow server={server} />
-                                            </motion.div>
+                                            </div>
                                         ))}
                                     </Grid>
                                 ) : (
