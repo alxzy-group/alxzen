@@ -23,49 +23,49 @@ const HeaderCard = styled.div<{ $status: string | null }>`
     background: hsl(var(--bg-card));
     border: 1px solid hsl(var(--border) / 0.85);
     border-left: 3.5px solid ${({ $status }) =>
-        $status === 'running'  ? '#10b981' :
-        $status === 'starting' ? '#0ea5e9' :
-        $status === 'stopping' ? '#f59e0b' :
-        'hsl(var(--text-muted) / 0.35)'};
+        $status === 'running' ? '#10b981' :
+            $status === 'starting' ? '#0ea5e9' :
+                $status === 'stopping' ? '#f59e0b' :
+                    'hsl(var(--text-muted) / 0.35)'};
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 `;
 
 const ServerIconBox = styled.div<{ $status: string | null }>`
     ${tw`w-11 h-11 flex items-center justify-center rounded-xl text-base flex-shrink-0`}
     color: ${({ $status }) =>
-        $status === 'running'  ? '#34d399' :
-        $status === 'starting' ? '#38bdf8' :
-        $status === 'stopping' ? '#fbbf24' :
-        'hsl(var(--text-muted))'};
+        $status === 'running' ? '#34d399' :
+            $status === 'starting' ? '#38bdf8' :
+                $status === 'stopping' ? '#fbbf24' :
+                    'hsl(var(--text-muted))'};
     background: ${({ $status }) =>
-        $status === 'running'  ? 'rgba(16, 185, 129, 0.12)' :
-        $status === 'starting' ? 'rgba(14, 165, 233, 0.12)' :
-        $status === 'stopping' ? 'rgba(245, 158, 11, 0.12)' :
-        'hsl(var(--bg-surface) / 0.8)'};
+        $status === 'running' ? 'rgba(16, 185, 129, 0.12)' :
+            $status === 'starting' ? 'rgba(14, 165, 233, 0.12)' :
+                $status === 'stopping' ? 'rgba(245, 158, 11, 0.12)' :
+                    'hsl(var(--bg-surface) / 0.8)'};
     border: 1px solid ${({ $status }) =>
-        $status === 'running'  ? 'rgba(16, 185, 129, 0.28)' :
-        $status === 'starting' ? 'rgba(14, 165, 233, 0.28)' :
-        $status === 'stopping' ? 'rgba(245, 158, 11, 0.28)' :
-        'hsl(var(--border) / 0.7)'};
+        $status === 'running' ? 'rgba(16, 185, 129, 0.28)' :
+            $status === 'starting' ? 'rgba(14, 165, 233, 0.28)' :
+                $status === 'stopping' ? 'rgba(245, 158, 11, 0.28)' :
+                    'hsl(var(--border) / 0.7)'};
 `;
 
 const StatusPill = styled.span<{ $status: string | null }>`
     ${tw`inline-flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full flex-shrink-0`}
     background: ${({ $status }) =>
-        $status === 'running'  ? 'rgba(16, 185, 129, 0.12)' :
-        $status === 'starting' ? 'rgba(14, 165, 233, 0.12)' :
-        $status === 'stopping' ? 'rgba(245, 158, 11, 0.12)' :
-        'hsl(var(--bg-surface) / 0.85)'};
+        $status === 'running' ? 'rgba(16, 185, 129, 0.12)' :
+            $status === 'starting' ? 'rgba(14, 165, 233, 0.12)' :
+                $status === 'stopping' ? 'rgba(245, 158, 11, 0.12)' :
+                    'hsl(var(--bg-surface) / 0.85)'};
     color: ${({ $status }) =>
-        $status === 'running'  ? '#34d399' :
-        $status === 'starting' ? '#38bdf8' :
-        $status === 'stopping' ? '#fbbf24' :
-        'hsl(var(--text-muted))'};
+        $status === 'running' ? '#34d399' :
+            $status === 'starting' ? '#38bdf8' :
+                $status === 'stopping' ? '#fbbf24' :
+                    'hsl(var(--text-muted))'};
     border: 1px solid ${({ $status }) =>
-        $status === 'running'  ? 'rgba(16, 185, 129, 0.3)' :
-        $status === 'starting' ? 'rgba(14, 165, 233, 0.3)' :
-        $status === 'stopping' ? 'rgba(245, 158, 11, 0.3)' :
-        'hsl(var(--border) / 0.7)'};
+        $status === 'running' ? 'rgba(16, 185, 129, 0.3)' :
+            $status === 'starting' ? 'rgba(14, 165, 233, 0.3)' :
+                $status === 'stopping' ? 'rgba(245, 158, 11, 0.3)' :
+                    'hsl(var(--border) / 0.7)'};
 
     .dot {
         width: 6px;
@@ -161,8 +161,8 @@ const ServerConsoleContainer = () => {
                     {isNodeUnderMaintenance
                         ? 'The node of this server is currently under maintenance and all actions are unavailable.'
                         : isInstalling
-                        ? 'This server is currently running its installation process and most actions are unavailable.'
-                        : 'This server is currently being transferred to another node and all actions are unavailable.'}
+                            ? 'This server is currently running its installation process and most actions are unavailable.'
+                            : 'This server is currently being transferred to another node and all actions are unavailable.'}
                 </Alert>
             )}
             {isExpiringSoon && (
@@ -227,16 +227,16 @@ const ServerConsoleContainer = () => {
                 </div>
             </HeaderCard>
 
-            {/* Uniform Telemetry Grid */}
-            <div className={'mb-4'}>
-                <ServerDetailsBlock />
-            </div>
-
-            {/* Console Terminal */}
-            <div className={'mb-4'}>
-                <Spinner.Suspense>
-                    <Console />
-                </Spinner.Suspense>
+            {/* Next-Gen Asymmetric Cloud Cockpit: Terminal (Left 8 cols) + Live Telemetry Bento (Right 4 cols) */}
+            <div className={'grid grid-cols-1 xl:grid-cols-12 gap-4 mb-4 items-stretch'}>
+                <div className={'xl:col-span-8 flex flex-col'}>
+                    <Spinner.Suspense>
+                        <Console />
+                    </Spinner.Suspense>
+                </div>
+                <div className={'xl:col-span-4 flex flex-col justify-between'}>
+                    <ServerDetailsBlock />
+                </div>
             </div>
 
             {/* Real-Time Resource Charts */}

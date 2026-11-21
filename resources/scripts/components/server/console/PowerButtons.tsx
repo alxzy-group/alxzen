@@ -57,7 +57,7 @@ const RestartBtn = styled(BaseButton)`
     }
 `;
 
-const StopBtn = styled(BaseButton)<{ $kill?: boolean }>`
+const StopBtn = styled(BaseButton) <{ $kill?: boolean }>`
     background: ${({ $kill }) =>
         $kill
             ? 'linear-gradient(180deg, #dc2626 0%, #991b1b 100%)'

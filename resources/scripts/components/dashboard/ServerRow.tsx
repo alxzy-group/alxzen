@@ -334,6 +334,24 @@ export default memo(({ server, className }: { server: Server; className?: string
                     </BarTrack>
                 </StatBox>
             </StatsGrid>
+
+            {/* Next-Gen Cloud Card Footer Strip */}
+            <div
+                css={tw`px-5 py-2.5 flex items-center justify-between text-[11px] font-semibold`}
+                style={{
+                    borderTop: '1px solid hsl(var(--border) / 0.45)',
+                    background: 'hsl(var(--bg-surface) / 0.4)',
+                    color: 'hsl(var(--text-muted))',
+                }}
+            >
+                <span css={tw`font-mono text-[10.5px] opacity-80`}>
+                    ID: {server.id} {server.node ? `· ${server.node}` : ''}
+                </span>
+                <span css={tw`flex items-center gap-1.5 font-bold`} style={{ color: '#38bdf8' }}>
+                    <span>Open Console</span>
+                    <span>→</span>
+                </span>
+            </div>
         </CardWrapper>
     );
 }, isEqual);

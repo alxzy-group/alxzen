@@ -6,12 +6,25 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.2.0"
+$tag = "v4.3.0"
 $repo = "alxzy-group/alxzen"
+$bodyText = @'
+### AlxZen Panel v4.3.0 - Next-Gen Cloud Platform UI/UX Architecture
+
+- **Next-Gen SaaS Admin Control Plane (No Longer Stock AdminLTE Look):**
+  - **Flattened Cloud Command Sidebar (`layouts/admin.blade.php`):** Removed old collapsible treeviews in favor of direct 1-click categorized navigation (`COMMAND CENTER`, `CLOUD FLEET & USERS`, `INFRASTRUCTURE`, `RUNTIME & EGGS`) with live database count badges and modern topbar pills.
+  - **Cloud Command Center Overview (`admin/index.blade.php`):** Added hero operational banner, 4 live KPI telemetry cards (Total Servers, Registered Accounts, Wings Daemon Nodes, Runtime Eggs), Recently Deployed Servers table, and Security Engine status panel.
+  - **Bento Settings & Interactive 2FA Cards (`admin/settings/index.blade.php` & `advanced.blade.php`):** Replaced old Bootstrap 3 `.btn-group` and flat forms with 12-column Bento Feature Cards, segmented pill tabs, and an interactive 3-card Zero-Trust 2FA selector.
+
+- **Next-Gen Client Cloud Cockpit & 1-Click Server Dock:**
+  - **Persistent 1-Click Server Command Dock (`ServerRouter.tsx`):** Added horizontal sticky pill navigation dock with icons across `/server/:id/*` for instant 1-click switching between Console, Files, Databases, Network, Subdomain, Backups, Startup, and Settings.
+  - **Asymmetric 12-Column Console Cockpit (`ServerConsoleContainer.tsx` & `ServerDetailsBlock.tsx`):** Side-by-side Terminal Console (`xl:col-span-8`) and Live Telemetry Bento Dock with progress bars (`xl:col-span-4`).
+  - **Bento Instance Cards (`ServerRow.tsx` & `DashboardContainer.tsx`):** Added Cloud Workspace fleet counter pills and instance card footer action strip (`ID · Open Console`).
+'@
 $releaseData = @{
     tag_name = $tag
     name = $tag
-    body = "### AlxZen Panel v4.2.0 — Industry-Standard UI/UX & Upstream Security Release`n`n- 🎨 **Unified Server Row & Console UI/UX Overhaul:**`n  - **Consistent 3-Column Server Cards (`ServerRow.tsx`):** Every server card now displays a uniform 3-column metric grid (CPU, RAM, Disk with allocated capacity limits and smooth hardware-accelerated progress bars) across all power states (`Online`, `Starting`, `Stopping`, `Offline`, `Suspended`) so dashboard grids align evenly.`n  - **One-Click IP:Port Copy Pill:** Added instant copy-to-clipboard with live checkmark feedback on both dashboard server cards and the console header.`n  - **Responsive Console Hero Header (`ServerConsoleContainer.tsx`):** Unified header card visible on both mobile and desktop with status badge, allocation copy badge, expiry badge, and tactile power controls.`n  - **Enhanced Terminal Toolbar (`Console.tsx`):** Added one-click `Clear` console button alongside `A-`, `A+`, and `Fit` controls.`n  - **Balanced 6-Column Telemetry Grid (`ServerDetailsBlock.tsx` & `StatBlock.tsx`):** Responsive 6-card grid (`Uptime`, `CPU Load`, `Memory`, `Disk Storage`, `Inbound`, `Outbound`) with `tabular-nums` and dynamic status icon coloring.`n`n- 🔘 **Industry-Standard Tactile Buttons & Responsive Admin Panel:**`n  - **Unified Client Button System (`Button.tsx`, `button/style.module.css`, `PowerButtons.tsx`):** Upgraded all legacy and modern buttons with 1px inner top highlights, tactile press feedback (`scale(0.98)`), sentence-case typography, and action icons (`Start`, `Restart`, `Stop`/`Kill`).`n  - **Global Admin Design System (`layouts/admin.blade.php` & `admin/index.blade.php`):** Fixed stylesheet load order so the dark precision design system overrides legacy AdminLTE/Pterodactyl styles across all rooms (Overview, Settings, Locations, Databases, Nodes, Nests, Mounts, Announcements, Users, Servers, Expiration), complete with mobile responsive headers and quick-access overview cards.`n`n- 🛡️ **Official Upstream Pterodactyl Security Patches (Backported up to v1.14.1):**`n  - **CVE-2026-86177 (High / CVSS 8.7):** Enforced action-specific permissions (`control.console`, `control.start`, `control.restart`, `control.stop`, `backup.create`) on schedule task creation and updates in `ScheduleTaskController.php` and `StoreTaskRequest.php`.`n  - **CVE-2026-35202:** Serialized concurrent database creation by locking the parent `Server` row (`lockForUpdate()`) inside the database creation transaction in `DatabaseController.php` and `DatabaseManagementService.php`.`n  - **CVE-2026-61609:** Scoped authentication and 2FA checkpoint rate-limiting per account/checkpoint token + IP in `AbstractLoginController.php` to prevent global panel lockouts."
+    body = $bodyText
 } | ConvertTo-Json
 
 Write-Host "Fetching or Creating GitHub Release $tag..." -ForegroundColor Yellow

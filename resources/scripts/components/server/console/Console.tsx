@@ -168,7 +168,7 @@ export default () => {
 
             try {
                 fitAddon.fit();
-            } catch (e) {}
+            } catch (e) { }
 
             searchBar.addNewStyle(zIndex);
 
@@ -200,7 +200,7 @@ export default () => {
                 terminal.options.fontSize = targetSize;
                 try {
                     fitAddon.fit();
-                } catch (e) {}
+                } catch (e) { }
             }
         }, 120);
 
@@ -217,7 +217,7 @@ export default () => {
                 if (terminal && terminal.element) {
                     try {
                         fitAddon.fit();
-                    } catch (e) {}
+                    } catch (e) { }
                 }
             }, 30)
         );
@@ -232,7 +232,7 @@ export default () => {
             terminal.options.fontSize = fontSize;
             try {
                 fitAddon.fit();
-            } catch (e) {}
+            } catch (e) { }
         }
     }, [fontSize, terminal, fitAddon]);
 
@@ -273,7 +273,7 @@ export default () => {
     const handleRefit = () => {
         try {
             fitAddon.fit();
-        } catch (e) {}
+        } catch (e) { }
     };
 
     return (
@@ -291,7 +291,7 @@ export default () => {
             )}
         >
             {/* Top Toolbar: macOS dots, Accent Bar, Device Mode, Clear & Font Zoom */}
-            <div 
+            <div
                 className="w-full h-10 transition-colors flex items-center justify-between px-3.5 select-none border-b"
                 style={{ backgroundColor: 'hsl(var(--bg-elevated))', borderBottomColor: 'hsl(var(--border) / 0.8)' }}
             >
@@ -305,7 +305,7 @@ export default () => {
                     <span className="text-[11px] font-bold uppercase tracking-wider text-gray-300 hidden sm:inline-block">
                         Terminal Console
                     </span>
-                    <span 
+                    <span
                         className={classNames('text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full', {
                             'bg-emerald-500/12 text-emerald-400 border border-emerald-500/30': status === 'running',
                             'bg-sky-500/12 text-sky-400 border border-sky-500/30': status === 'starting',
@@ -364,7 +364,7 @@ export default () => {
             </div>
 
             <SpinnerOverlay visible={!connected} size={'large'} />
-            
+
             {/* Terminal Viewport Container */}
             <div
                 className={classNames(styles.container, styles.overflows_container, 'bg-transparent flex-1', { 'rounded-b': !canSendCommands })}

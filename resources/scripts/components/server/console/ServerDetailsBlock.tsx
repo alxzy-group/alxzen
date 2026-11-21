@@ -88,11 +88,16 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
         });
     });
 
+    const cpuPct = limits.cpu > 0 ? Math.min(100, (stats.cpu / limits.cpu) * 100) : Math.min(100, stats.cpu);
+    const memPct = limits.memory > 0 ? Math.min(100, (stats.memory / mbToBytes(limits.memory)) * 100) : 0;
+    const diskPct = limits.disk > 0 ? Math.min(100, (stats.disk / mbToBytes(limits.disk)) * 100) : 0;
+    const barColor = (pct: number) => (pct > 85 ? '#ef4444' : pct > 65 ? '#f59e0b' : '#0ea5e9');
+
     return (
-        <div className={classNames('w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3', className)}>
+        <div className={classNames('w-full h-full grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-2 gap-2.5 sm:gap-3 content-between', className)}>
             <StatBlock
                 icon={faClock}
-                title={'Uptime'}
+                title={'Instance Uptime'}
                 color={getBackgroundColor(status === 'running' ? 0 : status !== 'offline' ? 9 : 10, 10)}
             >
                 {status === null || status === 'offline' ? (
@@ -104,25 +109,49 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
                 )}
             </StatBlock>
             <StatBlock icon={faMicrochip} title={'CPU Load'} color={getBackgroundColor(stats.cpu, limits.cpu)}>
-                {status === 'offline' ? (
-                    <span className={'text-gray-400'}>0.00%</span>
-                ) : (
-                    <Limit limit={textLimits.cpu}>{stats.cpu.toFixed(1)}%</Limit>
-                )}
+                <div>
+                    {status === 'offline' ? (
+                        <span className={'text-gray-400'}>0.0%</span>
+                    ) : (
+                        <Limit limit={textLimits.cpu}>{stats.cpu.toFixed(1)}%</Limit>
+                    )}
+                    <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-1.5">
+                        <div
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{ width: `${status === 'offline' ? 0 : cpuPct}%`, backgroundColor: barColor(cpuPct) }}
+                        />
+                    </div>
+                </div>
             </StatBlock>
             <StatBlock
                 icon={faMemory}
-                title={'Memory'}
+                title={'Memory Usage'}
                 color={getBackgroundColor(stats.memory / 1024, limits.memory * 1024)}
             >
-                {status === 'offline' ? (
-                    <span className={'text-gray-400'}>0 B</span>
-                ) : (
-                    <Limit limit={textLimits.memory}>{bytesToString(stats.memory)}</Limit>
-                )}
+                <div>
+                    {status === 'offline' ? (
+                        <span className={'text-gray-400'}>0 B</span>
+                    ) : (
+                        <Limit limit={textLimits.memory}>{bytesToString(stats.memory)}</Limit>
+                    )}
+                    <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-1.5">
+                        <div
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{ width: `${status === 'offline' ? 0 : memPct}%`, backgroundColor: barColor(memPct) }}
+                        />
+                    </div>
+                </div>
             </StatBlock>
             <StatBlock icon={faHdd} title={'Disk Storage'} color={getBackgroundColor(stats.disk / 1024, limits.disk * 1024)}>
-                <Limit limit={textLimits.disk}>{bytesToString(stats.disk)}</Limit>
+                <div>
+                    <Limit limit={textLimits.disk}>{bytesToString(stats.disk)}</Limit>
+                    <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-1.5">
+                        <div
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{ width: `${diskPct}%`, backgroundColor: barColor(diskPct) }}
+                        />
+                    </div>
+                </div>
             </StatBlock>
             <StatBlock icon={faCloudDownloadAlt} title={'Inbound ↓'}>
                 {status === 'offline' ? (

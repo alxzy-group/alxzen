@@ -207,6 +207,31 @@ export default () => {
 
                 <HeaderSection>
                     <TitleBox>
+                        <div css={tw`flex items-center gap-2 mb-2 flex-wrap`}>
+                            <span
+                                css={tw`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold uppercase tracking-wider`}
+                                style={{
+                                    background: 'rgba(14, 165, 233, 0.14)',
+                                    border: '1px solid rgba(56, 189, 248, 0.35)',
+                                    color: '#38bdf8',
+                                }}
+                            >
+                                <span css={tw`w-1.5 h-1.5 rounded-full bg-sky-400`} />
+                                Cloud Workspace
+                            </span>
+                            {servers && (
+                                <span
+                                    css={tw`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-mono font-bold`}
+                                    style={{
+                                        background: 'hsl(var(--bg-elevated))',
+                                        border: '1px solid hsl(var(--border))',
+                                        color: 'hsl(var(--text-secondary))',
+                                    }}
+                                >
+                                    {servers.pagination.total} {servers.pagination.total === 1 ? 'Instance' : 'Instances'}
+                                </span>
+                            )}
+                        </div>
                         <Title>Hello, <span>{username}</span></Title>
                     </TitleBox>
 

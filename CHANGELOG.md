@@ -1,5 +1,17 @@
 # Changelog
 
+## [v4.3.0] - 2026-11-21
+### Added
+- **Next-Gen SaaS Admin Control Plane Architecture**:
+  - Replaced legacy collapsible AdminLTE treeview menus with a flattened, categorized **Cloud Command Sidebar** (`COMMAND CENTER`, `CLOUD FLEET & USERS`, `INFRASTRUCTURE`, `RUNTIME & EGGS`) with live database count badges (`Servers`, `Users`, `Nodes`).
+  - Redesigned the Admin top header bar with live role status pill (`Super Owner (ID 1)` / `Sub-Admin`), one-click `Client Panel` switcher, user profile pill, and quick logout trigger.
+  - Transformed `/admin` (`admin/index.blade.php`) into a **Cloud Command Center** featuring a status hero banner, 4 live telemetry KPI cards (`Total Fleet Servers`, `Registered Accounts`, `Wings Daemon Nodes`, `Runtime Service Eggs`), a **Recently Deployed Servers** table, and a **Security & Engine Modules** status panel.
+  - Completely redesigned `/admin/settings` and `/admin/settings/advanced` into **Modern 12-Column Bento Cards** with icon headers, segmented navigation pill tabs, and a custom **3-Card Interactive Zero-Trust 2FA Selector** (`Not Required`, `Admin Only`, `All Users`), replacing the old Bootstrap 3 `.btn-group`.
+- **Next-Gen Client Cloud Cockpit & 1-Click Server Command Dock**:
+  - Added a persistent **Horizontal Server Command Dock** (`ServerRouter.tsx`) across `/server/:id/*` with icons for `Console`, `Files`, `Databases`, `Schedules`, `Users`, `Backups`, `Network`, `Subdomain`, `Startup`, `Settings`, `Activity`, and `Admin` for instant 1-click tab switching.
+  - Restructured `ServerConsoleContainer.tsx` and `ServerDetailsBlock.tsx` into an **Asymmetric 12-Column Cloud Cockpit** (`xl:col-span-8` Terminal Console on the left + `xl:col-span-4` Live Telemetry Dock with mini progress bars on the right).
+  - Enhanced `DashboardContainer.tsx` and `ServerRow.tsx` with a `Cloud Workspace` instance counter badge and a card footer action bar (`ID · Open Console →`).
+
 ## [v4.2.0] - 2026-11-21
 ### Added
 - **Unified Server Card & Console Telemetry Architecture**:

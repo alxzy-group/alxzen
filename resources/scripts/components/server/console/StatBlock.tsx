@@ -31,17 +31,17 @@ const StatContainer = styled.div<{ $statusColor?: string }>`
 const IconWrapper = styled.div<{ $color?: string }>`
     ${tw`flex items-center justify-center w-9 h-9 rounded-lg flex-shrink-0 text-sm`}
     background: ${({ $color }) =>
-        $color === 'bg-red-500'    ? 'rgba(239, 68, 68, 0.14)' :
-        $color === 'bg-yellow-500' ? 'rgba(245, 158, 11, 0.14)' :
-        'rgba(14, 165, 233, 0.12)'};
+        $color === 'bg-red-500' ? 'rgba(239, 68, 68, 0.14)' :
+            $color === 'bg-yellow-500' ? 'rgba(245, 158, 11, 0.14)' :
+                'rgba(14, 165, 233, 0.12)'};
     border: 1px solid ${({ $color }) =>
-        $color === 'bg-red-500'    ? 'rgba(239, 68, 68, 0.32)' :
-        $color === 'bg-yellow-500' ? 'rgba(245, 158, 11, 0.32)' :
-        'rgba(14, 165, 233, 0.28)'};
+        $color === 'bg-red-500' ? 'rgba(239, 68, 68, 0.32)' :
+            $color === 'bg-yellow-500' ? 'rgba(245, 158, 11, 0.32)' :
+                'rgba(14, 165, 233, 0.28)'};
     color: ${({ $color }) =>
-        $color === 'bg-red-500'    ? '#f87171' :
-        $color === 'bg-yellow-500' ? '#fbbf24' :
-        '#38bdf8'};
+        $color === 'bg-red-500' ? '#f87171' :
+            $color === 'bg-yellow-500' ? '#fbbf24' :
+                '#38bdf8'};
 `;
 
 const ContentWrapper = styled.div`

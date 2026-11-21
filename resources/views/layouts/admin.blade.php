@@ -635,17 +635,127 @@
                 }
                 .box-body { padding: 16px !important; }
             }
+            /* 11. Segmented Control Fix for Bootstrap .btn-group[data-toggle="buttons"] */
+            .btn-group[data-toggle="buttons"] {
+                display: inline-flex !important;
+                background: #09090b !important;
+                border: 1px solid var(--alx-border-strong) !important;
+                border-radius: 12px !important;
+                padding: 4px !important;
+                gap: 4px !important;
+                width: 100%;
+            }
+            .btn-group[data-toggle="buttons"] > .btn {
+                flex: 1 !important;
+                background: transparent !important;
+                border: 1px solid transparent !important;
+                color: var(--alx-text-secondary) !important;
+                box-shadow: none !important;
+                border-radius: 9px !important;
+                padding: 8px 12px !important;
+                font-size: 12.5px !important;
+                font-weight: 600 !important;
+                margin: 0 !important;
+            }
+            .btn-group[data-toggle="buttons"] > .btn:hover {
+                color: #ffffff !important;
+                background: rgba(255, 255, 255, 0.04) !important;
+                transform: none !important;
+            }
+            .btn-group[data-toggle="buttons"] > .btn.active,
+            .btn-group[data-toggle="buttons"] > .btn.active:hover,
+            .btn-group[data-toggle="buttons"] > .btn.active:focus {
+                background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%) !important;
+                border-color: rgba(56, 189, 248, 0.45) !important;
+                color: #ffffff !important;
+                box-shadow: 0 2px 10px rgba(14, 165, 233, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+            }
+
+            /* 12. Next-Gen Admin Layout Shell Overrides */
+            .main-header .logo {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-start !important;
+                padding: 0 20px !important;
+                gap: 10px !important;
+            }
+            .alx-brand-badge {
+                font-size: 10px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                padding: 2px 7px;
+                border-radius: 6px;
+                background: rgba(14, 165, 233, 0.15);
+                border: 1px solid rgba(56, 189, 248, 0.35);
+                color: #38bdf8;
+                line-height: 1.4;
+            }
+            .alx-topbar-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                padding: 6px 13px;
+                border-radius: 9px;
+                font-size: 12px;
+                font-weight: 600;
+                background: #141418;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #e4e4e7 !important;
+                margin: 9px 6px 0 0;
+                transition: all 0.15s ease;
+                text-decoration: none !important;
+            }
+            .alx-topbar-pill:hover {
+                background: #1f1f26 !important;
+                border-color: rgba(56, 189, 248, 0.45);
+                color: #38bdf8 !important;
+            }
+            .alx-topbar-pill.danger:hover {
+                border-color: rgba(239, 68, 68, 0.45);
+                color: #f87171 !important;
+                background: rgba(239, 68, 68, 0.1) !important;
+            }
+            .alx-nav-badge {
+                margin-left: auto;
+                font-size: 10.5px;
+                font-weight: 700;
+                padding: 1px 7px;
+                border-radius: 6px;
+                background: rgba(255, 255, 255, 0.06);
+                color: #a1a1aa;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                font-variant-numeric: tabular-nums;
+            }
+            .sidebar-menu > li.active > a .alx-nav-badge {
+                background: rgba(14, 165, 233, 0.25);
+                color: #ffffff;
+                border-color: rgba(56, 189, 248, 0.4);
+            }
+            .sidebar-menu > li > a {
+                display: flex !important;
+                align-items: center !important;
+            }
         </style>
     </head>
     <body class="hold-transition skin-blue fixed sidebar-mini">
         <div class="wrapper">
+            @php
+                $isSuperOwner = Auth::user()->id === 1;
+                $navServerCount = $isSuperOwner
+                    ? \Pterodactyl\Models\Server::count()
+                    : \Pterodactyl\Models\Server::where('owner_id', Auth::user()->id)->count();
+                $navUserCount = \Pterodactyl\Models\User::count();
+                $navNodeCount = \Pterodactyl\Models\Node::count();
+            @endphp
             <header class="main-header">
-                <a href="{{ route('index') }}" class="logo">
+                <a href="{{ route('admin.index') }}" class="logo">
                     @if(config('app.logo'))
-                        <img src="{{ config('app.logo') }}" alt="Logo" style="max-height: 35px; max-width: 100%; vertical-align: middle;">
+                        <img src="{{ config('app.logo') }}" alt="Logo" style="max-height: 28px; max-width: 100%; vertical-align: middle;">
                     @else
-                        <span>{{ config('app.name', 'alxzen') }}</span>
+                        <span style="font-weight:800; letter-spacing:-0.03em;">alx<span style="color:#38bdf8;">zen</span></span>
                     @endif
+                    <span class="alx-brand-badge">Admin</span>
                 </a>
                 <nav class="navbar navbar-static-top">
                     <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
@@ -655,34 +765,47 @@
                         <span class="icon-bar"></span>
                     </a>
                     <div class="navbar-custom-menu">
-                        <ul class="nav navbar-nav">
-                            <li class="user-menu">
-                                <a href="{{ route('account') }}">
-                                    <img src="https://www.gravatar.com/avatar/{{ md5(strtolower(Auth::user()->email)) }}?s=160" class="user-image" alt="User Image">
-                                    <span class="hidden-xs">{{ Auth::user()->name_first }} {{ Auth::user()->name_last }}</span>
+                        <ul class="nav navbar-nav" style="display:flex; align-items:center; padding-right: 12px;">
+                            <li class="hidden-xs">
+                                <span class="alx-topbar-pill" style="cursor:default; background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.25); color:#34d399 !important;">
+                                    <span style="width:6px; height:6px; border-radius:50%; background:#10b981; box-shadow:0 0 8px #10b981; display:inline-block;"></span>
+                                    {{ $isSuperOwner ? 'Super Owner (ID 1)' : 'Sub-Admin' }}
+                                </span>
+                            </li>
+                            <li>
+                                <a href="{{ route('index') }}" class="alx-topbar-pill" style="padding: 6px 13px !important;" title="Return to Client Dashboard">
+                                    <i class="fa fa-external-link" style="color:#38bdf8;"></i>
+                                    <span class="hidden-xs">Client Panel</span>
                                 </a>
                             </li>
-                            <li><a href="{{ route('index') }}" data-toggle="tooltip" data-placement="bottom" title="Exit Admin Control"><i class="fa fa-server"></i></a></li>
-                            <li><a href="{{ route('auth.logout') }}" id="logoutButton" data-toggle="tooltip" data-placement="bottom" title="Logout"><i class="fa fa-sign-out"></i></a></li>
+                            <li>
+                                <a href="{{ route('account') }}" class="alx-topbar-pill" style="padding: 6px 13px !important;">
+                                    <img src="https://www.gravatar.com/avatar/{{ md5(strtolower(Auth::user()->email)) }}?s=64" style="width:18px; height:18px; border-radius:50%;" alt="Avatar">
+                                    <span class="hidden-xs">{{ Auth::user()->username }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('auth.logout') }}" id="logoutButton" class="alx-topbar-pill danger" style="padding: 6px 11px !important;" title="Logout">
+                                    <i class="fa fa-power-off"></i>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </nav>
             </header>
             <aside class="main-sidebar">
                 <section class="sidebar">
-                    <ul class="sidebar-menu" data-widget="tree">
-                        <li class="header">BASIC ADMINISTRATION</li>
+                    <ul class="sidebar-menu" data-widget="tree" style="padding-top: 8px; padding-bottom: 24px;">
+                        <li class="header">COMMAND CENTER</li>
                         <li class="{{ Route::currentRouteName() !== 'admin.index' ?: 'active' }}">
                             <a href="{{ route('admin.index') }}">
-                                <i class="fa fa-home"></i> <span>Overview</span>
+                                <i class="fa fa-compass"></i> <span>Overview</span>
                             </a>
                         </li>
-
-                        {{-- HANYA OWNER ID 1 YANG BISA LIHAT SETTINGS & ANNOUNCEMENTS --}}
-                        @if(Auth::user()->id === 1)
+                        @if($isSuperOwner)
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.settings') ?: 'active' }}">
                             <a href="{{ route('admin.settings')}}">
-                                <i class="fa fa-wrench"></i> <span>Settings</span>
+                                <i class="fa fa-sliders"></i> <span>Panel Settings</span>
                             </a>
                         </li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.announcements') ?: 'active' }}">
@@ -693,72 +816,57 @@
                         @endif
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.api') ?: 'active' }}">
                             <a href="{{ route('admin.api.index')}}">
-                                <i class="fa fa-gamepad"></i> <span>Application API</span>
+                                <i class="fa fa-key"></i> <span>Application API</span>
                             </a>
                         </li>
 
-                        <li class="treeview {{ starts_with(Route::currentRouteName(), ['admin.databases', 'admin.locations', 'admin.nodes']) ? 'active' : '' }}">
-                            <a href="#">
-                                <i class="fa fa-cogs"></i> <span>Management</span>
-                                <span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>
+                        <li class="header">CLOUD FLEET &amp; USERS</li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.servers') ?: 'active' }}">
+                            <a href="{{ route('admin.servers') }}">
+                                <i class="fa fa-server"></i> <span>Servers</span>
+                                <span class="alx-nav-badge">{{ $navServerCount }}</span>
                             </a>
-                            <ul class="treeview-menu">
-                                <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.databases') ?: 'active' }}">
-                                    <a href="{{ route('admin.databases') }}">
-                                        <i class="fa fa-database"></i> <span>Databases</span>
-                                    </a>
-                                </li>
-                                <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.locations') ?: 'active' }}">
-                                    <a href="{{ route('admin.locations') }}">
-                                        <i class="fa fa-globe"></i> <span>Locations</span>
-                                    </a>
-                                </li>
-                                <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nodes') ?: 'active' }}">
-                                    <a href="{{ route('admin.nodes') }}">
-                                        <i class="fa fa-sitemap"></i> <span>Nodes</span>
-                                    </a>
-                                </li>
-
-                                <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.servers') ?: 'active' }}">
-                                    <a href="{{ route('admin.servers') }}">
-                                        <i class="fa fa-server"></i> <span>Servers</span>
-                                    </a>
-                                </li>
-                                
-                                <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.expiration') ?: 'active' }}">
-                                    <a href="{{ route('admin.expiration') }}">
-                                        <i class="fa fa-clock-o"></i> <span>Expiration Manager</span>
-                                    </a>
-                                </li>
-                                <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.users') ?: 'active' }}">
-                                    <a href="{{ route('admin.users') }}">
-                                        <i class="fa fa-users"></i> <span>Users</span>
-                                    </a>
-                                </li>
-                            </ul>
+                        </li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.expiration') ?: 'active' }}">
+                            <a href="{{ route('admin.expiration') }}">
+                                <i class="fa fa-clock-o"></i> <span>Expiration Manager</span>
+                            </a>
+                        </li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.users') ?: 'active' }}">
+                            <a href="{{ route('admin.users') }}">
+                                <i class="fa fa-users"></i> <span>Users &amp; Clients</span>
+                                <span class="alx-nav-badge">{{ $navUserCount }}</span>
+                            </a>
                         </li>
 
-                        <li class="treeview {{ starts_with(Route::currentRouteName(), ['admin.mounts', 'admin.nests']) ? 'active' : '' }}">
-                            <a href="#">
-                                <i class="fa fa-server"></i> <span>Service Management</span>
-                                <span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>
+                        <li class="header">INFRASTRUCTURE</li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nodes') ?: 'active' }}">
+                            <a href="{{ route('admin.nodes') }}">
+                                <i class="fa fa-sitemap"></i> <span>Nodes &amp; Wings</span>
+                                <span class="alx-nav-badge">{{ $navNodeCount }}</span>
                             </a>
-                            <ul class="treeview-menu">
-                                <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.mounts') ?: 'active' }}">
-                                    <a href="{{ route('admin.mounts') }}">
-                                        <i class="fa fa-magic"></i> <span>Mounts</span>
-                                    </a>
-                                </li>
-                                <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nests') ?: 'active' }}">
-                                    <a href="{{ route('admin.nests') }}">
-                                        <i class="fa fa-th-large"></i> <span>Nests</span>
-                                    </a>
-                                </li>
-                            </ul>
+                        </li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.locations') ?: 'active' }}">
+                            <a href="{{ route('admin.locations') }}">
+                                <i class="fa fa-globe"></i> <span>Locations</span>
+                            </a>
+                        </li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.databases') ?: 'active' }}">
+                            <a href="{{ route('admin.databases') }}">
+                                <i class="fa fa-database"></i> <span>Database Hosts</span>
+                            </a>
+                        </li>
+
+                        <li class="header">RUNTIME &amp; EGGS</li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nests') ?: 'active' }}">
+                            <a href="{{ route('admin.nests') }}">
+                                <i class="fa fa-cubes"></i> <span>Nests &amp; Eggs</span>
+                            </a>
+                        </li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.mounts') ?: 'active' }}">
+                            <a href="{{ route('admin.mounts') }}">
+                                <i class="fa fa-hdd-o"></i> <span>Storage Mounts</span>
+                            </a>
                         </li>
                     </ul>
                 </section>
