@@ -12,6 +12,9 @@ import classNames from 'classnames';
 import ActivityLogEntry from '@/components/elements/activity/ActivityLogEntry';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import useLocationHash from '@/plugins/useLocationHash';
+import PageHeader from '@/components/elements/PageHeader';
+import EmptyState from '@/components/elements/EmptyState';
+import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 export default () => {
     const { hash } = useLocationHash();
@@ -32,46 +35,60 @@ export default () => {
 
     return (
         <PageContentBlock title={'Account Activity Log'}>
+            <PageHeader
+                icon={faHistory}
+                title={'Account Activity Log'}
+                description={'Review sign-in sessions, API credential updates, and security audit history.'}
+                badge={data ? `${data.pagination.total} Events` : undefined}
+                actions={
+                    (filters.filters?.event || filters.filters?.ip) ? (
+                        <Link
+                            to={'#'}
+                            className={classNames(btnStyles.button, btnStyles.text, 'w-full sm:w-auto')}
+                            onClick={() => setFilters((value) => ({ ...value, filters: {} }))}
+                        >
+                            Clear Filters <XCircleIcon className={'w-4 h-4 ml-2'} />
+                        </Link>
+                    ) : undefined
+                }
+            />
             <FlashMessageRender byKey={'account'} />
-            {(filters.filters?.event || filters.filters?.ip) && (
-                <div className={'flex justify-end mb-2'}>
-                    <Link
-                        to={'#'}
-                        className={classNames(btnStyles.button, btnStyles.text, 'w-full sm:w-auto')}
-                        onClick={() => setFilters((value) => ({ ...value, filters: {} }))}
-                    >
-                        Clear Filters <XCircleIcon className={'w-4 h-4 ml-2'} />
-                    </Link>
-                </div>
-            )}
             {!data && isValidating ? (
                 <Spinner centered />
+            ) : data?.items.length === 0 ? (
+                <EmptyState
+                    icon={faHistory}
+                    title={'No Activity Recorded'}
+                    description={'No account security events match your current filters.'}
+                />
             ) : (
-                <div className={'bg-[#111111] rounded-2xl shadow-xl border border-white/5 overflow-hidden'}>
-                    {data?.items.length === 0 ? (
-                        <div className="p-6 text-center text-gray-400 text-sm">
-                            No activity logs available.
-                        </div>
-                    ) : (
-                        data?.items.map((activity) => (
-                            <ActivityLogEntry key={activity.id} activity={activity}>
-                                {typeof activity.properties.useragent === 'string' && (
-                                    <Tooltip content={activity.properties.useragent} placement={'top'}>
-                                        <span>
-                                            <DesktopComputerIcon />
-                                        </span>
-                                    </Tooltip>
-                                )}
-                            </ActivityLogEntry>
-                        ))
-                    )}
+                <div
+                    className={'rounded-2xl shadow-xl overflow-hidden'}
+                    style={{
+                        background: 'hsl(var(--bg-elevated))',
+                        border: '1px solid hsl(var(--border))',
+                    }}
+                >
+                    {data?.items.map((activity) => (
+                        <ActivityLogEntry key={activity.id} activity={activity}>
+                            {typeof activity.properties.useragent === 'string' && (
+                                <Tooltip content={activity.properties.useragent} placement={'top'}>
+                                    <span>
+                                        <DesktopComputerIcon />
+                                    </span>
+                                </Tooltip>
+                            )}
+                        </ActivityLogEntry>
+                    ))}
                 </div>
             )}
             {data && (
-                <PaginationFooter
-                    pagination={data.pagination}
-                    onPageSelect={(page) => setFilters((value) => ({ ...value, page }))}
-                />
+                <div className={'mt-4'}>
+                    <PaginationFooter
+                        pagination={data.pagination}
+                        onPageSelect={(page) => setFilters((value) => ({ ...value, page }))}
+                    />
+                </div>
             )}
         </PageContentBlock>
     );

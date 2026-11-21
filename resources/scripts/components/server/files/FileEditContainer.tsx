@@ -87,18 +87,33 @@ export default () => {
         <PageContentBlock>
             <FlashMessageRender byKey={'files:view'} css={tw`mb-4`} />
             <ErrorBoundary>
-                <div css={tw`mb-4`}>
+                <div
+                    css={tw`mb-4 px-4 py-3 rounded-xl border`}
+                    style={{
+                        background: 'hsl(var(--bg-elevated))',
+                        borderColor: 'hsl(var(--border))',
+                    }}
+                >
                     <FileManagerBreadcrumbs withinFileEditor isNewFile={action !== 'edit'} />
                 </div>
             </ErrorBoundary>
             {hash.replace(/^#/, '').endsWith('.pteroignore') && (
-                <div css={tw`mb-4 p-4 border-l-4 bg-neutral-900 rounded border-cyan-400`}>
-                    <p css={tw`text-neutral-300 text-sm`}>
-                        You&apos;re editing a <code css={tw`font-mono bg-black rounded py-px px-1`}>.pteroignore</code>{' '}
+                <div
+                    css={tw`mb-4 p-4 border-l-4 rounded-xl border`}
+                    style={{
+                        background: 'hsl(var(--bg-elevated))',
+                        borderColor: 'hsl(var(--border))',
+                        borderLeftColor: '#38bdf8',
+                    }}
+                >
+                    <p css={tw`text-sm m-0`} style={{ color: 'hsl(var(--text-secondary))' }}>
+                        You&apos;re editing a{' '}
+                        <code css={tw`font-mono rounded px-1.5 py-0.5 text-sky-400 bg-sky-500/10`}>.pteroignore</code>{' '}
                         file. Any files or directories listed in here will be excluded from backups. Wildcards are
-                        supported by using an asterisk (<code css={tw`font-mono bg-black rounded py-px px-1`}>*</code>).
+                        supported by using an asterisk (
+                        <code css={tw`font-mono rounded px-1.5 py-0.5 text-sky-400 bg-sky-500/10`}>*</code>).
                         You can negate a prior rule by prepending an exclamation point (
-                        <code css={tw`font-mono bg-black rounded py-px px-1`}>!</code>).
+                        <code css={tw`font-mono rounded px-1.5 py-0.5 text-sky-400 bg-sky-500/10`}>!</code>).
                     </p>
                 </div>
             )}
@@ -110,7 +125,13 @@ export default () => {
                     save(name);
                 }}
             />
-            <div css={tw`relative rounded-xl overflow-hidden border border-white/5 shadow-2xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)]`}>
+            <div
+                css={tw`relative rounded-2xl overflow-hidden border shadow-2xl transition-colors duration-200 hover:border-sky-500/40`}
+                style={{
+                    background: 'hsl(var(--bg-elevated))',
+                    borderColor: 'hsl(var(--border))',
+                }}
+            >
                 <SpinnerOverlay visible={loading} />
                 <CodemirrorEditor
                     mode={mode}
@@ -129,8 +150,8 @@ export default () => {
                     }}
                 />
             </div>
-            <div css={tw`flex justify-end mt-4`}>
-                <div css={tw`flex-1 sm:flex-none rounded bg-neutral-900 mr-4`}>
+            <div css={tw`flex justify-end items-center gap-3 mt-4`}>
+                <div css={tw`flex-1 sm:flex-none`}>
                     <Select value={mode} onChange={(e) => setMode(e.currentTarget.value)}>
                         {modes.map((mode) => (
                             <option key={`${mode.name}_${mode.mime}`} value={mode.mime}>

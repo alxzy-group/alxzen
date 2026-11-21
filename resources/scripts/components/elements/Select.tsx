@@ -1,17 +1,25 @@
 import styled, { css } from 'styled-components/macro';
-import tw from 'twin.macro';
 
 interface Props {
     hideDropdownArrow?: boolean;
 }
 
 const Select = styled.select<Props>`
-    ${tw`shadow-none block p-3 pr-8 rounded border w-full text-sm transition-colors duration-150 ease-linear`};
+    display: block;
+    width: 100%;
+    padding: 10px 36px 10px 14px;
+    font-size: 0.875rem;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-weight: 500;
+    line-height: 1.5;
+    border-radius: var(--radius, 10px);
+    box-shadow: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 
     &,
     &:hover:not(:disabled),
     &:focus {
-        ${tw`outline-none`};
+        outline: none;
     }
 
     -webkit-appearance: none;
@@ -25,15 +33,26 @@ const Select = styled.select<Props>`
         display: none;
     }
 
+    &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
     ${(props) =>
         !props.hideDropdownArrow &&
         css`
-            ${tw`bg-neutral-600 border-neutral-500 text-neutral-200`};
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='%23C3D1DF' d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z'/%3e%3c/svg%3e ");
+            background-color: hsl(var(--input-bg));
+            border: 1.5px solid hsl(var(--input-border));
+            color: hsl(var(--input-text));
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='%2394a3b8' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3e%3c/svg%3e");
 
-            &:hover:not(:disabled),
+            &:hover:not(:disabled) {
+                border-color: hsl(var(--border-hover, var(--border-focus)));
+            }
+
             &:focus {
-                ${tw`border-neutral-400`};
+                border-color: hsl(var(--border-focus));
+                box-shadow: 0 0 0 3px hsl(var(--accent-border)), 0 0 0 1px hsl(var(--border-focus));
             }
         `};
 `;

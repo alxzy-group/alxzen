@@ -10,6 +10,9 @@ import getServerBackups, { Context as ServerBackupContext } from '@/api/swr/getS
 import { ServerContext } from '@/state/server';
 import ServerContentBlock from '@/components/elements/ServerContentBlock';
 import Pagination from '@/components/elements/Pagination';
+import PageHeader from '@/components/elements/PageHeader';
+import EmptyState from '@/components/elements/EmptyState';
+import { faArchive } from '@fortawesome/free-solid-svg-icons';
 
 const BackupContainer = () => {
     const { page, setPage } = useContext(ServerBackupContext);
@@ -34,43 +37,49 @@ const BackupContainer = () => {
 
     return (
         <ServerContentBlock title={'Backups'}>
-            <FlashMessageRender byKey={'backups'} css={tw`mb-4`} />
-            <Pagination data={backups} onPageSelect={setPage}>
-                {({ items }) =>
-                    !items.length ? (
-                        // Don't show any error messages if the server has no backups and the user cannot
-                        // create additional ones for the server.
-                        !backupLimit ? null : (
-                            <p css={tw`text-center text-sm text-neutral-300`}>
-                                {page > 1
-                                    ? "Looks like we've run out of backups to show you, try going back a page."
-                                    : 'It looks like there are no backups currently stored for this server.'}
-                            </p>
-                        )
-                    ) : (
-                        items.map((backup, index) => (
-                            <BackupRow key={backup.uuid} backup={backup} css={index > 0 ? tw`mt-2` : undefined} />
-                        ))
-                    )
+            <PageHeader
+                icon={faArchive}
+                title={'Backups'}
+                description={'Create, download, lock, and restore container snapshots.'}
+                badge={backupLimit > 0 ? `${backups.backupCount} / ${backupLimit} Used` : undefined}
+                actions={
+                    backupLimit > 0 && backupLimit > backups.backupCount ? (
+                        <Can action={'backup.create'}>
+                            <CreateBackupButton />
+                        </Can>
+                    ) : undefined
                 }
-            </Pagination>
-            {backupLimit === 0 && (
-                <p css={tw`text-center text-sm text-neutral-300`}>
-                    Backups cannot be created for this server because the backup limit is set to 0.
-                </p>
+            />
+            <FlashMessageRender byKey={'backups'} css={tw`mb-4`} />
+            {backupLimit === 0 ? (
+                <EmptyState
+                    icon={faArchive}
+                    title={'Backups Disabled'}
+                    description={'Backups cannot be created for this server because the backup limit is set to 0.'}
+                />
+            ) : (
+                <Pagination data={backups} onPageSelect={setPage}>
+                    {({ items }) =>
+                        !items.length ? (
+                            <EmptyState
+                                icon={faArchive}
+                                title={page > 1 ? 'No More Backups' : 'No Backups Created'}
+                                description={
+                                    page > 1
+                                        ? "Looks like we've run out of backups to show you, try going back a page."
+                                        : 'Create a container snapshot to safeguard your data before making major changes.'
+                                }
+                            />
+                        ) : (
+                            <div css={tw`flex flex-col gap-2`}>
+                                {items.map((backup) => (
+                                    <BackupRow key={backup.uuid} backup={backup} />
+                                ))}
+                            </div>
+                        )
+                    }
+                </Pagination>
             )}
-            <Can action={'backup.create'}>
-                <div css={tw`mt-6 sm:flex items-center justify-end`}>
-                    {backupLimit > 0 && backups.backupCount > 0 && (
-                        <p css={tw`text-sm text-neutral-300 mb-4 sm:mr-6 sm:mb-0`}>
-                            {backups.backupCount} of {backupLimit} backups have been created for this server.
-                        </p>
-                    )}
-                    {backupLimit > 0 && backupLimit > backups.backupCount && (
-                        <CreateBackupButton css={tw`w-full sm:w-auto`} />
-                    )}
-                </div>
-            </Can>
         </ServerContentBlock>
     );
 };

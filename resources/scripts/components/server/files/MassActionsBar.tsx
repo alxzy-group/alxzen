@@ -93,9 +93,23 @@ const MassActionsBar = () => {
                     />
                 )}
                 <Portal>
-                    <div className={'pointer-events-none fixed bottom-0 mb-6 flex justify-center w-full z-50'}>
+                    <div className={'pointer-events-none fixed bottom-0 mb-6 flex justify-center w-full z-50 px-4'}>
                         <Fade timeout={75} in={selectedFiles.length > 0} unmountOnExit>
-                            <div css={tw`flex items-center space-x-4 pointer-events-auto rounded p-4 bg-black/50`}>
+                            <div
+                                css={tw`flex items-center space-x-3 pointer-events-auto rounded-2xl px-4 py-3 shadow-2xl border`}
+                                style={{
+                                    background: 'rgba(12, 13, 16, 0.96)',
+                                    borderColor: 'rgba(56, 189, 248, 0.35)',
+                                    boxShadow: '0 20px 50px rgba(0, 0, 0, 0.75), 0 0 24px rgba(14, 165, 233, 0.15)',
+                                }}
+                            >
+                                <span
+                                    className={
+                                        'px-2.5 py-1 rounded-lg text-xs font-mono font-bold text-sky-400 bg-sky-500/10 border border-sky-500/25'
+                                    }
+                                >
+                                    {selectedFiles.length} selected
+                                </span>
                                 <Button onClick={() => setShowMove(true)}>Move</Button>
                                 <Button onClick={onClickCompress}>Archive</Button>
                                 <Button.Danger variant={Button.Variants.Secondary} onClick={() => setShowConfirm(true)}>

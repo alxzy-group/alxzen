@@ -11,7 +11,8 @@ export default () => {
 
     useEventListener('keydown', (e: KeyboardEvent) => {
         if (['input', 'textarea'].indexOf(((e.target as HTMLElement).tagName || 'input').toLowerCase()) < 0) {
-            if (!visible && e.metaKey && e.key.toLowerCase() === '/') {
+            if (!visible && (e.metaKey || e.ctrlKey) && (e.key.toLowerCase() === '/' || e.key.toLowerCase() === 'k')) {
+                e.preventDefault();
                 setVisible(true);
             }
         }
@@ -20,24 +21,34 @@ export default () => {
     return (
         <>
             {visible && <SearchModal appear visible={visible} onDismissed={() => setVisible(false)} />}
-            <Tooltip placement={'bottom'} content={'Search'}>
+            <Tooltip placement={'bottom'} content={'Quick Search (Ctrl+K)'}>
                 <button
                     onClick={() => setVisible(true)}
                     css={`
-                        ${tw`w-10 h-10 flex items-center justify-center transition-all duration-200 cursor-pointer rounded-full outline-none`}
-                        color: hsl(var(--text-primary));
+                        ${tw`h-9 w-9 sm:w-auto sm:px-3 flex items-center justify-center gap-2.5 transition-all duration-150 cursor-pointer rounded-xl outline-none text-xs font-medium`}
+                        color: hsl(var(--text-secondary));
                         background: hsl(var(--bg-elevated));
-                        border: 1px solid hsl(var(--border) / 0.8);
+                        border: 1px solid hsl(var(--border));
                         &:hover {
                             color: #38bdf8;
                             background: hsl(var(--bg-surface));
-                            border-color: rgba(14, 165, 233, 0.4);
+                            border-color: rgba(56, 189, 248, 0.45);
                             transform: translateY(-1px);
-                            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
                         }
                     `}
                 >
-                    <FontAwesomeIcon icon={faSearch} />
+                    <FontAwesomeIcon icon={faSearch} style={{ fontSize: 12 }} />
+                    <span css={tw`hidden sm:inline`}>Search servers...</span>
+                    <kbd
+                        css={tw`hidden md:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono`}
+                        style={{
+                            background: 'hsl(var(--bg-surface))',
+                            border: '1px solid hsl(var(--border))',
+                            color: 'hsl(var(--text-muted))',
+                        }}
+                    >
+                        ⌘K
+                    </kbd>
                 </button>
             </Tooltip>
         </>

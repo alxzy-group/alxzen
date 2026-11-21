@@ -1,4 +1,4 @@
-﻿param(
+param(
     [string]$token = $env:GITHUB_TOKEN
 )
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -6,17 +6,19 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.3.1"
+$tag = "v4.4.0"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.3.1 - Full-Width Console Telemetry Bento & Complete Admin Room Redesign
+### AlxZen Panel v4.4.0 - Zero-Duplicate Sidebar Navigation & Full Client/Admin UI Modernization
 
-- **Fixed Client Server Console Layout (`ServerConsoleContainer.tsx`, `ServerDetailsBlock.tsx`, `StatBlock.tsx`):**
-  - Replaced the squeezed 8/4 split (which left a 230px empty black gap below CPU Load and wrapped JSON logs) with an edge-to-edge **6-Card Horizontal Live Telemetry Bento Strip** (`Instance Uptime`, `CPU Load`, `Memory Usage`, `Disk Storage`, `Net Inbound`, `Net Outbound` with live progress bars) directly above the **100% Full-Width Terminal Console**.
-- **Smart `STARTING` -> `ONLINE` Status Detection (`WebsocketHandler.tsx`, `ServerDetailsBlock.tsx`):**
-  - Fixed Node.js / Python / Auto-Order bot servers staying stuck on `STARTING` when an Egg's startup regex does not match; the panel now automatically promotes status to `ONLINE` as soon as Wings reports active CPU, RAM, or Uptime telemetry.
-- **Complete Admin Room Bento Redesign:**
-  - Modernized all remaining Admin pages (`settings/mail`, `announcements`, `locations`, `databases`, `nests`, `mounts`, `users/new`, `users/view`, `servers/view`, and `servers/partials/navigation`) with Bento cards, icon headers, counter badges, and dark modals.
+- **Zero-Duplicate Navigation Architecture (`NavigationBar.tsx`, `ServerRouter.tsx`, `DashboardRouter.tsx`):**
+  - Removed the redundant horizontal `ServerDockBar` and `SubNavigation` bars so all Server Operations & Account navigation lives cleanly in the redesigned 288px Sidebar Drawer with categorized SaaS groups and cyan active accents.
+  - Compacted the top bar (`64px`) with a live `/ {Server Name}` breadcrumb pill, `Cmd/Ctrl+K` Quick Search bar, Admin/Manage shortcut pill, and Light/Dark mode toggle.
+- **Unified Obsidian + Electric Cyan Primitives & Full Sub-Page Overhaul:**
+  - Upgraded legacy gray/purple `Modal`, `Dialog`, `Select`, `Code`, `SearchModal`, `ContentBox`, and `TitledGreyBox` components to unified Obsidian + Electric Cyan surfaces.
+  - Added unified `PageHeader` and composed `EmptyState` across all Server tabs (`Files`, `Databases`, `Schedules`, `Users`, `Backups`, `Network`, `Domains`, `Startup`, `Settings`, `Activity`) and Account tabs (`Overview`, `API Keys`, `SSH Keys`, `Activity`).
+- **Complete Admin List View Unification (`admin/servers`, `admin/users`, `admin/nodes`, `admin/expiration`):**
+  - Upgraded the remaining 4 legacy list templates to the unified AlxZen Admin Bento system with tabular-nums telemetry pills and responsive toolbars.
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag

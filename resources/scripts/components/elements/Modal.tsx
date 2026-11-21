@@ -22,8 +22,7 @@ export interface ModalProps extends RequiredModalProps {
 
 export const ModalMask = styled.div`
     ${tw`fixed z-50 overflow-auto flex w-full inset-0`};
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.78);
 `;
 
 const ModalContainer = styled.div<{ alignTop?: boolean }>`
@@ -43,7 +42,7 @@ const ModalContainer = styled.div<{ alignTop?: boolean }>`
     margin-bottom: auto;
 
     & > .close-icon {
-        ${tw`absolute right-0 p-2 text-white cursor-pointer opacity-50 transition-all duration-150 ease-linear hover:opacity-100`};
+        ${tw`absolute right-0 p-2 text-white cursor-pointer opacity-60 transition-all duration-150 ease-linear hover:opacity-100`};
         top: -2.5rem;
 
         &:hover {
@@ -123,8 +122,8 @@ const Modal: React.FC<ModalProps> = ({
                     {showSpinnerOverlay && (
                         <Fade timeout={150} appear in>
                             <div
-                                css={tw`absolute w-full h-full rounded flex items-center justify-center`}
-                                style={{ background: 'hsla(211, 10%, 53%, 0.35)', zIndex: 9999 }}
+                                css={tw`absolute w-full h-full rounded-2xl flex items-center justify-center`}
+                                style={{ background: 'rgba(10, 12, 16, 0.72)', zIndex: 9999 }}
                             >
                                 <Spinner />
                             </div>
@@ -132,13 +131,12 @@ const Modal: React.FC<ModalProps> = ({
                     )}
                     <div
                         style={{
-                            background: 'linear-gradient(160deg, #0d0c14 0%, #09090f 100%)',
-                            border: '1px solid rgba(124,58,237,0.2)',
-                            borderLeft: '3px solid #7c3aed',
-                            borderRadius: 0,
-                            padding: '24px',
-                            overflowY: 'scroll',
-                            boxShadow: '0 24px 60px rgba(0,0,0,0.8), 0 0 40px rgba(124,58,237,0.08)',
+                            background: 'hsl(var(--bg-elevated))',
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: '18px',
+                            padding: '24px 28px',
+                            overflowY: 'auto',
+                            boxShadow: '0 24px 64px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(56, 189, 248, 0.08)',
                         }}
                     >
                         {children}

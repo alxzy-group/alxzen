@@ -12,6 +12,9 @@ import tw from 'twin.macro';
 import Fade from '@/components/elements/Fade';
 import ServerContentBlock from '@/components/elements/ServerContentBlock';
 import { useDeepMemoize } from '@/plugins/useDeepMemoize';
+import PageHeader from '@/components/elements/PageHeader';
+import EmptyState from '@/components/elements/EmptyState';
+import { faDatabase } from '@fortawesome/free-solid-svg-icons';
 
 export default () => {
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
@@ -38,6 +41,19 @@ export default () => {
 
     return (
         <ServerContentBlock title={'Databases'}>
+            <PageHeader
+                icon={faDatabase}
+                title={'Databases'}
+                description={'Manage MySQL databases allocated to this server.'}
+                badge={databaseLimit > 0 ? `${databases.length} / ${databaseLimit} Used` : undefined}
+                actions={
+                    databaseLimit > 0 && databaseLimit !== databases.length ? (
+                        <Can action={'database.create'}>
+                            <CreateDatabaseButton />
+                        </Can>
+                    ) : undefined
+                }
+            />
             <FlashMessageRender byKey={'databases'} css={tw`mb-4`} />
             {!databases.length && loading ? (
                 <Spinner size={'large'} centered />
@@ -45,33 +61,22 @@ export default () => {
                 <Fade timeout={150}>
                     <>
                         {databases.length > 0 ? (
-                            databases.map((database, index) => (
-                                <DatabaseRow
-                                    key={database.id}
-                                    database={database}
-                                    className={index > 0 ? 'mt-1' : undefined}
-                                />
-                            ))
-                        ) : (
-                            <p css={tw`text-center text-sm text-neutral-300`}>
-                                {databaseLimit > 0
-                                    ? 'It looks like you have no databases.'
-                                    : 'Databases cannot be created for this server.'}
-                            </p>
-                        )}
-                        <Can action={'database.create'}>
-                            <div css={tw`mt-6 flex items-center justify-end`}>
-                                {databaseLimit > 0 && databases.length > 0 && (
-                                    <p css={tw`text-sm text-neutral-300 mb-4 sm:mr-6 sm:mb-0`}>
-                                        {databases.length} of {databaseLimit} databases have been allocated to this
-                                        server.
-                                    </p>
-                                )}
-                                {databaseLimit > 0 && databaseLimit !== databases.length && (
-                                    <CreateDatabaseButton css={tw`flex justify-end mt-6`} />
-                                )}
+                            <div css={tw`flex flex-col gap-2`}>
+                                {databases.map((database) => (
+                                    <DatabaseRow key={database.id} database={database} />
+                                ))}
                             </div>
-                        </Can>
+                        ) : (
+                            <EmptyState
+                                icon={faDatabase}
+                                title={databaseLimit > 0 ? 'No Databases Created' : 'Databases Disabled'}
+                                description={
+                                    databaseLimit > 0
+                                        ? 'You have not created any MySQL databases for this server yet.'
+                                        : 'Databases cannot be created because the database limit for this server is set to 0.'
+                                }
+                            />
+                        )}
                     </>
                 </Fade>
             )}

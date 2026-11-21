@@ -5,7 +5,7 @@
 @endsection
 
 @section('content-header')
-    <h1>Expiration Manager<small>Manage server expiration dates.</small></h1>
+    <h1>Expiration Lifecycle Manager<small>Monitor billing deadlines, extend active subscriptions, or purge expired servers.</small></h1>
     <ol class="breadcrumb">
         <li><a href="{{ route('admin.index') }}">Admin</a></li>
         <li class="active">Expiration Manager</li>
@@ -14,168 +14,142 @@
 
 @section('content')
 <style>
-.alx-card {
-    background: #171717;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-    box-shadow: none;
-    overflow: hidden;
+.alx-toolbar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
-.alx-card-header {
-    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-    padding: 16px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    background: #171717;
+.alx-toolbar-input {
+    width: 195px !important;
+    height: 34px !important;
+    font-size: 13px !important;
 }
-.alx-card-title { font-size:15px; font-weight:500; color:#e5e5e5; display:flex; align-items:center; gap:8px; margin:0; }
-.alx-card-title i { color:#a3a3a3; }
-.alx-search-group { display:flex; gap:8px; align-items:center; flex-wrap: wrap; }
-.alx-search-group .form-control {
-    background: #0a0a0a !important; border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-radius: 8px !important; color:#e5e5e5 !important; font-size:13px; height:34px;
-    padding: 0 12px; min-width:180px; transition: border-color 0.2s; box-shadow: none !important;
+.alx-exp-form {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
 }
-.alx-search-group .form-control:focus { border-color:#0ea5e9 !important; box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2) !important; outline:none; }
-.alx-search-group .form-control::placeholder { color:#737373; }
-.alx-btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; font-size:13px; font-weight:500; border:1px solid transparent; cursor:pointer; transition:all 0.2s; text-decoration:none; white-space:nowrap; box-shadow:none; }
-.alx-btn-search { background: #262626; color:#e5e5e5; border:1px solid rgba(255, 255, 255, 0.15); }
-.alx-btn-search:hover { background: #404040; }
-.alx-table { width:100%; border-collapse:collapse; min-width: 700px; }
-.alx-table thead tr { background: #171717; border-bottom:1px solid rgba(255, 255, 255, 0.08); }
-.alx-table thead th { padding:12px 16px; font-size:12px; font-weight:500; text-transform:capitalize; color:#a3a3a3; white-space:nowrap; text-align:left; }
-.alx-table tbody tr { border-bottom:1px solid rgba(255, 255, 255, 0.04); transition:background 0.15s; }
-.alx-table tbody tr:last-child { border-bottom:none; }
-.alx-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
-.alx-table td { padding:12px 16px; font-size:13px; color:#e5e5e5; vertical-align:middle; }
-.alx-table td a { color:#a3a3a3; text-decoration:none; font-weight:500; transition:color 0.15s; }
-.alx-table td a:hover { color:#e5e5e5; }
-.alx-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:500; white-space:nowrap; }
-.alx-badge-unlimited { background:rgba(255, 255, 255, 0.1); color:#a3a3a3; border:1px solid rgba(255, 255, 255, 0.15); }
-.alx-badge-expired { background:rgba(239, 68, 68, 0.1); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.2); }
-.alx-badge-active { background:rgba(16, 185, 129, 0.1); color:#10b981; border:1px solid rgba(16, 185, 129, 0.2); }
-.alx-badge-soon { background:rgba(245, 158, 11, 0.1); color:#f59e0b; border:1px solid rgba(245, 158, 11, 0.2); }
-.alx-action-group { display:flex; align-items:center; gap:6px; }
-.alx-date-input {
-    background: #0a0a0a !important; border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-radius:8px !important; color:#e5e5e5 !important; font-size:13px; height:32px;
-    padding:0 10px; min-width:130px; transition:border-color 0.2s; box-shadow: none !important;
+.alx-exp-date {
+    width: 145px !important;
+    height: 30px !important;
+    font-size: 12px !important;
+    padding: 2px 8px !important;
 }
-.alx-date-input:focus { border-color:#0ea5e9 !important; outline:none; }
-.alx-btn-set { background:rgba(255, 255, 255, 0.1); color:#ffffff; border:1px solid rgba(255, 255, 255, 0.2); height:32px; padding:0 10px; border-radius:8px; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
-.alx-btn-set:hover { background:rgba(255, 255, 255, 0.2); color:#ffffff; }
-.alx-btn-add30 { background:rgba(16, 185, 129, 0.15); color:#34d399; border:1px solid rgba(16, 185, 129, 0.3); height:32px; padding:0 10px; border-radius:8px; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
-.alx-btn-add30:hover { background:rgba(16, 185, 129, 0.25); }
-.alx-btn-delete-all { background: #ef4444; color: #fff; border: 1px solid transparent; }
-.alx-btn-delete-all:hover { background: #dc2626; color: #fff; }
-.alx-admin-pager { display:flex; justify-content:center; padding:16px 24px; border-top:1px solid rgba(255, 255, 255, 0.08); background: #171717; }
-.alx-admin-pager .pagination { margin: 0; }
-.alx-admin-pager .pagination > li > a, .alx-admin-pager .pagination > li > span { background: #0a0a0a !important; border-color: rgba(255, 255, 255, 0.08) !important; color: #a3a3a3 !important; border-radius: 4px !important; margin: 0 2px; }
-.alx-admin-pager .pagination > .active > a, .alx-admin-pager .pagination > .active > span { background: #0ea5e9 !important; border-color: #0ea5e9 !important; color: #fff !important; }
-.alx-server-name { font-weight:500; color:#e5e5e5; }
-.alx-username { color:#a3a3a3; font-size:13px; }
-.alx-email { color:#737373; font-size:11px; display:block; margin-top:2px; }
-.alx-date-val { color:#e5e5e5; font-weight:500; font-size:13px; }
-.alx-date-time { color:#737373; font-size:11px; display:block; margin-top:1px; }
 </style>
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="alx-card">
-            <div class="alx-card-header">
-                <h3 class="alx-card-title"><i class="fa fa-clock-o"></i> Expiration Manager</h3>
-                <div class="alx-search-group" style="flex: 1; justify-content: flex-end;">
-                    <form action="{{ route('admin.expiration') }}" method="GET" style="display:inline-flex; gap: 8px;">
-                        <input type="text" name="filter[name]" class="form-control" value="{{ request()->input('filter.name', '') }}" placeholder="Search server name...">
-                        <button type="submit" class="alx-btn alx-btn-search"><i class="fa fa-search"></i> Search</button>
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">
+                    <i class="fa fa-clock-o" style="color:#38bdf8;margin-right:8px;"></i>Server Expiration Schedule
+                    <span style="margin-left:10px;padding:2px 9px;border-radius:999px;background:rgba(14,165,233,0.12);color:#38bdf8;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;">{{ $servers->total() }} Instances</span>
+                </h3>
+                <div class="box-tools alx-toolbar-wrap">
+                    <form action="{{ route('admin.expiration') }}" method="GET" class="alx-toolbar-wrap">
+                        <input type="text" name="filter[name]" class="form-control alx-toolbar-input" value="{{ request()->input('filter.name', '') }}" placeholder="Search server name...">
+                        <button type="submit" class="btn btn-sm btn-default">
+                            <i class="fa fa-search" style="margin-right:4px;"></i> Search
+                        </button>
                     </form>
                     <form action="{{ route('admin.expiration.deleteAll') }}" method="POST" style="display:inline-flex;" onsubmit="return confirm('Are you sure you want to delete all expired servers? This action cannot be undone and will delete server files and databases.');">
                         {!! csrf_field() !!}
-                        <button type="submit" class="alx-btn alx-btn-delete-all"><i class="fa fa-trash"></i> Delete All Expired</button>
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fa fa-trash-o" style="margin-right:4px;"></i> Purge Expired
+                        </button>
                     </form>
                 </div>
             </div>
 
-            <div style="overflow-x: auto;">
-                <table class="alx-table">
+            <div class="box-body table-responsive no-padding">
+                <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>Server</th>
+                            <th>Server Instance</th>
                             <th>Owner</th>
-                            <th>Node</th>
-                            <th>Expires At</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th>Daemon Node</th>
+                            <th>Expiration Date</th>
+                            <th class="text-center">Lifecycle Status</th>
+                            <th class="text-right">Extend / Update</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($servers as $server)
+                        @forelse ($servers as $server)
                             <tr>
                                 <td>
-                                    <a href="{{ route('admin.servers.view', $server->id) }}" class="alx-server-name">
-                                        <i class="fa fa-server" style="color:#a3a3a3;margin-right:6px;font-size:11px;"></i>{{ $server->name }}
+                                    <a href="{{ route('admin.servers.view', $server->id) }}" style="font-weight:700;color:#f4f4f5;font-size:13.5px;">
+                                        <i class="fa fa-server" style="color:#38bdf8;margin-right:6px;"></i>{{ $server->name }}
                                     </a>
                                 </td>
 
                                 <td>
                                     @if($server->user)
-                                        <a href="{{ route('admin.users.view', $server->user->id) }}" class="alx-username">{{ $server->user->username }}</a>
-                                        <small class="alx-email">{{ $server->user->email }}</small>
+                                        <a href="{{ route('admin.users.view', $server->user->id) }}" style="font-weight:600;">{{ $server->user->username }}</a>
+                                        <div style="font-size:11px;color:#71717a;">{{ $server->user->email }}</div>
                                     @else
-                                        <span class="alx-username" style="color:#ef4444;">Unknown User</span>
+                                        <span style="color:#fb7185;">Unknown User</span>
                                     @endif
                                 </td>
 
                                 <td>
                                     @if($server->node)
-                                        <span style="color:#94a3b8;">{{ $server->node->name }}</span>
+                                        <span style="color:#d4d4d8;">{{ $server->node->name }}</span>
                                     @else
-                                        <span style="color:#ef4444;">Unknown Node</span>
+                                        <span style="color:#fb7185;">Unknown Node</span>
                                     @endif
                                 </td>
 
                                 <td>
                                     @if($server->expires_at)
-                                        <span class="alx-date-val">{{ $server->expires_at->format('d M Y') }}</span>
-                                        <small class="alx-date-time"><i class="fa fa-clock-o" style="font-size:10px;"></i> {{ $server->expires_at->format('H:i') }}</small>
+                                        <div style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#f4f4f5;font-variant-numeric:tabular-nums;">{{ $server->expires_at->format('d M Y') }}</div>
+                                        <div style="font-size:11px;color:#71717a;font-family:'JetBrains Mono',monospace;"><i class="fa fa-clock-o"></i> {{ $server->expires_at->format('H:i') }}</div>
                                     @else
-                                        <span style="color:#475569;">—</span>
+                                        <span style="color:#71717a;">&mdash; Unlimited</span>
                                     @endif
                                 </td>
 
-                                <td>
+                                <td class="text-center">
                                     @if(!$server->expires_at)
-                                        <span class="alx-badge alx-badge-unlimited"><i class="fa fa-infinity"></i> Unlimited</span>
+                                        <span class="label label-default"><i class="fa fa-infinity"></i> Unlimited</span>
                                     @elseif($server->expires_at->isPast())
-                                        <span class="alx-badge alx-badge-expired"><i class="fa fa-exclamation-circle"></i> EXPIRED</span>
+                                        <span class="label label-danger"><i class="fa fa-exclamation-circle"></i> EXPIRED</span>
                                     @elseif($server->expires_at->diffInDays() <= 3)
-                                        <span class="alx-badge alx-badge-soon"><i class="fa fa-clock-o"></i> {{ $server->expires_at->diffForHumans() }}</span>
+                                        <span class="label label-warning"><i class="fa fa-clock-o"></i> {{ $server->expires_at->diffForHumans() }}</span>
                                     @else
-                                        <span class="alx-badge alx-badge-active"><i class="fa fa-check-circle"></i> {{ $server->expires_at->diffForHumans() }}</span>
+                                        <span class="label label-success"><i class="fa fa-check-circle"></i> {{ $server->expires_at->diffForHumans() }}</span>
                                     @endif
                                 </td>
 
-                                <td>
-                                    <form action="{{ route('admin.expiration.update', $server->id) }}" method="POST">
+                                <td class="text-right">
+                                    <form action="{{ route('admin.expiration.update', $server->id) }}" method="POST" class="alx-exp-form">
                                         {!! csrf_field() !!}
-                                        <div class="alx-action-group">
-                                            <input type="date" name="new_date" class="alx-date-input" title="Pick a specific date">
-                                            <button type="submit" class="alx-btn-set" title="Set to selected date">
-                                                <i class="fa fa-calendar-check-o"></i> Set
-                                            </button>
-                                            <button type="submit" name="days" value="30" class="alx-btn-add30" title="Add 30 Days from now/current expiry">
-                                                +30D
-                                            </button>
-                                        </div>
+                                        <input type="date" name="new_date" class="form-control alx-exp-date" title="Pick a specific date">
+                                        <button type="submit" class="btn btn-xs btn-default" title="Set to selected date">
+                                            <i class="fa fa-calendar-check-o"></i> Set
+                                        </button>
+                                        <button type="submit" name="days" value="30" class="btn btn-xs btn-success" title="Add 30 Days from now/current expiry">
+                                            +30D
+                                        </button>
                                     </form>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center" style="padding:40px 16px;color:#71717a;">
+                                    <i class="fa fa-clock-o" style="font-size:26px;display:block;margin-bottom:8px;color:#3f3f46;"></i>
+                                    No servers match your expiration filter.
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
 
             @if($servers->hasPages())
-                <div class="alx-admin-pager">
-                    {!! $servers->appends(['filter' => request()->input('filter')])->render() !!}
+                <div class="box-footer with-border">
+                    <div class="col-md-12 text-center">{!! $servers->appends(['filter' => request()->input('filter')])->render() !!}</div>
                 </div>
             @endif
         </div>

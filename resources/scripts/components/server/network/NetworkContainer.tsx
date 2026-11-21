@@ -12,6 +12,9 @@ import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import getServerAllocations from '@/api/swr/getServerAllocations';
 import isEqual from 'react-fast-compare';
 import { useDeepCompareEffect } from '@/plugins/useDeepCompareEffect';
+import PageHeader from '@/components/elements/PageHeader';
+import EmptyState from '@/components/elements/EmptyState';
+import { faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
 const NetworkContainer = () => {
     const [loading, setLoading] = useState(false);
@@ -52,30 +55,36 @@ const NetworkContainer = () => {
 
     return (
         <ServerContentBlock showFlashKey={'server:network'} title={'Network'}>
+            <PageHeader
+                icon={faNetworkWired}
+                title={'Network & Allocations'}
+                description={'Manage IP addresses, ports, and primary connection endpoints.'}
+                badge={allocationLimit > 0 && data ? `${data.length} / ${allocationLimit} Ports` : undefined}
+                actions={
+                    allocationLimit > 0 && data && allocationLimit > data.length ? (
+                        <Can action={'allocation.create'}>
+                            <Button color={'primary'} onClick={onCreateAllocation}>
+                                Create Allocation
+                            </Button>
+                        </Can>
+                    ) : undefined
+                }
+            />
+            <SpinnerOverlay visible={loading} />
             {!data ? (
                 <Spinner size={'large'} centered />
+            ) : !data.length ? (
+                <EmptyState
+                    icon={faNetworkWired}
+                    title={'No Allocations Assigned'}
+                    description={'This server currently has no network IP or port allocations.'}
+                />
             ) : (
-                <>
+                <div css={tw`flex flex-col gap-2`}>
                     {data.map((allocation) => (
                         <AllocationRow key={`${allocation.ip}:${allocation.port}`} allocation={allocation} />
                     ))}
-                    {allocationLimit > 0 && (
-                        <Can action={'allocation.create'}>
-                            <SpinnerOverlay visible={loading} />
-                            <div css={tw`mt-6 sm:flex items-center justify-end`}>
-                                <p css={tw`text-sm text-neutral-300 mb-4 sm:mr-6 sm:mb-0`}>
-                                    You are currently using {data.length} of {allocationLimit} allowed allocations for
-                                    this server.
-                                </p>
-                                {allocationLimit > data.length && (
-                                    <Button css={tw`w-full sm:w-auto`} color={'primary'} onClick={onCreateAllocation}>
-                                        Create Allocation
-                                    </Button>
-                                )}
-                            </div>
-                        </Can>
-                    )}
-                </>
+                </div>
             )}
         </ServerContentBlock>
     );

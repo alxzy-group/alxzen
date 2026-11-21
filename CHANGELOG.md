@@ -1,5 +1,19 @@
 # Changelog
 
+## [v4.4.0] - 2026-11-21
+### Changed & Upgraded
+- **Eliminated Duplicate Horizontal Navigation & Upgraded Sidebar Control Architecture (`NavigationBar.tsx`, `ServerRouter.tsx`, `DashboardRouter.tsx`, `SearchContainer.tsx`)**:
+  - Removed the redundant horizontal `ServerDockBar` in `ServerRouter.tsx` and the redundant `SubNavigation` tab bar in `DashboardRouter.tsx` so navigation never duplicates between the top bar and the sidebar drawer.
+  - Streamlined the sticky top bar (`h-16`) with a compact `/ {Server Name}` context pill, `⌘K` Quick Search trigger bar, one-click `Admin` / `Manage` shortcut pill (for administrators), and Light/Dark theme switcher.
+  - Redesigned the Sidebar Drawer (`288px`) with clean categorized SaaS groups (`Workspace`, collapsible `Server Operations`, `Account`, `Administration`) and left-accent cyan active indicators instead of heavy boxed links.
+- **Unified AlxZen Obsidian + Electric Cyan Core Primitives (`Modal.tsx`, `Dialog`, `Select.tsx`, `Code.tsx`, `SearchModal.tsx`, `ContentBox.tsx`, `TitledGreyBox.tsx`)**:
+  - Replaced legacy purple `#7c3aed` modals/search inputs and stock Admin/Tailwind `bg-gray-600` / `bg-neutral-600` dialogs and selects with unified rounded-2xl `hsl(var(--bg-elevated))` surfaces, Electric Cyan focus states, and subtle top-edge refraction borders.
+- **Complete Upgrade Across Every Client Server & Account Page**:
+  - Added unified `PageHeader` (with cyan icon badge, title, quota/count pill, and top-right primary action) and composed `EmptyState` across `Files`, `Databases`, `Schedules`, `Users`, `Backups`, `Network`, `Domains`, `Startup`, `Settings`, `Server Activity`, `My Account`, `API Credentials`, `SSH Keys`, and `Account Activity`.
+  - Fixed sticky toolbar offset in `FileManagerContainer.tsx` (`top: 72px`) and upgraded `MassActionsBar.tsx` with a live selected counter pill.
+- **Modernized Remaining Admin Fleet Lists (`admin/servers`, `admin/users`, `admin/nodes`, `admin/expiration`)**:
+  - Unified the Server Fleet, Registered Users, Wings Daemon Nodes, and Expiration Manager list views with the `v4.3.1` Admin Bento design system (cyan headers, tabular-nums counter pills, unified toolbars, and removal of leftover legacy `#171717` / `#7c3aed` hover styles).
+
 ## [v4.3.1] - 2026-11-21
 ### Fixed & Improved
 - **Full-Width Client Server Console & 6-Card Live Telemetry Bento Bar (`ServerConsoleContainer.tsx`, `ServerDetailsBlock.tsx`, `StatBlock.tsx`)**:

@@ -13,6 +13,9 @@ import tw from 'twin.macro';
 import GreyRowBox from '@/components/elements/GreyRowBox';
 import { Button } from '@/components/elements/button/index';
 import ServerContentBlock from '@/components/elements/ServerContentBlock';
+import PageHeader from '@/components/elements/PageHeader';
+import EmptyState from '@/components/elements/EmptyState';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
 export default () => {
     const match = useRouteMatch();
@@ -39,39 +42,51 @@ export default () => {
 
     return (
         <ServerContentBlock title={'Schedules'}>
+            <PageHeader
+                icon={faCalendarAlt}
+                title={'Schedules'}
+                description={'Automate commands, power actions, and backups on a cron schedule.'}
+                badge={`${schedules.filter((s) => s.isActive).length} Active`}
+                actions={
+                    <Can action={'schedule.create'}>
+                        <Button type={'button'} onClick={() => setVisible(true)}>
+                            Create Schedule
+                        </Button>
+                    </Can>
+                }
+            />
+            <Can action={'schedule.create'}>
+                <EditScheduleModal visible={visible} onModalDismissed={() => setVisible(false)} />
+            </Can>
             <FlashMessageRender byKey={'schedules'} css={tw`mb-4`} />
             {!schedules.length && loading ? (
                 <Spinner size={'large'} centered />
             ) : (
                 <>
                     {schedules.length === 0 ? (
-                        <p css={tw`text-sm text-center text-neutral-300`}>
-                            There are no schedules configured for this server.
-                        </p>
+                        <EmptyState
+                            icon={faCalendarAlt}
+                            title={'No Schedules Configured'}
+                            description={'Automate restarts, commands, or backups by creating your first cron schedule.'}
+                        />
                     ) : (
-                        schedules.map((schedule) => (
-                            <GreyRowBox
-                                as={'a'}
-                                key={schedule.id}
-                                href={`${match.url}/${schedule.id}`}
-                                css={tw`cursor-pointer mb-2 flex-wrap`}
-                                onClick={(e: any) => {
-                                    e.preventDefault();
-                                    history.push(`${match.url}/${schedule.id}`);
-                                }}
-                            >
-                                <ScheduleRow schedule={schedule} />
-                            </GreyRowBox>
-                        ))
-                    )}
-                    <Can action={'schedule.create'}>
-                        <div css={tw`mt-8 flex justify-end`}>
-                            <EditScheduleModal visible={visible} onModalDismissed={() => setVisible(false)} />
-                            <Button type={'button'} onClick={() => setVisible(true)}>
-                                Create schedule
-                            </Button>
+                        <div css={tw`flex flex-col gap-2`}>
+                            {schedules.map((schedule) => (
+                                <GreyRowBox
+                                    as={'a'}
+                                    key={schedule.id}
+                                    href={`${match.url}/${schedule.id}`}
+                                    css={tw`cursor-pointer flex-wrap`}
+                                    onClick={(e: any) => {
+                                        e.preventDefault();
+                                        history.push(`${match.url}/${schedule.id}`);
+                                    }}
+                                >
+                                    <ScheduleRow schedule={schedule} />
+                                </GreyRowBox>
+                            ))}
                         </div>
-                    </Can>
+                    )}
                 </>
             )}
         </ServerContentBlock>

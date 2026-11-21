@@ -34,9 +34,8 @@ export default ({ database, className }: Props) => {
     const appendDatabase = ServerContext.useStoreActions((actions) => actions.databases.appendDatabase);
     const removeDatabase = ServerContext.useStoreActions((actions) => actions.databases.removeDatabase);
 
-    const jdbcConnectionString = `jdbc:mysql://${database.username}${
-        database.password ? `:${encodeURIComponent(database.password)}` : ''
-    }@${database.connectionString}/${database.name}`;
+    const jdbcConnectionString = `jdbc:mysql://${database.username}${database.password ? `:${encodeURIComponent(database.password)}` : ''
+        }@${database.connectionString}/${database.name}`;
 
     const schema = object().shape({
         confirm: string()
@@ -72,8 +71,10 @@ export default ({ database, className }: Props) => {
                         }}
                     >
                         <FlashMessageRender byKey={'database:delete'} css={tw`mb-6`} />
-                        <h2 css={tw`text-2xl mb-6`}>Confirm database deletion</h2>
-                        <p css={tw`text-sm`}>
+                        <h2 css={tw`text-xl font-bold mb-3`} style={{ color: 'hsl(var(--text-primary))' }}>
+                            Confirm database deletion
+                        </h2>
+                        <p css={tw`text-sm`} style={{ color: 'hsl(var(--text-secondary))' }}>
                             Deleting a database is a permanent action, it cannot be undone. This will permanently delete
                             the <strong>{database.name}</strong> database and remove all associated data.
                         </p>
@@ -99,32 +100,34 @@ export default ({ database, className }: Props) => {
             </Formik>
             <Modal visible={connectionVisible} onDismissed={() => setConnectionVisible(false)}>
                 <FlashMessageRender byKey={'database-connection-modal'} css={tw`mb-6`} />
-                <h3 css={tw`mb-6 text-2xl`}>Database connection details</h3>
+                <h3 css={tw`mb-5 text-xl font-bold`} style={{ color: 'hsl(var(--text-primary))' }}>
+                    Database connection details
+                </h3>
                 <div>
                     <Label>Endpoint</Label>
                     <CopyOnClick text={database.connectionString}>
                         <Input type={'text'} readOnly value={database.connectionString} />
                     </CopyOnClick>
                 </div>
-                <div css={tw`mt-6`}>
+                <div css={tw`mt-5`}>
                     <Label>Connections from</Label>
                     <Input type={'text'} readOnly value={database.allowConnectionsFrom} />
                 </div>
-                <div css={tw`mt-6`}>
+                <div css={tw`mt-5`}>
                     <Label>Username</Label>
                     <CopyOnClick text={database.username}>
                         <Input type={'text'} readOnly value={database.username} />
                     </CopyOnClick>
                 </div>
                 <Can action={'database.view_password'}>
-                    <div css={tw`mt-6`}>
+                    <div css={tw`mt-5`}>
                         <Label>Password</Label>
                         <CopyOnClick text={database.password} showInNotification={false}>
                             <Input type={'text'} readOnly value={database.password} />
                         </CopyOnClick>
                     </div>
                 </Can>
-                <div css={tw`mt-6`}>
+                <div css={tw`mt-5`}>
                     <Label>JDBC Connection String</Label>
                     <CopyOnClick text={jdbcConnectionString} showInNotification={false}>
                         <Input type={'text'} readOnly value={jdbcConnectionString} />
@@ -139,33 +142,54 @@ export default ({ database, className }: Props) => {
                     </Button>
                 </div>
             </Modal>
-            <GreyRowBox $hoverable={false} className={className} css={tw`mb-2`}>
-                <div css={tw`hidden md:block`}>
-                    <FontAwesomeIcon icon={faDatabase} fixedWidth />
+            <GreyRowBox $hoverable={false} className={className}>
+                <div
+                    css={tw`hidden md:flex w-9 h-9 rounded-xl items-center justify-center flex-shrink-0`}
+                    style={{
+                        background: 'rgba(14, 165, 233, 0.1)',
+                        border: '1px solid rgba(56, 189, 248, 0.25)',
+                        color: '#38bdf8',
+                    }}
+                >
+                    <FontAwesomeIcon icon={faDatabase} />
                 </div>
-                <div css={tw`flex-1 ml-4`}>
+                <div css={tw`flex-1 md:ml-4 min-w-0`}>
                     <CopyOnClick text={database.name}>
-                        <p css={tw`text-lg`}>{database.name}</p>
+                        <p css={tw`text-sm font-bold truncate m-0`} style={{ color: 'hsl(var(--text-primary))' }}>
+                            {database.name}
+                        </p>
                     </CopyOnClick>
                 </div>
-                <div css={tw`ml-8 text-center hidden md:block`}>
+                <div css={tw`ml-6 text-center hidden md:block`}>
                     <CopyOnClick text={database.connectionString}>
-                        <p css={tw`text-sm`}>{database.connectionString}</p>
+                        <p css={tw`text-xs font-mono m-0`} style={{ color: 'hsl(var(--text-primary))', fontVariantNumeric: 'tabular-nums' }}>
+                            {database.connectionString}
+                        </p>
                     </CopyOnClick>
-                    <p css={tw`mt-1 text-2xs text-neutral-500 uppercase select-none`}>Endpoint</p>
+                    <p css={tw`mt-0.5 text-[10px] uppercase tracking-wider m-0`} style={{ color: 'hsl(var(--text-muted))' }}>
+                        Endpoint
+                    </p>
                 </div>
-                <div css={tw`ml-8 text-center hidden md:block`}>
-                    <p css={tw`text-sm`}>{database.allowConnectionsFrom}</p>
-                    <p css={tw`mt-1 text-2xs text-neutral-500 uppercase select-none`}>Connections from</p>
+                <div css={tw`ml-6 text-center hidden md:block`}>
+                    <p css={tw`text-xs font-mono m-0`} style={{ color: 'hsl(var(--text-primary))' }}>
+                        {database.allowConnectionsFrom}
+                    </p>
+                    <p css={tw`mt-0.5 text-[10px] uppercase tracking-wider m-0`} style={{ color: 'hsl(var(--text-muted))' }}>
+                        Connections from
+                    </p>
                 </div>
-                <div css={tw`ml-8 text-center hidden md:block`}>
+                <div css={tw`ml-6 text-center hidden md:block`}>
                     <CopyOnClick text={database.username}>
-                        <p css={tw`text-sm`}>{database.username}</p>
+                        <p css={tw`text-xs font-mono m-0`} style={{ color: 'hsl(var(--text-primary))' }}>
+                            {database.username}
+                        </p>
                     </CopyOnClick>
-                    <p css={tw`mt-1 text-2xs text-neutral-500 uppercase select-none`}>Username</p>
+                    <p css={tw`mt-0.5 text-[10px] uppercase tracking-wider m-0`} style={{ color: 'hsl(var(--text-muted))' }}>
+                        Username
+                    </p>
                 </div>
-                <div css={tw`ml-8`}>
-                    <Button isSecondary css={tw`mr-2`} onClick={() => setConnectionVisible(true)}>
+                <div css={tw`ml-6 flex items-center gap-2 flex-shrink-0`}>
+                    <Button isSecondary onClick={() => setConnectionVisible(true)}>
                         <FontAwesomeIcon icon={faEye} fixedWidth />
                     </Button>
                     <Can action={'database.delete'}>

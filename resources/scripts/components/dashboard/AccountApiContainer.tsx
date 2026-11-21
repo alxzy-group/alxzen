@@ -14,6 +14,8 @@ import GreyRowBox from '@/components/elements/GreyRowBox';
 import { Dialog } from '@/components/elements/dialog';
 import { useFlashKey } from '@/plugins/useFlash';
 import Code from '@/components/elements/Code';
+import PageHeader from '@/components/elements/PageHeader';
+import EmptyState from '@/components/elements/EmptyState';
 
 export default () => {
     const [deleteIdentifier, setDeleteIdentifier] = useState('');
@@ -43,12 +45,18 @@ export default () => {
 
     return (
         <PageContentBlock title={'Account API'}>
-            <FlashMessageRender byKey={'account'} />
-            <div css={tw`md:flex flex-nowrap my-10`}>
-                <ContentBox title={'Create API Key'} css={tw`flex-none w-full md:w-1/2`}>
+            <PageHeader
+                icon={faKey}
+                title={'API Credentials'}
+                description={'Generate and revoke personal Client API keys for external integrations.'}
+                badge={`${keys.length} Keys`}
+            />
+            <FlashMessageRender byKey={'account'} css={tw`mb-4`} />
+            <div css={tw`grid grid-cols-1 md:grid-cols-12 gap-6 items-start`}>
+                <ContentBox title={'Create API Key'} css={tw`md:col-span-5`}>
                     <CreateApiKeyForm onKeyCreated={(key) => setKeys((s) => [...s!, key])} />
                 </ContentBox>
-                <ContentBox title={'API Keys'} css={tw`flex-1 overflow-hidden mt-8 md:mt-0 md:ml-8`}>
+                <ContentBox title={'API Keys'} css={tw`md:col-span-7 overflow-hidden`}>
                     <SpinnerOverlay visible={loading} />
                     <Dialog.Confirm
                         title={'Delete API Key'}
@@ -60,35 +68,52 @@ export default () => {
                         All requests using the <Code>{deleteIdentifier}</Code> key will be invalidated.
                     </Dialog.Confirm>
                     {keys.length === 0 ? (
-                        <p css={tw`text-center text-sm`}>
-                            {loading ? 'Loading...' : 'No API keys exist for this account.'}
-                        </p>
+                        <EmptyState
+                            icon={faKey}
+                            title={loading ? 'Loading Credentials...' : 'No API Keys Created'}
+                            description={
+                                loading
+                                    ? 'Fetching your active personal API credentials.'
+                                    : 'No client API keys exist for this account yet.'
+                            }
+                        />
                     ) : (
-                        keys.map((key, index) => (
-                            <GreyRowBox
-                                key={key.identifier}
-                                css={[tw`flex items-center border border-transparent hover:border-white/10 transition-colors duration-200`, index > 0 && tw`mt-2`]}
-                                style={{ backgroundColor: '#111111' }}
-                            >
-                                <FontAwesomeIcon icon={faKey} css={tw`text-neutral-400`} />
-                                <div css={tw`ml-4 flex-1 overflow-hidden`}>
-                                    <p css={tw`text-sm break-words font-medium`}>{key.description}</p>
-                                    <p css={tw`text-2xs text-neutral-300 uppercase`}>
-                                        Last used:&nbsp;
-                                        {key.lastUsedAt ? format(key.lastUsedAt, 'MMM do, yyyy HH:mm') : 'Never'}
-                                    </p>
-                                </div>
-                                <p css={tw`text-sm ml-4 hidden md:block`}>
-                                    <code css={tw`font-mono py-1 px-2 bg-neutral-900 rounded`}>{key.identifier}</code>
-                                </p>
-                                <button css={tw`ml-4 p-2 text-sm`} onClick={() => setDeleteIdentifier(key.identifier)}>
-                                    <FontAwesomeIcon
-                                        icon={faTrashAlt}
-                                        css={tw`text-neutral-400 hover:text-red-400 transition-colors duration-150`}
-                                    />
-                                </button>
-                            </GreyRowBox>
-                        ))
+                        <div css={tw`flex flex-col gap-2`}>
+                            {keys.map((key) => (
+                                <GreyRowBox key={key.identifier} css={tw`flex items-center mb-0`}>
+                                    <div
+                                        css={tw`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0`}
+                                        style={{
+                                            background: 'rgba(14, 165, 233, 0.1)',
+                                            border: '1px solid rgba(56, 189, 248, 0.25)',
+                                            color: '#38bdf8',
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faKey} style={{ fontSize: 12 }} />
+                                    </div>
+                                    <div css={tw`ml-3.5 flex-1 overflow-hidden`}>
+                                        <p css={tw`text-sm break-words font-semibold m-0`} style={{ color: 'hsl(var(--text-primary))' }}>
+                                            {key.description}
+                                        </p>
+                                        <p css={tw`text-[11px] uppercase tracking-wide mt-0.5 m-0`} style={{ color: 'hsl(var(--text-muted))' }}>
+                                            Last used:&nbsp;
+                                            {key.lastUsedAt ? format(key.lastUsedAt, 'MMM do, yyyy HH:mm') : 'Never'}
+                                        </p>
+                                    </div>
+                                    <div css={tw`ml-3 hidden sm:block`}>
+                                        <Code dark>{key.identifier}</Code>
+                                    </div>
+                                    <button
+                                        css={tw`ml-3 p-2 text-sm cursor-pointer rounded-lg transition-colors hover:text-red-400`}
+                                        style={{ color: 'hsl(var(--text-muted))' }}
+                                        onClick={() => setDeleteIdentifier(key.identifier)}
+                                        title={'Revoke API Key'}
+                                    >
+                                        <FontAwesomeIcon icon={faTrashAlt} />
+                                    </button>
+                                </GreyRowBox>
+                            ))}
+                        </div>
                     )}
                 </ContentBox>
             </div>

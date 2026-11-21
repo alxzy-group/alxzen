@@ -14,6 +14,9 @@ import isEqual from 'react-fast-compare';
 import CopyOnClick from '@/components/elements/CopyOnClick';
 import { ip } from '@/lib/formatters';
 import { Button } from '@/components/elements/button/index';
+import Code from '@/components/elements/Code';
+import PageHeader from '@/components/elements/PageHeader';
+import { faCogs, faInfoCircle, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 
 export default () => {
     const username = useStoreState((state) => state.user.data!.username);
@@ -24,57 +27,58 @@ export default () => {
 
     return (
         <ServerContentBlock title={'Settings'}>
+            <PageHeader
+                icon={faCogs}
+                title={'Server Settings'}
+                description={'Access SFTP connection details, inspect instance identifiers, rename, or reinstall.'}
+            />
             <FlashMessageRender byKey={'settings'} css={tw`mb-4`} />
-            <div css={tw`md:flex`}>
-                <div css={tw`w-full md:flex-1 md:mr-10`}>
+            <div css={tw`grid grid-cols-1 lg:grid-cols-2 gap-6 items-start`}>
+                <div css={tw`flex flex-col gap-6`}>
                     <Can action={'file.sftp'}>
-                        <TitledGreyBox title={'SFTP Details'} css={tw`mb-6 md:mb-10`}>
+                        <TitledGreyBox icon={faNetworkWired} title={'SFTP Details'}>
                             <div>
                                 <Label>Server Address</Label>
                                 <CopyOnClick text={`sftp://${ip(sftp.ip)}:${sftp.port}`}>
                                     <Input type={'text'} value={`sftp://${ip(sftp.ip)}:${sftp.port}`} readOnly />
                                 </CopyOnClick>
                             </div>
-                            <div css={tw`mt-6`}>
+                            <div css={tw`mt-5`}>
                                 <Label>Username</Label>
                                 <CopyOnClick text={`${username}.${id}`}>
                                     <Input type={'text'} value={`${username}.${id}`} readOnly />
                                 </CopyOnClick>
                             </div>
-                            <div css={tw`mt-6 flex items-center`}>
+                            <div css={tw`mt-5 flex items-center justify-between gap-4`}>
                                 <div css={tw`flex-1`}>
-                                    <div css={tw`border-l-4 border-cyan-500 p-3`}>
-                                        <p css={tw`text-xs text-neutral-200`}>
+                                    <div css={tw`border-l-2 border-sky-400 pl-3 py-1`}>
+                                        <p css={tw`text-xs m-0`} style={{ color: 'hsl(var(--text-muted))' }}>
                                             Your SFTP password is the same as the password you use to access this panel.
                                         </p>
                                     </div>
                                 </div>
-                                <div css={tw`ml-4`}>
-                                    <a href={`sftp://${username}.${id}@${ip(sftp.ip)}:${sftp.port}`}>
-                                        <Button.Text variant={Button.Variants.Secondary}>Launch SFTP</Button.Text>
-                                    </a>
-                                </div>
+                                <a href={`sftp://${username}.${id}@${ip(sftp.ip)}:${sftp.port}`}>
+                                    <Button.Text variant={Button.Variants.Secondary}>Launch SFTP</Button.Text>
+                                </a>
                             </div>
                         </TitledGreyBox>
                     </Can>
-                    <TitledGreyBox title={'Debug Information'} css={tw`mb-6 md:mb-10`}>
+                    <TitledGreyBox icon={faInfoCircle} title={'Debug Information'}>
                         <div css={tw`flex items-center justify-between text-sm`}>
-                            <p>Node</p>
-                            <code css={tw`font-mono bg-neutral-900 rounded py-1 px-2`}>{node}</code>
+                            <p css={tw`m-0`} style={{ color: 'hsl(var(--text-secondary))' }}>Node</p>
+                            <Code dark>{node}</Code>
                         </div>
                         <CopyOnClick text={uuid}>
-                            <div css={tw`flex items-center justify-between mt-2 text-sm`}>
-                                <p>Server ID</p>
-                                <code css={tw`font-mono bg-neutral-900 rounded py-1 px-2`}>{uuid}</code>
+                            <div css={tw`flex items-center justify-between mt-3 text-sm cursor-pointer`}>
+                                <p css={tw`m-0`} style={{ color: 'hsl(var(--text-secondary))' }}>Server ID</p>
+                                <Code dark>{uuid}</Code>
                             </div>
                         </CopyOnClick>
                     </TitledGreyBox>
                 </div>
-                <div css={tw`w-full mt-6 md:flex-1 md:mt-0`}>
+                <div css={tw`flex flex-col gap-6`}>
                     <Can action={'settings.rename'}>
-                        <div css={tw`mb-6 md:mb-10`}>
-                            <RenameServerBox />
-                        </div>
+                        <RenameServerBox />
                     </Can>
                     <Can action={'settings.reinstall'}>
                         <ReinstallServerBox />

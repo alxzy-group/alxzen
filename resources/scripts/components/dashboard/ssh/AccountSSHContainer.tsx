@@ -8,10 +8,12 @@ import GreyRowBox from '@/components/elements/GreyRowBox';
 import { useSSHKeys } from '@/api/account/ssh-keys';
 import { useFlashKey } from '@/plugins/useFlash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faKey } from '@fortawesome/free-solid-svg-icons';
+import { faKey, faTerminal } from '@fortawesome/free-solid-svg-icons';
 import { format } from 'date-fns';
 import CreateSSHKeyForm from '@/components/dashboard/ssh/CreateSSHKeyForm';
 import DeleteSSHKeyButton from '@/components/dashboard/ssh/DeleteSSHKeyButton';
+import PageHeader from '@/components/elements/PageHeader';
+import EmptyState from '@/components/elements/EmptyState';
 
 export default () => {
     const { clearAndAddHttpError } = useFlashKey('account');
@@ -26,36 +28,59 @@ export default () => {
 
     return (
         <PageContentBlock title={'SSH Keys'}>
-            <FlashMessageRender byKey={'account'} />
-            <div css={tw`md:flex flex-nowrap my-10`}>
-                <ContentBox title={'Add SSH Key'} css={tw`flex-none w-full md:w-1/2`}>
+            <PageHeader
+                icon={faTerminal}
+                title={'SSH Public Keys'}
+                description={'Manage authorized SSH public keys for passwordless SFTP authentication.'}
+                badge={data ? `${data.length} Keys` : undefined}
+            />
+            <FlashMessageRender byKey={'account'} css={tw`mb-4`} />
+            <div css={tw`grid grid-cols-1 md:grid-cols-12 gap-6 items-start`}>
+                <ContentBox title={'Add SSH Key'} css={tw`md:col-span-5`}>
                     <CreateSSHKeyForm />
                 </ContentBox>
-                <ContentBox title={'SSH Keys'} css={tw`flex-1 overflow-hidden mt-8 md:mt-0 md:ml-8`}>
+                <ContentBox title={'SSH Keys'} css={tw`md:col-span-7 overflow-hidden`}>
                     <SpinnerOverlay visible={!data && isValidating} />
                     {!data || !data.length ? (
-                        <p css={tw`text-center text-sm`}>
-                            {!data ? 'Loading...' : 'No SSH Keys exist for this account.'}
-                        </p>
+                        <EmptyState
+                            icon={faTerminal}
+                            title={!data ? 'Loading SSH Keys...' : 'No SSH Keys Registered'}
+                            description={
+                                !data
+                                    ? 'Fetching registered public keys for this account.'
+                                    : 'Add an SSH public key to connect to your servers via SFTP without passwords.'
+                            }
+                        />
                     ) : (
-                        data.map((key, index) => (
-                            <GreyRowBox
-                                key={key.fingerprint}
-                                css={[tw`flex space-x-4 items-center border border-transparent hover:border-white/10 transition-colors duration-200`, index > 0 && tw`mt-2`]}
-                                style={{ backgroundColor: '#111111' }}
-                            >
-                                <FontAwesomeIcon icon={faKey} css={tw`text-neutral-400`} />
-                                <div css={tw`flex-1`}>
-                                    <p css={tw`text-sm break-words font-medium`}>{key.name}</p>
-                                    <p css={tw`text-xs mt-1 font-mono truncate`}>SHA256:{key.fingerprint}</p>
-                                    <p css={tw`text-xs mt-1 text-neutral-300 uppercase`}>
-                                        Added on:&nbsp;
-                                        {format(key.createdAt, 'MMM do, yyyy HH:mm')}
-                                    </p>
-                                </div>
-                                <DeleteSSHKeyButton name={key.name} fingerprint={key.fingerprint} />
-                            </GreyRowBox>
-                        ))
+                        <div css={tw`flex flex-col gap-2`}>
+                            {data.map((key) => (
+                                <GreyRowBox key={key.fingerprint} css={tw`flex space-x-3.5 items-center mb-0`}>
+                                    <div
+                                        css={tw`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0`}
+                                        style={{
+                                            background: 'rgba(14, 165, 233, 0.1)',
+                                            border: '1px solid rgba(56, 189, 248, 0.25)',
+                                            color: '#38bdf8',
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faKey} style={{ fontSize: 12 }} />
+                                    </div>
+                                    <div css={tw`flex-1 min-w-0`}>
+                                        <p css={tw`text-sm break-words font-semibold m-0`} style={{ color: 'hsl(var(--text-primary))' }}>
+                                            {key.name}
+                                        </p>
+                                        <p css={tw`text-xs mt-1 font-mono truncate m-0`} style={{ color: '#38bdf8' }}>
+                                            SHA256:{key.fingerprint}
+                                        </p>
+                                        <p css={tw`text-[11px] mt-1 uppercase tracking-wide m-0`} style={{ color: 'hsl(var(--text-muted))' }}>
+                                            Added on:&nbsp;
+                                            {format(key.createdAt, 'MMM do, yyyy HH:mm')}
+                                        </p>
+                                    </div>
+                                    <DeleteSSHKeyButton name={key.name} fingerprint={key.fingerprint} />
+                                </GreyRowBox>
+                            ))}
+                        </div>
                     )}
                 </ContentBox>
             </div>

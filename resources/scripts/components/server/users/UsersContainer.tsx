@@ -11,6 +11,9 @@ import { httpErrorToHuman } from '@/api/http';
 import Can from '@/components/elements/Can';
 import ServerContentBlock from '@/components/elements/ServerContentBlock';
 import tw from 'twin.macro';
+import PageHeader from '@/components/elements/PageHeader';
+import EmptyState from '@/components/elements/EmptyState';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
 export default () => {
     const [loading, setLoading] = useState(true);
@@ -49,17 +52,31 @@ export default () => {
 
     return (
         <ServerContentBlock title={'Users'}>
+            <PageHeader
+                icon={faUsers}
+                title={'Subusers'}
+                description={'Grant granular panel and console permissions to team members.'}
+                badge={`${subusers.length} ${subusers.length === 1 ? 'Member' : 'Members'}`}
+                actions={
+                    <Can action={'user.create'}>
+                        <AddSubuserButton />
+                    </Can>
+                }
+            />
             <FlashMessageRender byKey={'users'} css={tw`mb-4`} />
             {!subusers.length ? (
-                <p css={tw`text-center text-sm text-neutral-300`}>It looks like you don&apos;t have any subusers.</p>
+                <EmptyState
+                    icon={faUsers}
+                    title={'No Subusers Added'}
+                    description={'Collaborate securely by inviting team members with custom server permissions.'}
+                />
             ) : (
-                subusers.map((subuser) => <UserRow key={subuser.uuid} subuser={subuser} />)
-            )}
-            <Can action={'user.create'}>
-                <div css={tw`flex justify-end mt-6`}>
-                    <AddSubuserButton />
+                <div css={tw`flex flex-col gap-2`}>
+                    {subusers.map((subuser) => (
+                        <UserRow key={subuser.uuid} subuser={subuser} />
+                    ))}
                 </div>
-            </Can>
+            )}
         </ServerContentBlock>
     );
 };

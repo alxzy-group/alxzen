@@ -22,25 +22,25 @@ interface Values {
 }
 
 const CustomInput = styled(Input)`
-    ${tw`rounded-none text-white transition-all shadow-none`}
-    background: rgba(0,0,0,0.4) !important;
-    border: 1px solid rgba(124,58,237,0.2) !important;
+    ${tw`rounded-xl transition-all shadow-none`}
+    background: hsl(var(--bg-surface)) !important;
+    border: 1.5px solid hsl(var(--border)) !important;
+    color: hsl(var(--text-primary)) !important;
     &:focus {
-        border-color: rgba(124,58,237,0.6) !important;
-        box-shadow: 0 0 0 3px rgba(124,58,237,0.12), 0 0 16px rgba(124,58,237,0.15) !important;
-        background: rgba(124,58,237,0.04) !important;
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.16) !important;
     }
 `;
 
 const ServerResult = styled(Link)`
-    ${tw`flex items-center p-4 no-underline transition-all duration-150`}
-    background: rgba(124,58,237,0.05);
-    border-left: 2px solid rgba(124,58,237,0.15);
+    ${tw`flex items-center p-3.5 rounded-xl no-underline transition-all duration-150`}
+    background: hsl(var(--bg-surface));
+    border: 1px solid hsl(var(--border));
 
     &:hover {
-        background: rgba(124,58,237,0.1);
-        border-left-color: #7c3aed;
-        box-shadow: 0 0 20px rgba(124,58,237,0.12);
+        background: rgba(14, 165, 233, 0.08);
+        border-color: rgba(56, 189, 248, 0.45);
+        transform: translateY(-1px);
     }
 
     &:not(:last-of-type) {
@@ -78,7 +78,6 @@ export default ({ ...props }: Props) => {
     const search = debounce(({ term }: Values, { setSubmitting }: FormikHelpers<Values>) => {
         clearFlashes('search');
 
-        // if (ref.current) ref.current.focus();
         getServers({ query: term, type: isOwner ? 'admin-all' : undefined })
             .then((servers) => setServers(servers.items.filter((_, index) => index < 5)))
             .catch((error) => {
@@ -95,8 +94,7 @@ export default ({ ...props }: Props) => {
         }
     }, [props.visible]);
 
-    // Formik does not support an innerRef on custom components.
-    const InputWithRef = (props: any) => <CustomInput autoFocus {...props} ref={ref} />;
+    const InputWithRef = (inputProps: any) => <CustomInput autoFocus {...inputProps} ref={ref} />;
 
     return (
         <Formik
@@ -111,26 +109,34 @@ export default ({ ...props }: Props) => {
                     <Form>
                         <FormikFieldWrapper
                             name={'term'}
-                            label={'Search term'}
-                            description={'Enter a server name, uuid, or allocation to begin searching.'}
+                            label={'Quick Server Search'}
+                            description={'Enter a server name, UUID, or IP:port allocation (min. 3 characters).'}
                         >
                             <SearchWatcher />
                             <InputSpinner visible={isSubmitting}>
-                                <Field as={InputWithRef} name={'term'} />
+                                <Field as={InputWithRef} name={'term'} placeholder={'Search servers...'} />
                             </InputSpinner>
                         </FormikFieldWrapper>
                     </Form>
                     {servers.length > 0 && (
-                        <div css={tw`mt-6`}>
+                        <div css={tw`mt-5`}>
                             {servers.map((server) => (
                                 <ServerResult
                                     key={server.uuid}
                                     to={`/server/${server.id}`}
                                     onClick={() => props.onDismissed()}
                                 >
-                                    <div css={tw`flex-1 mr-4`}>
-                                        <p style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0', margin: 0 }}>{server.name}</p>
-                                        <p style={{ marginTop: 4, fontSize: 11, color: '#4b5563', fontFamily: 'monospace', margin: '4px 0 0' }}>
+                                    <div css={tw`flex-1 mr-4 min-w-0`}>
+                                        <p
+                                            css={tw`truncate m-0 text-sm font-bold`}
+                                            style={{ color: 'hsl(var(--text-primary))' }}
+                                        >
+                                            {server.name}
+                                        </p>
+                                        <p
+                                            css={tw`mt-1 text-xs font-mono m-0`}
+                                            style={{ color: 'hsl(var(--text-muted))', fontVariantNumeric: 'tabular-nums' }}
+                                        >
                                             {server.allocations
                                                 .filter((alloc) => alloc.isDefault)
                                                 .map((allocation) => (
@@ -141,7 +147,17 @@ export default ({ ...props }: Props) => {
                                         </p>
                                     </div>
                                     <div css={tw`flex-none text-right`}>
-                                        <span style={{ fontSize: 10, padding: '2px 8px', background: 'rgba(124,58,237,0.12)', color: '#a78bfa', border: '1px solid rgba(124,58,237,0.25)', fontWeight: 700, letterSpacing: '0.5px' }}>
+                                        <span
+                                            style={{
+                                                fontSize: 11,
+                                                padding: '3px 9px',
+                                                borderRadius: 999,
+                                                background: 'rgba(14, 165, 233, 0.12)',
+                                                color: '#38bdf8',
+                                                border: '1px solid rgba(56, 189, 248, 0.25)',
+                                                fontWeight: 700,
+                                            }}
+                                        >
                                             {server.node}
                                         </span>
                                     </div>

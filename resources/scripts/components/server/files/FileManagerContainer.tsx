@@ -22,7 +22,9 @@ import ErrorBoundary from '@/components/elements/ErrorBoundary';
 import { FileActionCheckbox } from '@/components/server/files/SelectFileCheckbox';
 import { hashToPath } from '@/helpers';
 import { usePersistedState } from '@/plugins/usePersistedState';
-import style from './style.module.css';
+import PageHeader from '@/components/elements/PageHeader';
+import EmptyState from '@/components/elements/EmptyState';
+import { faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 
 const sortFiles = (files: FileObject[]): FileObject[] => {
     const sortedFiles: FileObject[] = files
@@ -63,22 +65,35 @@ export default () => {
 
     return (
         <ServerContentBlock title={'File Manager'} showFlashKey={'files'}>
+            <PageHeader
+                icon={faFolderOpen}
+                title={'File Manager'}
+                description={'Browse, edit, upload, and archive container files.'}
+                badge={files ? `${files.length} Items` : undefined}
+            />
             <ErrorBoundary>
-                <div style={{
-                    position: 'sticky', top: 0, zIndex: 50,
-                    background: 'hsl(var(--bg-page) / 0.85)',
-                    backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)',
-                    paddingBottom: 16, marginBottom: 16,
-                    borderBottom: '1px solid hsl(var(--border))',
-                    display: 'flex', flexWrap: 'wrap', alignItems: 'center',
-                    justifyContent: 'space-between', gap: 16, paddingTop: 8
-                }}>
+                <div
+                    style={{
+                        position: 'sticky',
+                        top: '72px',
+                        zIndex: 30,
+                        background: 'hsl(var(--bg-elevated))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '16px',
+                        padding: '10px 14px',
+                        marginBottom: '16px',
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 14,
+                    }}
+                >
                     <FileManagerBreadcrumbs
                         renderLeft={
                             <FileActionCheckbox
                                 type={'checkbox'}
-                                css={tw`mx-4`}
+                                css={tw`mx-3`}
                                 checked={selectedFilesLength === (files?.length === 0 ? -1 : files?.length)}
                                 onChange={onSelectAllClick}
                             />
@@ -86,37 +101,52 @@ export default () => {
                     />
                     <Can action={'file.create'}>
                         <div className={'flex flex-wrap items-center gap-2 mt-2 md:mt-0 w-full md:w-auto'}>
-                            {/* View Mode Toggle */}
-                            <div style={{
-                                display: 'flex', alignItems: 'center', gap: 2,
-                                background: 'hsl(var(--bg-elevated))',
-                                padding: 4, borderRadius: 10,
-                                border: '1.5px solid hsl(var(--border))',
-                                marginRight: 8, flexShrink: 0
-                            }}>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 2,
+                                    background: 'hsl(var(--bg-surface))',
+                                    padding: 4,
+                                    borderRadius: 10,
+                                    border: '1px solid hsl(var(--border))',
+                                    marginRight: 6,
+                                    flexShrink: 0,
+                                }}
+                            >
                                 <button
                                     onClick={() => setViewMode('grid')}
                                     style={{
-                                        padding: '6px 8px', borderRadius: 7, border: 'none', cursor: 'pointer',
+                                        padding: '6px 8px',
+                                        borderRadius: 7,
+                                        border: 'none',
+                                        cursor: 'pointer',
                                         background: viewMode === 'grid' ? 'hsl(var(--accent))' : 'transparent',
                                         color: viewMode === 'grid' ? '#fff' : 'hsl(var(--text-muted))',
-                                        transition: 'all 0.15s ease'
+                                        transition: 'all 0.15s ease',
                                     }}
                                     title={'Grid View'}
                                 >
-                                    <svg style={{ width: 16, height: 16 }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                                    <svg style={{ width: 16, height: 16 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                    </svg>
                                 </button>
                                 <button
                                     onClick={() => setViewMode('list')}
                                     style={{
-                                        padding: '6px 8px', borderRadius: 7, border: 'none', cursor: 'pointer',
+                                        padding: '6px 8px',
+                                        borderRadius: 7,
+                                        border: 'none',
+                                        cursor: 'pointer',
                                         background: viewMode === 'list' ? 'hsl(var(--accent))' : 'transparent',
                                         color: viewMode === 'list' ? '#fff' : 'hsl(var(--text-muted))',
-                                        transition: 'all 0.15s ease'
+                                        transition: 'all 0.15s ease',
                                     }}
                                     title={'List View'}
                                 >
-                                    <svg style={{ width: 16, height: 16 }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+                                    <svg style={{ width: 16, height: 16 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                    </svg>
                                 </button>
                             </div>
                             <FileManagerStatus />
@@ -131,15 +161,18 @@ export default () => {
                     </Can>
                 </div>
             </ErrorBoundary>
-            
-            {/* Main Content: Files List/Grid */}
+
             <div className={'w-full'}>
                 {!files ? (
                     <Spinner size={'large'} centered />
                 ) : (
                     <>
                         {!files.length ? (
-                            <p css={tw`text-sm text-neutral-400 text-center`}>This directory seems to be empty.</p>
+                            <EmptyState
+                                icon={faFolderOpen}
+                                title={'Empty Directory'}
+                                description={'No files or folders exist in this directory yet.'}
+                            />
                         ) : (
                             <CSSTransition classNames={'fade'} timeout={150} appear in>
                                 <div>

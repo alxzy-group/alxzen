@@ -12,6 +12,9 @@ import classNames from 'classnames';
 import { styles as btnStyles } from '@/components/elements/button/index';
 import { XCircleIcon } from '@heroicons/react/solid';
 import useLocationHash from '@/plugins/useLocationHash';
+import PageHeader from '@/components/elements/PageHeader';
+import EmptyState from '@/components/elements/EmptyState';
+import { faHistory } from '@fortawesome/free-solid-svg-icons';
 
 export default () => {
     const { hash } = useLocationHash();
@@ -33,27 +36,42 @@ export default () => {
 
     return (
         <ServerContentBlock title={'Activity Log'}>
+            <PageHeader
+                icon={faHistory}
+                title={'Server Activity Log'}
+                description={'Audit power events, file changes, and API actions recorded for this server.'}
+                badge={data ? `${data.pagination.total} Events` : undefined}
+                actions={
+                    (filters.filters?.event || filters.filters?.ip) ? (
+                        <Link
+                            to={'#'}
+                            className={classNames(btnStyles.button, btnStyles.text, 'w-full sm:w-auto')}
+                            onClick={() => setFilters((value) => ({ ...value, filters: {} }))}
+                        >
+                            Clear Filters <XCircleIcon className={'w-4 h-4 ml-2'} />
+                        </Link>
+                    ) : undefined
+                }
+            />
             <FlashMessageRender byKey={'server:activity'} />
-            {(filters.filters?.event || filters.filters?.ip) && (
-                <div className={'flex justify-end mb-4'}>
-                    <Link
-                        to={'#'}
-                        className={classNames(btnStyles.button, btnStyles.text, 'w-full sm:w-auto')}
-                        onClick={() => setFilters((value) => ({ ...value, filters: {} }))}
-                    >
-                        Clear Filters <XCircleIcon className={'w-4 h-4 ml-2'} />
-                    </Link>
-                </div>
-            )}
             {!data && isValidating ? (
                 <Spinner centered />
             ) : !data?.items.length ? (
-                <div style={{ borderRadius: 14, border: '1px dashed hsl(var(--border))', background: 'hsl(var(--bg-surface))', padding: '48px 24px', textAlign: 'center' }}>
-                    <p style={{ fontSize: '0.875rem', color: 'hsl(var(--text-muted))' }}>No activity logs available for this server.</p>
-                </div>
+                <EmptyState
+                    icon={faHistory}
+                    title={'No Activity Recorded'}
+                    description={'No server activity logs match your current filters yet.'}
+                />
             ) : (
-                <div style={{ borderRadius: 14, border: '1.5px solid hsl(var(--border))', background: 'hsl(var(--bg-elevated))', overflow: 'hidden' }}>
-                    {data?.items.map((activity, index) => (
+                <div
+                    style={{
+                        borderRadius: 16,
+                        border: '1px solid hsl(var(--border))',
+                        background: 'hsl(var(--bg-elevated))',
+                        overflow: 'hidden',
+                    }}
+                >
+                    {data?.items.map((activity) => (
                         <ActivityLogEntry key={activity.id} activity={activity}>
                             <span />
                         </ActivityLogEntry>

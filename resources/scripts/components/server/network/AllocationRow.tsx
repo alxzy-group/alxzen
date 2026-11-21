@@ -2,7 +2,7 @@ import React, { memo, useCallback, useState } from 'react';
 import isEqual from 'react-fast-compare';
 import tw from 'twin.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faNetworkWired } from '@fortawesome/free-solid-svg-icons';
+import { faNetworkWired, faStar } from '@fortawesome/free-solid-svg-icons';
 import InputSpinner from '@/components/elements/InputSpinner';
 import { Textarea } from '@/components/elements/Input';
 import Can from '@/components/elements/Can';
@@ -22,7 +22,8 @@ import { ip } from '@/lib/formatters';
 import Code from '@/components/elements/Code';
 
 const Label = styled.label`
-    ${tw`uppercase text-xs mt-1 text-neutral-400 block px-1 select-none transition-colors duration-150`}
+    ${tw`uppercase text-[10px] tracking-wider mt-1.5 block px-1 select-none transition-colors duration-150`}
+    color: hsl(var(--text-muted));
 `;
 
 interface Props {
@@ -60,15 +61,24 @@ const AllocationRow = ({ allocation }: Props) => {
     };
 
     return (
-        <GreyRowBox $hoverable={false} className={'flex-wrap md:flex-nowrap mt-2'}>
+        <GreyRowBox $hoverable={false} className={'flex-wrap md:flex-nowrap gap-4'}>
             <div className={'flex items-center w-full md:w-auto'}>
-                <div className={'pl-4 pr-6 text-neutral-400'}>
+                <div
+                    css={tw`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mr-4`}
+                    style={{
+                        background: allocation.isDefault ? 'rgba(16, 185, 129, 0.12)' : 'rgba(14, 165, 233, 0.1)',
+                        border: allocation.isDefault
+                            ? '1px solid rgba(52, 211, 153, 0.3)'
+                            : '1px solid rgba(56, 189, 248, 0.25)',
+                        color: allocation.isDefault ? '#34d399' : '#38bdf8',
+                    }}
+                >
                     <FontAwesomeIcon icon={faNetworkWired} />
                 </div>
-                <div className={'mr-4 flex-1 md:w-40'}>
+                <div className={'mr-4 flex-1 md:w-44'}>
                     {allocation.alias ? (
                         <CopyOnClick text={allocation.alias}>
-                            <Code dark className={'w-40 truncate'}>
+                            <Code dark className={'w-44 truncate'}>
                                 {allocation.alias}
                             </Code>
                         </CopyOnClick>
@@ -79,26 +89,27 @@ const AllocationRow = ({ allocation }: Props) => {
                     )}
                     <Label>{allocation.alias ? 'Hostname' : 'IP Address'}</Label>
                 </div>
-                <div className={'w-16 md:w-24 overflow-hidden'}>
+                <div className={'w-20 md:w-24 overflow-hidden'}>
                     <Code dark>{allocation.port}</Code>
                     <Label>Port</Label>
                 </div>
             </div>
-            <div className={'mt-4 w-full md:mt-0 md:flex-1 md:w-auto'}>
+            <div className={'w-full md:flex-1 md:w-auto'}>
                 <InputSpinner visible={loading}>
                     <Textarea
-                        className={'bg-neutral-800 hover:border-neutral-600 border-transparent'}
-                        placeholder={'Notes'}
+                        rows={1}
+                        placeholder={'Notes (optional)...'}
                         defaultValue={allocation.notes || undefined}
                         onChange={(e) => setAllocationNotes(e.currentTarget.value)}
                     />
                 </InputSpinner>
             </div>
-            <div className={'flex justify-end space-x-4 mt-4 w-full md:mt-0 md:w-48'}>
+            <div className={'flex justify-end items-center space-x-3 w-full md:w-44 shrink-0'}>
                 {allocation.isDefault ? (
-                    <Button size={Button.Sizes.Small} className={'!text-gray-50 !bg-blue-600'} disabled>
+                    <span className={'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'}>
+                        <FontAwesomeIcon icon={faStar} style={{ fontSize: 10 }} />
                         Primary
-                    </Button>
+                    </span>
                 ) : (
                     <>
                         <Can action={'allocation.delete'}>
