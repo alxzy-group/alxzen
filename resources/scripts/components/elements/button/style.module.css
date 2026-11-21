@@ -1,38 +1,41 @@
-/* ── Button Base ── */
+/* ── Alxzen Industry-Standard Tactile Button System ── */
 .button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 0.5rem;
     padding: 9px 18px;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.875rem;
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.84rem;
     font-weight: 600;
     letter-spacing: -0.01em;
-    border-radius: 10px;
-    border: 1.5px solid transparent;
+    line-height: 1.25;
+    border-radius: 11px;
+    border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     white-space: nowrap;
     position: relative;
     outline: none;
     user-select: none;
+    transform: translateZ(0);
 
     &.small {
         padding: 6px 13px;
-        font-size: 0.8rem;
-        border-radius: 8px;
+        font-size: 0.78rem;
+        border-radius: 9px;
     }
 
     &.large {
         padding: 12px 24px;
-        font-size: 0.95rem;
-        border-radius: 12px;
+        font-size: 0.925rem;
+        border-radius: 13px;
     }
 
     &.square {
         padding: 0;
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
         border-radius: 10px;
 
         &.small {
@@ -44,12 +47,13 @@
 
     &:disabled {
         cursor: not-allowed;
-        opacity: 0.5;
+        opacity: 0.45;
+        pointer-events: none;
     }
 
     &.secondary {
-        background: transparent !important;
-        box-shadow: none !important;
+        background: hsl(var(--bg-elevated) / 0.75) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
     }
 
     &:focus-visible {
@@ -58,61 +62,71 @@
     }
 }
 
-/* ── Primary (Sky Blue — Saweria-like) ── */
+/* ── Primary (Sky Blue Tactile) ── */
 .primary {
-    background: hsl(var(--accent));
+    background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%);
     color: #ffffff;
-    border-color: transparent;
-    box-shadow: 0 2px 8px hsl(var(--accent) / 0.35);
+    border-color: rgba(56, 189, 248, 0.35);
+    box-shadow: 0 2px 10px rgba(14, 165, 233, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 
     &:hover:not(:disabled) {
-        background: hsl(var(--accent-hover));
-        box-shadow: 0 4px 16px hsl(var(--accent) / 0.45);
+        background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 100%);
+        border-color: rgba(125, 211, 252, 0.5);
+        box-shadow: 0 6px 18px rgba(14, 165, 233, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.28);
         transform: translateY(-1px);
     }
 
     &:active:not(:disabled) {
-        transform: translateY(0);
-        box-shadow: 0 1px 4px hsl(var(--accent) / 0.3);
+        transform: translateY(0) scale(0.98);
+        box-shadow: 0 1px 4px rgba(14, 165, 233, 0.2);
     }
 
     &.secondary {
-        color: hsl(var(--accent));
-        border-color: hsl(var(--accent-border));
+        color: #38bdf8;
+        border-color: rgba(14, 165, 233, 0.35);
 
         &:hover:not(:disabled) {
-            background: hsl(var(--accent-muted)) !important;
+            background: rgba(14, 165, 233, 0.14) !important;
+            border-color: rgba(56, 189, 248, 0.55);
+            color: #7dd3fc;
         }
     }
 
     &:disabled {
-        background: hsl(var(--accent) / 0.5);
+        background: hsl(var(--accent) / 0.4);
         box-shadow: none;
     }
 }
 
-/* ── Text / Neutral ── */
+/* ── Text / Neutral Surface ── */
 .text {
-    background: hsl(var(--bg-overlay));
-    color: hsl(var(--text-secondary));
+    background: hsl(var(--bg-elevated));
+    color: hsl(var(--text-primary));
     border-color: hsl(var(--border));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
     &:hover:not(:disabled) {
-        background: hsl(var(--bg-elevated));
-        color: hsl(var(--text-primary));
-        border-color: hsl(var(--border-focus) / 0.4);
+        background: hsl(var(--bg-overlay));
+        color: #ffffff;
+        border-color: rgba(56, 189, 248, 0.4);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        transform: translateY(-1px);
     }
 
     &:active:not(:disabled) {
+        transform: translateY(0) scale(0.98);
         background: hsl(var(--bg-surface));
     }
 
     &.secondary {
-        background: transparent;
+        background: transparent !important;
         color: hsl(var(--text-secondary));
+        border-color: hsl(var(--border) / 0.8);
 
         &:hover:not(:disabled) {
-            background: hsl(var(--bg-overlay)) !important;
+            background: hsl(var(--bg-elevated)) !important;
+            color: hsl(var(--text-primary));
+            border-color: hsl(var(--border-focus) / 0.4);
         }
     }
 
@@ -121,34 +135,38 @@
     }
 }
 
-/* ── Danger ── */
+/* ── Danger (Crimson Tactile) ── */
 .danger {
-    background: hsl(var(--danger-muted));
-    color: hsl(var(--danger));
-    border-color: hsl(var(--danger) / 0.3);
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.18) 0%, rgba(220, 38, 38, 0.24) 100%);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.35);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
     &:hover:not(:disabled) {
-        background: hsl(var(--danger));
-        color: #fff;
-        border-color: transparent;
-        box-shadow: 0 4px 16px hsl(var(--danger) / 0.4);
+        background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+        color: #ffffff;
+        border-color: rgba(248, 113, 113, 0.5);
+        box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
         transform: translateY(-1px);
     }
 
     &:active:not(:disabled) {
-        transform: translateY(0);
+        transform: translateY(0) scale(0.98);
     }
 
     &.secondary {
-        background: transparent;
-        color: hsl(var(--danger));
+        background: transparent !important;
+        color: #f87171;
+        border-color: rgba(239, 68, 68, 0.3);
 
         &:hover:not(:disabled) {
-            background: hsl(var(--danger-muted)) !important;
+            background: rgba(239, 68, 68, 0.14) !important;
+            border-color: rgba(239, 68, 68, 0.5);
+            color: #fca5a5;
         }
     }
 
     &:disabled {
-        opacity: 0.5;
+        opacity: 0.45;
     }
 }

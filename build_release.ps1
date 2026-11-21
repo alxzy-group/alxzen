@@ -45,6 +45,7 @@ $items = @(
     "package.json",
     "yarn.lock",
     "setup.sh",
+    "CHANGELOG.md",
     "README.md",
     "LICENSE",
     "LICENSE.md"

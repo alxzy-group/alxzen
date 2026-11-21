@@ -138,13 +138,79 @@
 </style>
 
 <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-3">
+        <a href="{{ route('admin.servers') }}" style="text-decoration:none;">
+            <div class="alx-overview-card" style="padding:18px 20px; display:flex; align-items:center; justify-content:space-between; transition:transform 0.15s ease, border-color 0.15s ease;">
+                <div>
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#a1a1aa; margin-bottom:4px;">Servers</div>
+                    <div style="font-size:15px; font-weight:700; color:#ffffff;">Manage Instances</div>
+                </div>
+                <div style="width:40px; height:40px; border-radius:11px; background:rgba(14,165,233,0.12); border:1px solid rgba(14,165,233,0.28); display:flex; align-items:center; justify-content:center; color:#38bdf8; font-size:16px;">
+                    <i class="fa fa-server"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-3">
+        <a href="{{ route('admin.users') }}" style="text-decoration:none;">
+            <div class="alx-overview-card" style="padding:18px 20px; display:flex; align-items:center; justify-content:space-between; transition:transform 0.15s ease, border-color 0.15s ease;">
+                <div>
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#a1a1aa; margin-bottom:4px;">Accounts</div>
+                    <div style="font-size:15px; font-weight:700; color:#ffffff;">User Directory</div>
+                </div>
+                <div style="width:40px; height:40px; border-radius:11px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.28); display:flex; align-items:center; justify-content:center; color:#34d399; font-size:16px;">
+                    <i class="fa fa-users"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-3">
+        <a href="{{ route('admin.nodes') }}" style="text-decoration:none;">
+            <div class="alx-overview-card" style="padding:18px 20px; display:flex; align-items:center; justify-content:space-between; transition:transform 0.15s ease, border-color 0.15s ease;">
+                <div>
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#a1a1aa; margin-bottom:4px;">Infrastructure</div>
+                    <div style="font-size:15px; font-weight:700; color:#ffffff;">Daemon Nodes</div>
+                </div>
+                <div style="width:40px; height:40px; border-radius:11px; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.28); display:flex; align-items:center; justify-content:center; color:#38bdf8; font-size:16px;">
+                    <i class="fa fa-sitemap"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-3">
+        <a href="{{ route('admin.api.index') }}" style="text-decoration:none;">
+            <div class="alx-overview-card" style="padding:18px 20px; display:flex; align-items:center; justify-content:space-between; transition:transform 0.15s ease, border-color 0.15s ease;">
+                <div>
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#a1a1aa; margin-bottom:4px;">Automation</div>
+                    <div style="font-size:15px; font-weight:700; color:#ffffff;">Application API</div>
+                </div>
+                <div style="width:40px; height:40px; border-radius:11px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.28); display:flex; align-items:center; justify-content:center; color:#fbbf24; font-size:16px;">
+                    <i class="fa fa-key"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row">
     <div class="col-md-6">
         <div class="alx-overview-card delay-1">
             <div class="alx-card-header-inner">
                 <h3><i class="fa fa-info-circle"></i>System Information</h3>
             </div>
             <div class="alx-card-body">
-                <p>You are running <strong>Alxzen Panel</strong> version <code>{{ config('app.version') }}</code>. Your panel is up-to-date!</p>
+                <p>You are running <strong>Alxzen Panel</strong> version <code>{{ config('app.version') }}</code> with upstream security patches &amp; hardware-accelerated UI.</p>
+                <div class="alx-btn-row" style="margin-top: 16px;">
+                    <a href="https://t.me/alxzy_group" target="_blank" class="alx-link-btn alx-link-btn-orange">
+                        <i class="fa fa-paper-plane"></i> Get Help via Telegram
+                    </a>
+                    <a href="https://github.com/alxzy-group" target="_blank" class="alx-link-btn alx-link-btn-gray">
+                        <i class="fa fa-github"></i> GitHub
+                    </a>
+                    <a href="https://saweria.co/ALANSTOREMD" target="_blank" class="alx-link-btn alx-link-btn-green">
+                        <i class="fa fa-heart"></i> Support Us
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -152,35 +218,18 @@
     <div class="col-md-6">
         <div class="alx-overview-card delay-2">
             <div class="alx-card-header-inner">
-                <h3><i class="fa fa-shield"></i>Alxzen Panel Features</h3>
+                <h3><i class="fa fa-shield"></i>Alxzen Panel Security &amp; Engine</h3>
             </div>
             <div class="alx-card-body">
                 <ul class="list-unstyled" style="margin:0;">
                     <li style="margin-bottom:8px;"><strong>Developed by:</strong> &nbsp;<span class="alx-label-red">{{ config('app.author') }}</span></li>
-                    <li style="margin-bottom:8px;"><strong>Theme Version:</strong> &nbsp;<code>v{{ config('app.theme_version') }}</code></li>
-                    <li style="margin-bottom:8px;"><strong>Protection:</strong> &nbsp;<span class="alx-label-green">Active (v{{ config('app.protect_version') }})</span></li>
+                    <li style="margin-bottom:8px;"><strong>Theme Engine:</strong> &nbsp;<code>v{{ config('app.theme_version') }}</code></li>
+                    <li style="margin-bottom:8px;"><strong>Endpoint Protection:</strong> &nbsp;<span class="alx-label-green">Active (v{{ config('app.protect_version') }} · OWASP + CVE-2026)</span></li>
                     <li style="margin-bottom:0;"><strong>Expiration Engine:</strong> &nbsp;<span class="alx-stat-pill"><i class="fa fa-clock-o"></i> v{{ config('app.expiration_version') }}</span></li>
                 </ul>
             </div>
         </div>
     </div>
-</div>
-
-<div class="row" style="margin-bottom:20px;">
-    <div class="col-xs-12">
-        <div class="alx-btn-row">
-            <a href="https://t.me/alxzy_group" target="_blank" class="alx-link-btn alx-link-btn-orange">
-                <i class="fa fa-paper-plane"></i> Get Help via Telegram
-            </a>
-            <a href="https://github.com/alxzy-group" target="_blank" class="alx-link-btn alx-link-btn-gray">
-                <i class="fa fa-github"></i> GitHub
-            </a>
-            <a href="https://saweria.co/ALANSTOREMD" target="_blank" class="alx-link-btn alx-link-btn-green">
-                <i class="fa fa-heart"></i> Support Us
-            </a>
-        </div>
-    </div>
-</div>
 </div>
 
 <div class="row">

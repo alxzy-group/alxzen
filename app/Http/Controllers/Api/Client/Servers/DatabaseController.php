@@ -50,11 +50,15 @@ class DatabaseController extends ClientApiController
     public function store(StoreDatabaseRequest $request, Server $server): array
     {
         $database = Activity::event('server:database.create')->transaction(function ($log) use ($request, $server) {
-            if ($server->databases()->lockForUpdate()->count() >= $server->database_limit) {
+            // CVE-2026-35202 fix: Lock the parent server row to serialize concurrent database creations
+            // even when the server currently has 0 rows in the databases table.
+            $lockedServer = Server::query()->where('id', $server->id)->lockForUpdate()->firstOrFail();
+
+            if (is_null($lockedServer->database_limit) || $lockedServer->databases()->count() >= $lockedServer->database_limit) {
                 throw new DisplayException('Cannot create additional databases on this server: limit has been reached.');
             }
 
-            $database = $this->deployDatabaseService->handle($server, $request->validated());
+            $database = $this->deployDatabaseService->handle($lockedServer, $request->validated());
 
             $log->subject($database)->property('name', $database->database);
 

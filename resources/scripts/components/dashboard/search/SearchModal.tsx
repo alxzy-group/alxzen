@@ -62,11 +62,11 @@ const SearchWatcher = () => {
 
 export default ({ ...props }: Props) => {
     const ref = useRef<HTMLInputElement>(null);
-    const isOwner = useStoreState((state) => 
+    const isOwner = useStoreState((state) =>
         Boolean(
-            (state.user.data as any)?.isOwner || 
-            (state.user.data as any)?.is_owner || 
-            (window as any).PterodactylUser?.is_owner || 
+            (state.user.data as any)?.isOwner ||
+            (state.user.data as any)?.is_owner ||
+            (window as any).PterodactylUser?.is_owner ||
             (window as any).PterodactylUser?.isOwner
         )
     );

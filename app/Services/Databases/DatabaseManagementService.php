@@ -98,7 +98,14 @@ class DatabaseManagementService
         $database = null;
 
         try {
-            return $this->connection->transaction(function () use ($data, &$database) {
+            return $this->connection->transaction(function () use ($server, $data, &$database) {
+                if ($this->validateDatabaseLimit) {
+                    $lockedServer = Server::query()->where('id', $server->id)->lockForUpdate()->firstOrFail();
+                    if (!is_null($lockedServer->database_limit) && $lockedServer->databases()->count() >= $lockedServer->database_limit) {
+                        throw new TooManyDatabasesException();
+                    }
+                }
+
                 $database = $this->createModel($data);
 
                 $this->dynamic->set('dynamic', $data['database_host_id']);

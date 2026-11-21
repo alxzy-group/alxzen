@@ -1,5 +1,66 @@
 # Changelog
 
+## [v4.2.0] - 2026-11-21
+### Added
+- **Unified Server Card & Console Telemetry Architecture**:
+  - Redesigned `ServerRow.tsx` so every server card in the dashboard maintains a consistent 3-column metric layout (CPU, RAM, Disk with allocated capacity limits and smooth hardware-accelerated progress bars) across all states (`Online`, `Starting`, `Stopping`, `Offline`, `Suspended`).
+  - One-click **Copy IP:Port Badge** with live checkmark feedback directly on dashboard server cards and the server console header.
+  - Redesigned `ServerConsoleContainer.tsx` with a responsive **Console Hero Header Card** visible on both mobile and desktop, displaying server icon, live status badge, allocation copy pill, expiration status, and tactile power controls.
+  - Upgraded `Console.tsx` terminal toolbar with a **Clear Console** button, responsive device/font indicator, and unified status border accents.
+- **Industry-Standard Tactile Button System**:
+  - Unified both `resources/scripts/components/elements/button/style.module.css` and `resources/scripts/components/elements/Button.tsx` (used across File Manager, Databases, Schedules, Backups, Users, Startup, and Settings) with modern sentence-case typography, 1px inner top refraction highlights, tactile press feedback (`scale(0.98)`), and FontAwesome action icons on `PowerButtons.tsx` (`Start`, `Restart`, `Stop`, `Kill`).
+- **Global Responsive Admin Panel Overhaul**:
+  - Re-architected `resources/views/layouts/admin.blade.php` to load the unified Alxzen Dark Precision Design System (`Plus Jakarta Sans` + `JetBrains Mono` with `tabular-nums`) *after* `pterodactyl.css` and AdminLTE, eliminating legacy gray-blue fallback styles on Locations, Databases, Nests, Mounts, Announcements, Settings, Modals, and Select2 dropdowns.
+  - Added quick-access infrastructure cards to the Admin Overview (`resources/views/admin/index.blade.php`) and full mobile flex-wrapping across all Admin card headers and search toolbars.
+
+### Security (Upstream Pterodactyl Advisory Backports)
+- **CVE-2026-86177 (High / CVSS 8.7) — Schedule Task Privilege Escalation Fix**:
+  - Patched `ScheduleTaskController.php` and `StoreTaskRequest.php` to enforce action-specific permission checks when creating or updating schedule tasks (`control.console` for `command` tasks; `control.start`, `control.restart`, or `control.stop` for `power` tasks; `backup.create` for `backup` tasks), preventing subusers with only `schedule.update` from escalating privileges.
+- **CVE-2026-35202 — Database Limit Race Condition Bypass Fix**:
+  - Patched `DatabaseController.php` and `DatabaseManagementService.php` to acquire a row-level lock (`lockForUpdate()`) on the parent `Server` record inside the database creation transaction before checking `databases()->count() >= database_limit`.
+- **CVE-2026-61609 — Global Authentication & 2FA Checkpoint Lockout (DoS) Fix**:
+  - Patched `AbstractLoginController.php` to bind `username()` to `'user'` and scope `throttleKey()` by normalized account identifier / 2FA checkpoint session token + client IP, preventing unauthenticated attackers from triggering panel-wide login lockouts.
+- **Verified Upstream Mitigations**:
+  - Confirmed strict regex validation on `LocaleRequest.php` (**CVE-2025-49132**) and node ownership enforcement across all Remote API endpoints (**CVE-2026-26016**).
+
+---
+
+## [v4.1.57] - 2026-11-20
+### Fixed
+- **Super Admin (ID 1) Server Inspection Toggle**:
+  - Fixed state hydration in `App.tsx` and `User.php` (`toVueObject()`) so `isOwner` (`$user->id === 1`) is properly populated in the Easy-Peasy store.
+  - Restored the **"Lihat Server Lain"** toggle switch with an Eye icon on the dashboard header and enabled global server search (`admin-all`) exclusively for Super Admin ID 1.
+
+---
+
+## [v4.1.56] - 2026-11-20
+### Changed
+- **Major UI/UX Performance & Anti-Lag Optimization**:
+  - Eliminated cascading multi-pass `backdrop-filter: blur(...)` from repeating list and grid components (`ServerRow`, `.file_row`, `GreyRowBox`, `StatBlock`, `ChartBlock`, `AnnounceBar`, `SubNavigation`), resolving severe GPU fill-rate drops during scrolling.
+  - Replaced 30+ concurrent Framer Motion JavaScript `requestAnimationFrame` loops on server cards and resource progress bars with hardware-accelerated CSS compositor layers (`transform: translateZ(0)`, `will-change: transform`).
+  - Locked `#tsparticles-bg` to `pointer-events: none !important` and disabled expensive per-pixel Euclidean hover distance calculations.
+
+---
+
+## [v4.1.55] - 2026-11-19
+### Fixed
+- **Bot Auto-Order & User Provisioning Compatibility (`cpanel alxzy`)**:
+  - Permitted `r_users` write access (`POST /api/application/users`) for Sub-Admin PTLA API keys and added backward-compatible auto-authorization for existing keys holding `r_servers` write permission.
+  - Enforced strict anti-privilege escalation (`root_admin = false` forced on users created by Sub-Admins) and protected Super Admin (ID 1) and other administrators from deletion.
+- **Clean Release Packaging**:
+  - Whitelisted production-only directories in `build_release.ps1`, reducing `panel.tar.gz` size by 86% (from 281 MB to 39.96 MB).
+
+---
+
+## [v4.1.54] - 2026-11-18
+### Security
+- **Comprehensive OWASP Top 10 Hardening & Endpoint-Level Anti-Intip Isolation**:
+  - Fixed BOLA/IDOR in `DomainController.php` by enforcing server ownership and domain-to-server relation checks.
+  - Restricted bulk expired server deletion and manual expiration modification in `ExpirationController.php` to Super Admin ID 1.
+  - Secured `/api/public/resolve-domain` (`DomainRouterController.php`) with `DOMAIN_ROUTER_KEY` / loopback verification.
+  - Replaced `{!! json_encode(...) !!}` with `@json(...)` in `wrapper.blade.php` to prevent stored XSS.
+  - Enforced strict server ownership isolation across Client API (`ClientController`, `AuthenticateServerAccess`, `ServerPolicy`), Application API (`ServerController`, `CustomBuilder`), and Admin Panel (`/admin/servers`, `/admin/nodes`, `/admin/nests`) so Sub-Admins (ID != 1) can only view and manage their own servers and cannot delete servers or modify/delete eggs.
+
 ## [v4.1.0] - 2026-09-23
 ### Added
 - **Subdomain Manager**: Vercel-like domain routing system. Users can instantly attach subdomains (e.g. `myserver.yourdomain.com`) to their servers directly from the panel.

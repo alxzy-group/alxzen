@@ -11,85 +11,125 @@ interface Props {
 }
 
 const ButtonStyle = styled.button<Omit<Props, 'isLoading'>>`
-    ${tw`relative inline-block rounded p-2 uppercase tracking-wide text-sm transition-all duration-150 border`};
+    ${tw`relative inline-flex items-center justify-center gap-2 font-semibold text-xs sm:text-sm transition-all duration-150 border cursor-pointer select-none whitespace-nowrap outline-none`};
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    border-radius: 11px;
+    letter-spacing: -0.01em;
+    transform: translateZ(0);
 
     ${(props) =>
         ((!props.isSecondary && !props.color) || props.color === 'primary') &&
         css<Props>`
-            ${(props) => !props.isSecondary && tw`bg-primary-500 border-primary-600 border text-primary-50`};
+            background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%);
+            border-color: rgba(56, 189, 248, 0.35);
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(14, 165, 233, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 
             &:hover:not(:disabled) {
-                ${tw`bg-primary-600 border-primary-700`};
+                background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 100%);
+                border-color: rgba(125, 211, 252, 0.5);
+                box-shadow: 0 6px 18px rgba(14, 165, 233, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+                transform: translateY(-1px);
             }
         `};
 
     ${(props) =>
         props.color === 'grey' &&
         css`
-            ${tw`border-neutral-600 bg-neutral-500 text-neutral-50`};
+            background: hsl(var(--bg-elevated));
+            border-color: hsl(var(--border));
+            color: hsl(var(--text-primary));
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
             &:hover:not(:disabled) {
-                ${tw`bg-neutral-600 border-neutral-700`};
+                background: hsl(var(--bg-overlay));
+                border-color: rgba(56, 189, 248, 0.4);
+                transform: translateY(-1px);
             }
         `};
 
     ${(props) =>
         props.color === 'green' &&
         css<Props>`
-            ${tw`border-green-600 bg-green-500 text-green-50`};
+            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+            border-color: rgba(52, 211, 153, 0.35);
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 
             &:hover:not(:disabled) {
-                ${tw`bg-green-600 border-green-700`};
+                background: linear-gradient(180deg, #34d399 0%, #10b981 100%);
+                border-color: rgba(110, 231, 183, 0.5);
+                box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+                transform: translateY(-1px);
             }
-
-            ${(props) =>
-                props.isSecondary &&
-                css`
-                    &:active:not(:disabled) {
-                        ${tw`bg-green-600 border-green-700`};
-                    }
-                `};
         `};
 
     ${(props) =>
         props.color === 'red' &&
         css<Props>`
-            ${tw`border-red-600 bg-red-500 text-red-50`};
+            background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+            border-color: rgba(248, 113, 113, 0.35);
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 
             &:hover:not(:disabled) {
-                ${tw`bg-red-600 border-red-700`};
+                background: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
+                border-color: rgba(252, 165, 165, 0.5);
+                box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+                transform: translateY(-1px);
             }
-
-            ${(props) =>
-                props.isSecondary &&
-                css`
-                    &:active:not(:disabled) {
-                        ${tw`bg-red-600 border-red-700`};
-                    }
-                `};
         `};
 
-    ${(props) => props.size === 'xsmall' && tw`px-2 py-1 text-xs`};
-    ${(props) => (!props.size || props.size === 'small') && tw`px-4 py-2`};
-    ${(props) => props.size === 'large' && tw`p-4 text-sm`};
-    ${(props) => props.size === 'xlarge' && tw`p-4 w-full`};
+    &:active:not(:disabled) {
+        transform: translateY(0) scale(0.98);
+    }
+
+    ${(props) => props.size === 'xsmall' && tw`px-2.5 py-1.5 text-xs rounded-lg`};
+    ${(props) => (!props.size || props.size === 'small') && tw`px-4 py-2.5`};
+    ${(props) => props.size === 'large' && tw`px-5 py-3 text-sm rounded-xl`};
+    ${(props) => props.size === 'xlarge' && tw`px-6 py-3.5 w-full text-sm rounded-xl`};
 
     ${(props) =>
         props.isSecondary &&
         css<Props>`
-            ${tw`border-neutral-600 bg-transparent text-neutral-200`};
+            background: hsl(var(--bg-elevated) / 0.65);
+            border-color: hsl(var(--border));
+            color: hsl(var(--text-secondary));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 
             &:hover:not(:disabled) {
-                ${tw`border-neutral-500 text-neutral-100`};
-                ${(props) => props.color === 'red' && tw`bg-red-500 border-red-600 text-red-50`};
-                ${(props) => props.color === 'primary' && tw`bg-primary-500 border-primary-600 text-primary-50`};
-                ${(props) => props.color === 'green' && tw`bg-green-500 border-green-600 text-green-50`};
+                background: hsl(var(--bg-elevated));
+                border-color: rgba(56, 189, 248, 0.4);
+                color: hsl(var(--text-primary));
+                transform: translateY(-1px);
+                ${(props) =>
+                    props.color === 'red' &&
+                    css`
+                        background: rgba(239, 68, 68, 0.15);
+                        border-color: rgba(239, 68, 68, 0.45);
+                        color: #f87171;
+                    `};
+                ${(props) =>
+                    props.color === 'primary' &&
+                    css`
+                        background: rgba(14, 165, 233, 0.15);
+                        border-color: rgba(56, 189, 248, 0.45);
+                        color: #38bdf8;
+                    `};
+                ${(props) =>
+                    props.color === 'green' &&
+                    css`
+                        background: rgba(16, 185, 129, 0.15);
+                        border-color: rgba(52, 211, 153, 0.45);
+                        color: #34d399;
+                    `};
             }
         `};
 
     &:disabled {
-        opacity: 0.55;
-        cursor: default;
+        opacity: 0.45;
+        cursor: not-allowed;
+        pointer-events: none;
     }
 `;
 

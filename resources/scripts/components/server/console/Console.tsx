@@ -269,6 +269,7 @@ export default () => {
 
     const handleZoomIn = () => setFontSize((s) => Math.min(18, s + 1));
     const handleZoomOut = () => setFontSize((s) => Math.max(9, s - 1));
+    const handleClear = () => terminal.clear();
     const handleRefit = () => {
         try {
             fitAddon.fit();
@@ -278,21 +279,21 @@ export default () => {
     return (
         <div
             ref={containerRef}
-            style={{ zIndex: 40, backgroundColor: 'hsl(var(--bg-elevated))' }}
+            style={{ zIndex: 40, backgroundColor: 'hsl(var(--bg-card))' }}
             className={classNames(
                 styles.terminal,
-                'relative rounded-2xl overflow-hidden resize-y transition-colors duration-200 min-h-[340px] border shadow-2xl',
+                'relative rounded-2xl overflow-hidden resize-y transition-colors duration-200 min-h-[360px] border shadow-xl',
                 {
-                    'border-sky-500/40 shadow-[0_4px_25px_-5px_rgba(14,165,233,0.2)]': status === 'running',
-                    'border-blue-500/40 shadow-[0_4px_25px_-5px_rgba(59,130,246,0.2)]': status === 'starting',
-                    'border-white/10 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.5)]': status === 'offline' || status === 'stopping',
+                    'border-emerald-500/35': status === 'running',
+                    'border-sky-500/35': status === 'starting',
+                    'border-white/10': status === 'offline' || status === 'stopping',
                 }
             )}
         >
-            {/* Top Toolbar: macOS dots, Accent Bar, Device Mode & Font Zoom */}
+            {/* Top Toolbar: macOS dots, Accent Bar, Device Mode, Clear & Font Zoom */}
             <div 
-                className="w-full h-9 transition-colors flex items-center justify-between px-3 select-none border-b"
-                style={{ backgroundColor: 'hsl(var(--bg-overlay) / 0.9)', borderBottomColor: 'hsl(var(--border) / 0.8)' }}
+                className="w-full h-10 transition-colors flex items-center justify-between px-3.5 select-none border-b"
+                style={{ backgroundColor: 'hsl(var(--bg-elevated))', borderBottomColor: 'hsl(var(--border) / 0.8)' }}
             >
                 {/* Left: Window Dots & Status */}
                 <div className="flex items-center gap-2">
@@ -301,14 +302,14 @@ export default () => {
                         <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80 inline-block" />
                         <span className="w-2.5 h-2.5 rounded-full bg-green-500/80 inline-block" />
                     </div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 hidden sm:inline-block">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-300 hidden sm:inline-block">
                         Terminal Console
                     </span>
                     <span 
                         className={classNames('text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full', {
-                            'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30': status === 'running',
-                            'bg-blue-500/10 text-blue-400 border border-blue-500/30': status === 'starting',
-                            'bg-gray-500/10 text-gray-400 border border-gray-500/30': status === 'offline' || status === 'stopping',
+                            'bg-emerald-500/12 text-emerald-400 border border-emerald-500/30': status === 'running',
+                            'bg-sky-500/12 text-sky-400 border border-sky-500/30': status === 'starting',
+                            'bg-gray-500/12 text-gray-400 border border-gray-500/30': status === 'offline' || status === 'stopping',
                         })}
                     >
                         {status || 'Connecting'}
@@ -317,19 +318,27 @@ export default () => {
 
                 {/* Center: Accent Bar */}
                 <div className="flex-1 h-full flex items-center justify-center px-2">
-                    <div className="w-12 h-1 rounded-full opacity-30 bg-gray-500" />
+                    <div className="w-12 h-1 rounded-full opacity-25 bg-gray-500" />
                 </div>
 
-                {/* Right: Device Detection Badge & Zoom Controls */}
+                {/* Right: Device Detection Badge, Clear & Zoom Controls */}
                 <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-medium text-gray-400 px-2 py-0.5 rounded bg-white/[0.04] border border-white/5 hidden xs:inline-block">
-                        {isMobile ? '📱 Mobile' : '💻 Desktop'} ({fontSize}px)
+                    <span className="text-[10px] font-medium text-gray-400 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 hidden sm:inline-block">
+                        {isMobile ? 'Mobile' : 'Desktop'} · {fontSize}px
                     </span>
-                    <div className="flex items-center bg-white/[0.04] border border-white/10 rounded-lg p-0.5">
+                    <div className="flex items-center bg-white/[0.04] border border-white/10 rounded-lg p-0.5 gap-0.5">
+                        <button
+                            type="button"
+                            onClick={handleClear}
+                            className="px-2 py-0.5 text-[10px] font-bold text-gray-300 hover:text-white hover:bg-white/10 rounded transition-colors"
+                            title="Bersihkan Layar Terminal"
+                        >
+                            Clear
+                        </button>
                         <button
                             type="button"
                             onClick={handleZoomOut}
-                            className="px-2 py-0.5 text-xs text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
+                            className="px-2 py-0.5 text-xs font-semibold text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
                             title="Perkecil Font Terminal"
                         >
                             A-
@@ -337,7 +346,7 @@ export default () => {
                         <button
                             type="button"
                             onClick={handleZoomIn}
-                            className="px-2 py-0.5 text-xs text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
+                            className="px-2 py-0.5 text-xs font-semibold text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
                             title="Perbesar Font Terminal"
                         >
                             A+
@@ -345,7 +354,7 @@ export default () => {
                         <button
                             type="button"
                             onClick={handleRefit}
-                            className="px-2 py-0.5 text-[10px] font-bold text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 rounded transition-colors"
+                            className="px-2 py-0.5 text-[10px] font-bold text-sky-400 hover:text-sky-300 hover:bg-sky-500/15 rounded transition-colors"
                             title="Auto Fit Layar"
                         >
                             Fit

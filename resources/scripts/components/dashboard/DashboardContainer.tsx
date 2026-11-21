@@ -129,11 +129,11 @@ export default () => {
     const uuid = useStoreState((state) => state.user.data!.uuid);
     const username = useStoreState((state) => state.user.data!.username);
     const rootAdmin = useStoreState((state) => state.user.data!.rootAdmin);
-    const isOwner = useStoreState((state) => 
+    const isOwner = useStoreState((state) =>
         Boolean(
-            (state.user.data as any)?.isOwner || 
-            (state.user.data as any)?.is_owner || 
-            (window as any).PterodactylUser?.is_owner || 
+            (state.user.data as any)?.isOwner ||
+            (state.user.data as any)?.is_owner ||
+            (window as any).PterodactylUser?.is_owner ||
             (window as any).PterodactylUser?.isOwner
         )
     );

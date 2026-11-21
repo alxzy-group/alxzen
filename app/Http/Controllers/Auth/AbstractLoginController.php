@@ -91,6 +91,30 @@ abstract class AbstractLoginController extends Controller
     }
 
     /**
+     * Get the login username field to be used by the controller.
+     */
+    public function username(): string
+    {
+        return 'user';
+    }
+
+    /**
+     * Get the throttle key for the given request (CVE-2026-61609 mitigation).
+     * Scopes rate-limiting per account/checkpoint token + IP to prevent global panel lockouts.
+     */
+    protected function throttleKey(Request $request): string
+    {
+        $userIdentifier = (string) $request->input($this->username(), '');
+        if ($userIdentifier === '') {
+            $sessionUserId = $request->session()->get('auth_confirmation_token.user_id');
+            $confirmToken = substr((string) $request->input('confirmation_token', ''), 0, 16);
+            $userIdentifier = 'checkpoint:' . ($sessionUserId ?? $confirmToken);
+        }
+
+        return \Illuminate\Support\Str::transliterate(\Illuminate\Support\Str::lower($userIdentifier) . '|' . $request->ip());
+    }
+
+    /**
      * Determine if the user is logging in using an email or username.
      */
     protected function getField(?string $input = null): string

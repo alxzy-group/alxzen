@@ -32,6 +32,45 @@ class ScheduleTaskController extends ClientApiController
     }
 
     /**
+     * Validate that the authenticated user holds the underlying action-specific permission
+     * required to execute the scheduled task (CVE-2026-86177 mitigation).
+     *
+     * @throws HttpForbiddenException
+     */
+    protected function validateTaskActionPermissions(StoreTaskRequest $request, Server $server): void
+    {
+        $user = $request->user();
+        $action = $request->input('action');
+        $payload = $request->input('payload');
+
+        switch ($action) {
+            case Task::ACTION_COMMAND:
+                if (!$user->can(Permission::ACTION_CONTROL_CONSOLE, $server)) {
+                    throw new HttpForbiddenException('You do not have permission to create or modify console command tasks.');
+                }
+                break;
+            case Task::ACTION_POWER:
+                $permission = match ($payload) {
+                    'start' => Permission::ACTION_CONTROL_START,
+                    'restart' => Permission::ACTION_CONTROL_RESTART,
+                    'stop', 'kill' => Permission::ACTION_CONTROL_STOP,
+                    default => null,
+                };
+                if (is_null($permission) || !$user->can($permission, $server)) {
+                    throw new HttpForbiddenException('You do not have permission to perform this power action via schedule tasks.');
+                }
+                break;
+            case Task::ACTION_BACKUP:
+                if (!$user->can(Permission::ACTION_BACKUP_CREATE, $server)) {
+                    throw new HttpForbiddenException('You do not have permission to create or modify backup tasks.');
+                }
+                break;
+            default:
+                throw new HttpForbiddenException('Unsupported schedule task action.');
+        }
+    }
+
+    /**
      * Create a new task for a given schedule and store it in the database.
      *
      * @throws \Pterodactyl\Exceptions\Model\DataValidationException
@@ -39,6 +78,12 @@ class ScheduleTaskController extends ClientApiController
      */
     public function store(StoreTaskRequest $request, Server $server, Schedule $schedule): array
     {
+        if ($server->id !== $schedule->server_id) {
+            throw new NotFoundHttpException();
+        }
+
+        $this->validateTaskActionPermissions($request, $server);
+
         $limit = config('pterodactyl.client_features.schedules.per_schedule_task_limit', 10);
         if ($schedule->tasks()->count() >= $limit) {
             throw new ServiceLimitExceededException("Schedules may not have more than $limit tasks associated with them. Creating this task would put this schedule over the limit.");
@@ -103,6 +148,8 @@ class ScheduleTaskController extends ClientApiController
         if ($schedule->id !== $task->schedule_id || $server->id !== $schedule->server_id) {
             throw new NotFoundHttpException();
         }
+
+        $this->validateTaskActionPermissions($request, $server);
 
         if ($server->backup_limit === 0 && $request->action === 'backup') {
             throw new HttpForbiddenException("A backup task cannot be created when the server's backup limit is set to 0.");

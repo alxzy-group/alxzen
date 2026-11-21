@@ -19,8 +19,17 @@ class StoreTaskRequest extends ViewScheduleRequest
     public function rules(): array
     {
         return [
-            'action' => 'required|in:command,power,backup',
-            'payload' => 'required_unless:action,backup|string|nullable',
+            'action' => 'required|string|in:command,power,backup',
+            'payload' => [
+                'required_unless:action,backup',
+                'string',
+                'nullable',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if ($this->input('action') === 'power' && !in_array($value, ['start', 'stop', 'restart', 'kill'], true)) {
+                        $fail('The selected power action payload is invalid. Must be one of: start, stop, restart, kill.');
+                    }
+                },
+            ],
             'time_offset' => 'required|numeric|min:0|max:900',
             'sequence_id' => 'sometimes|required|numeric|min:1',
             'continue_on_failure' => 'sometimes|required|boolean',

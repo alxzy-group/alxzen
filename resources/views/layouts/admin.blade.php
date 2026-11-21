@@ -15,240 +15,9 @@
         <link rel="shortcut icon" href="/favicons/favicon.ico">
         <meta name="msapplication-config" content="/favicons/browserconfig.xml">
         <meta name="theme-color" content="#0e4688">
-        <style>
-            /* --- TASTE SKILL PREMIUM DARK MODE --- */
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-            
-            body, .wrapper, .main-sidebar, .left-side, .main-header .navbar, .main-header .logo, .main-footer {
-                font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-                background-color: #000000 !important; /* Deep AMOLED Black */
-                border-color: rgba(255, 255, 255, 0.05) !important;
-            }
-            .content-wrapper { background-color: #000000 !important; }
-
-            /* 1. Header & Sidebar */
-            .main-sidebar {
-                background-color: #000000 !important;
-                border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
-            }
-            .main-header .logo {
-                background-color: #000000 !important;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-                border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
-                color: #ffffff !important;
-                font-weight: 600 !important;
-                letter-spacing: -0.02em;
-            }
-            .main-header .navbar {
-                background-color: #000000 !important;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-            }
-            .sidebar-menu > li.header {
-                background: transparent !important;
-                color: #52525b !important;
-                font-weight: 600 !important;
-                font-size: 11px !important;
-                letter-spacing: 0.05em;
-                text-transform: uppercase;
-                padding: 24px 24px 12px 16px !important;
-            }
-            .sidebar-menu > li > a {
-                font-weight: 500 !important;
-                color: #a1a1aa !important;
-                border-left: 2px solid transparent !important;
-                padding: 10px 16px !important;
-                margin: 2px 12px !important;
-                border-radius: 12px !important; /* Samsung soft square */
-                transition: all 0.2s ease;
-            }
-            .sidebar-menu > li > a > i {
-                margin-right: 12px;
-                color: #52525b !important;
-                transition: all 0.2s ease;
-            }
-            .sidebar-menu > li:hover > a {
-                background: #111111 !important;
-                color: #e4e4e7 !important;
-            }
-            .sidebar-menu > li:hover > a > i { color: #e4e4e7 !important; }
-            .sidebar-menu > li.active > a {
-                background: rgba(14, 165, 233, 0.1) !important; /* Sky Blue bg */
-                color: #0ea5e9 !important; /* Sky Blue text */
-            }
-            .sidebar-menu > li.active > a > i { color: #0ea5e9 !important; }
-            
-            /* Treeview */
-            .sidebar-menu .treeview-menu {
-                background: transparent !important;
-                padding-left: 20px;
-            }
-            .sidebar-menu .treeview-menu > li > a {
-                color: #71717a !important;
-                padding: 8px 16px !important;
-                border-radius: 10px !important;
-                margin: 2px 12px !important;
-                transition: all 0.2s ease;
-            }
-            .sidebar-menu .treeview-menu > li.active > a,
-            .sidebar-menu .treeview-menu > li > a:hover {
-                background: #111111 !important;
-                color: #e4e4e7 !important;
-            }
-
-            /* 2. Typography & Page Layout */
-            .content-header h1 { 
-                font-weight: 600 !important; 
-                color: #ffffff !important; 
-                letter-spacing: -0.02em !important;
-                font-size: 24px !important;
-            }
-            .content-header > .breadcrumb {
-                background: transparent !important; margin-top: 2px !important;
-            }
-            .content-header > .breadcrumb > li > a { color: #71717a !important; }
-            .content-header > .breadcrumb > li > a:hover { color: #e4e4e7 !important; }
-            .content-header > .breadcrumb > .active { color: #52525b !important; }
-
-            /* 3. Box / Panel (Samsung S24 Style) */
-            .box {
-                background: #111111 !important; /* Surface color */
-                border: 1px solid rgba(255, 255, 255, 0.08) !important;
-                border-radius: 16px !important; /* Squarish but smooth */
-                box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.02) !important;
-                color: #e4e4e7 !important;
-                margin-bottom: 24px;
-            }
-            .box-header {
-                color: #ffffff !important;
-                padding: 20px 24px !important;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-                background: transparent !important;
-            }
-            .box-title { font-size: 15px !important; font-weight: 600 !important; letter-spacing: -0.01em; }
-            .box-body { padding: 24px !important; }
-            .box-footer {
-                background: rgba(255, 255, 255, 0.01) !important;
-                border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-                padding: 16px 24px !important;
-            }
-
-            /* 4. Forms & Inputs */
-            .form-control {
-                background: #000000 !important;
-                border: 1px solid rgba(255, 255, 255, 0.12) !important;
-                border-radius: 12px !important;
-                color: #e4e4e7 !important;
-                box-shadow: inset 0 1px 2px rgba(0,0,0,0.2) !important;
-                padding: 10px 14px !important;
-                height: auto !important;
-                transition: all 0.2s ease;
-            }
-            .form-control:focus {
-                border-color: #0ea5e9 !important; /* Sky Blue focus */
-                box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2), inset 0 1px 2px rgba(0,0,0,0.2) !important;
-            }
-            .form-control[disabled], .form-control[readonly] { 
-                background: rgba(255,255,255,0.02) !important; 
-                color: #71717a !important; 
-            }
-            label { color: #a1a1aa !important; font-weight: 500 !important; font-size: 13px !important; margin-bottom: 8px !important; }
-
-            /* 5. Tables */
-            .table > thead > tr > th {
-                background: transparent !important;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-                padding: 14px 16px !important;
-                font-size: 12px !important;
-                font-weight: 500 !important;
-                color: #a1a1aa !important;
-                text-transform: uppercase;
-                letter-spacing: 0.02em;
-            }
-            .table > tbody > tr > td {
-                border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
-                padding: 14px 16px !important;
-                font-size: 13px !important;
-                color: #e4e4e7 !important;
-            }
-            .table-hover > tbody > tr:hover { background: rgba(255, 255, 255, 0.02) !important; }
-
-            /* 6. Buttons & Badges */
-            .btn {
-                font-weight: 600 !important;
-                border-radius: 12px !important; /* Squarish smooth buttons */
-                font-size: 13px !important;
-                transition: all 0.2s ease !important;
-                border: 1px solid transparent !important;
-                padding: 10px 20px !important;
-                box-shadow: 0 1px 2px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08) !important;
-            }
-            .btn-primary { background: #0ea5e9 !important; color: #ffffff !important; } /* Sky Blue */
-            .btn-primary:hover { background: #0284c7 !important; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3) !important; transform: translateY(-1px) !important; }
-            .btn-success { background: #10b981 !important; color: #ffffff !important; }
-            .btn-danger { background: #ef4444 !important; color: #ffffff !important; }
-            .btn-warning { background: #f59e0b !important; color: #ffffff !important; }
-            .btn-default { 
-                background: #262626 !important; 
-                color: #e4e4e7 !important; 
-                border-color: rgba(255, 255, 255, 0.12) !important; 
-            }
-            .btn-default:hover { background: #404040 !important; }
-            
-            .label { font-weight: 600 !important; border-radius: 6px !important; padding: 4px 8px !important; font-size: 11px !important; }
-            .label-primary { background: rgba(14, 165, 233, 0.15) !important; color: #38bdf8 !important; border: 1px solid rgba(14, 165, 233, 0.3) !important; }
-            .label-success { background: rgba(16, 185, 129, 0.15) !important; color: #34d399 !important; border: 1px solid rgba(16, 185, 129, 0.25) !important; }
-            .label-danger { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; border: 1px solid rgba(239, 68, 68, 0.25) !important; }
-            .label-warning { background: rgba(245, 158, 11, 0.15) !important; color: #fbbf24 !important; border: 1px solid rgba(245, 158, 11, 0.25) !important; }
-
-            /* 7. Footer */
-            .main-footer { 
-                background: #000000 !important;
-                color: #52525b !important; 
-                border-top: 1px solid rgba(255, 255, 255, 0.05) !important; 
-            }
-
-            /* 8. Nav Tabs (Samsung S24 Style) */
-            .nav-tabs-custom {
-                background: transparent !important;
-                box-shadow: none !important;
-                margin-bottom: 24px !important;
-            }
-            .nav-tabs-custom > .nav-tabs {
-                border-bottom: none !important;
-                display: flex;
-                gap: 8px;
-                overflow-x: auto;
-                background: #111111 !important;
-                border: 1px solid rgba(255, 255, 255, 0.08) !important;
-                border-radius: 12px !important;
-                padding: 8px !important;
-                white-space: nowrap;
-            }
-            .nav-tabs-custom > .nav-tabs > li {
-                margin-bottom: 0 !important;
-            }
-            .nav-tabs-custom > .nav-tabs > li > a {
-                border: none !important;
-                border-radius: 8px !important;
-                color: #a1a1aa !important;
-                padding: 8px 16px !important;
-                font-size: 13px !important;
-                font-weight: 600 !important;
-                margin: 0 !important;
-                transition: all 0.2s ease;
-            }
-            .nav-tabs-custom > .nav-tabs > li > a:hover {
-                color: #e5e5e5 !important;
-                background: rgba(255, 255, 255, 0.04) !important;
-            }
-            .nav-tabs-custom > .nav-tabs > li.active > a, 
-            .nav-tabs-custom > .nav-tabs > li.active > a:hover {
-                background: rgba(14, 165, 233, 0.1) !important;
-                color: #0ea5e9 !important;
-                border: none !important;
-            }
-        </style>
-    </head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
         @include('layouts.scripts')
 
@@ -262,8 +31,611 @@
             {!! Theme::css('css/pterodactyl.css?t={cache-version}') !!}
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+        @show
 
-            @show
+        <style>
+            /* ==========================================================================
+               ALXZEN INDUSTRY-STANDARD ADMIN DESIGN SYSTEM (UNIFIED & RESPONSIVE)
+               Loaded AFTER pterodactyl.css & AdminLTE to ensure 100% consistency
+               ========================================================================== */
+            :root {
+                --alx-bg-page: #09090b;
+                --alx-bg-surface: #111113;
+                --alx-bg-elevated: #18181b;
+                --alx-bg-input: #09090b;
+                --alx-border: rgba(255, 255, 255, 0.08);
+                --alx-border-strong: rgba(255, 255, 255, 0.14);
+                --alx-text-primary: #f4f4f5;
+                --alx-text-secondary: #a1a1aa;
+                --alx-text-muted: #71717a;
+                --alx-accent: #0ea5e9;
+                --alx-accent-light: #38bdf8;
+            }
+
+            body, .wrapper, .content-wrapper, .main-footer {
+                font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+                background-color: var(--alx-bg-page) !important;
+                color: var(--alx-text-primary) !important;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            /* 1. Top Navbar & Sidebar */
+            .main-header {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+                border-bottom: 1px solid var(--alx-border) !important;
+            }
+            .main-header .logo {
+                background-color: #0c0c0e !important;
+                border-bottom: 1px solid var(--alx-border) !important;
+                border-right: 1px solid var(--alx-border) !important;
+                color: #ffffff !important;
+                font-weight: 800 !important;
+                letter-spacing: -0.03em;
+                font-size: 19px !important;
+            }
+            .main-header .navbar {
+                background-color: #0c0c0e !important;
+                border-bottom: 1px solid var(--alx-border) !important;
+            }
+            .main-header .navbar .sidebar-toggle,
+            .main-header .navbar .nav > li > a {
+                color: var(--alx-text-secondary) !important;
+                transition: color 0.15s ease, background-color 0.15s ease;
+            }
+            .main-header .navbar .sidebar-toggle:hover,
+            .main-header .navbar .nav > li > a:hover {
+                background-color: var(--alx-bg-elevated) !important;
+                color: #ffffff !important;
+            }
+            .main-sidebar, .left-side {
+                background-color: #0c0c0e !important;
+                border-right: 1px solid var(--alx-border) !important;
+                box-shadow: none !important;
+            }
+            .sidebar-menu > li.header {
+                background: transparent !important;
+                color: var(--alx-text-muted) !important;
+                font-weight: 700 !important;
+                font-size: 10.5px !important;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                padding: 20px 20px 8px 18px !important;
+            }
+            .sidebar-menu > li > a {
+                font-weight: 600 !important;
+                font-size: 13px !important;
+                color: var(--alx-text-secondary) !important;
+                border-left: none !important;
+                padding: 10px 14px !important;
+                margin: 3px 10px !important;
+                border-radius: 11px !important;
+                border: 1px solid transparent !important;
+                transition: all 0.15s ease;
+            }
+            .sidebar-menu > li > a > i {
+                margin-right: 10px;
+                color: var(--alx-text-muted) !important;
+                transition: color 0.15s ease;
+            }
+            .sidebar-menu > li:hover > a {
+                background: var(--alx-bg-elevated) !important;
+                color: var(--alx-text-primary) !important;
+                border-color: var(--alx-border) !important;
+            }
+            .sidebar-menu > li:hover > a > i { color: var(--alx-accent-light) !important; }
+            .sidebar-menu > li.active > a {
+                background: linear-gradient(135deg, rgba(14, 165, 233, 0.16) 0%, rgba(2, 132, 199, 0.24) 100%) !important;
+                color: #38bdf8 !important;
+                border-color: rgba(56, 189, 248, 0.35) !important;
+                box-shadow: 0 2px 10px rgba(14, 165, 233, 0.12) !important;
+            }
+            .sidebar-menu > li.active > a > i { color: #38bdf8 !important; }
+
+            /* Sidebar Treeview */
+            .sidebar-menu .treeview-menu {
+                background: transparent !important;
+                padding-left: 14px;
+                margin-bottom: 4px;
+            }
+            .sidebar-menu .treeview-menu > li > a {
+                color: var(--alx-text-secondary) !important;
+                font-size: 12.5px !important;
+                font-weight: 500 !important;
+                padding: 8px 14px !important;
+                border-radius: 9px !important;
+                margin: 2px 10px !important;
+                transition: all 0.15s ease;
+            }
+            .sidebar-menu .treeview-menu > li.active > a,
+            .sidebar-menu .treeview-menu > li > a:hover {
+                background: var(--alx-bg-elevated) !important;
+                color: #38bdf8 !important;
+            }
+
+            /* 2. Content Header & Breadcrumbs */
+            .content-header {
+                padding: 20px 24px 8px 24px !important;
+            }
+            .content-header > h1 {
+                font-weight: 800 !important;
+                color: #ffffff !important;
+                letter-spacing: -0.025em !important;
+                font-size: 22px !important;
+            }
+            .content-header > h1 > small {
+                color: var(--alx-text-secondary) !important;
+                font-weight: 500 !important;
+                font-size: 13px !important;
+                margin-left: 8px !important;
+            }
+            .content-header > .breadcrumb {
+                background: transparent !important;
+                margin-top: 2px !important;
+                font-size: 12px !important;
+            }
+            .content-header > .breadcrumb > li > a { color: var(--alx-text-secondary) !important; }
+            .content-header > .breadcrumb > li > a:hover { color: #38bdf8 !important; }
+            .content-header > .breadcrumb > .active { color: var(--alx-text-muted) !important; }
+            .content { padding: 16px 24px 32px 24px !important; }
+
+            /* 3. Unified Cards & Boxes (.box, .alx-card, .alx-admin-card, .alx-overview-card) */
+            .box, .alx-card, .alx-admin-card, .alx-overview-card {
+                background: var(--alx-bg-surface) !important;
+                border: 1px solid var(--alx-border) !important;
+                border-top: 1px solid var(--alx-border) !important;
+                border-radius: 16px !important;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+                color: var(--alx-text-primary) !important;
+                margin-bottom: 24px !important;
+                overflow: hidden;
+            }
+            .box-header, .alx-card-header, .alx-admin-header, .alx-card-header-inner {
+                color: #ffffff !important;
+                padding: 16px 22px !important;
+                border-bottom: 1px solid var(--alx-border) !important;
+                background: rgba(255, 255, 255, 0.015) !important;
+            }
+            .box-title, .alx-card-title, .alx-admin-title {
+                font-size: 15px !important;
+                font-weight: 700 !important;
+                letter-spacing: -0.015em !important;
+                color: #ffffff !important;
+            }
+            .box-body { padding: 22px !important; }
+            .box-body.no-padding, .box-body.table-responsive.no-padding { padding: 0 !important; }
+            .box-footer, .alx-admin-pager, .alx-pagination {
+                background: rgba(255, 255, 255, 0.01) !important;
+                border-top: 1px solid var(--alx-border) !important;
+                padding: 14px 22px !important;
+            }
+
+            /* 4. Unified Tables (.table, .alx-table, .alx-admin-table) */
+            .table, .alx-table, .alx-admin-table {
+                width: 100%;
+                margin-bottom: 0 !important;
+                border-collapse: collapse !important;
+                font-variant-numeric: tabular-nums;
+            }
+            .table > thead > tr > th,
+            .table > tbody > tr > th,
+            .alx-table thead th,
+            .alx-admin-table thead th {
+                background: rgba(255, 255, 255, 0.02) !important;
+                border-top: none !important;
+                border-bottom: 1px solid var(--alx-border) !important;
+                padding: 13px 18px !important;
+                font-size: 11px !important;
+                font-weight: 700 !important;
+                color: var(--alx-text-secondary) !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.06em !important;
+            }
+            .table > tbody > tr > td,
+            .alx-table tbody td,
+            .alx-admin-table tbody td {
+                border-top: none !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+                padding: 13px 18px !important;
+                font-size: 13px !important;
+                color: var(--alx-text-primary) !important;
+                vertical-align: middle !important;
+            }
+            .table > tbody > tr:last-child > td,
+            .alx-table tbody tr:last-child td,
+            .alx-admin-table tbody tr:last-child td {
+                border-bottom: none !important;
+            }
+            .table-hover > tbody > tr:hover,
+            .alx-table tbody tr:hover,
+            .alx-admin-table tbody tr:hover {
+                background-color: rgba(255, 255, 255, 0.025) !important;
+            }
+            .table td a:not(.btn):not(.alx-btn):not(.alx-action),
+            .alx-table td a:not(.btn):not(.alx-btn):not(.alx-action):not(.alx-stat-pill),
+            .alx-admin-table td a:not(.btn):not(.alx-btn):not(.alx-action) {
+                color: #38bdf8 !important;
+                font-weight: 600 !important;
+                text-decoration: none !important;
+                transition: color 0.15s ease;
+            }
+            .table td a:not(.btn):hover,
+            .alx-table td a:not(.btn):hover,
+            .alx-admin-table td a:not(.btn):hover {
+                color: #7dd3fc !important;
+            }
+
+            /* Code & Monospace Pills */
+            code {
+                font-family: 'JetBrains Mono', monospace !important;
+                background: #18181b !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                border-radius: 6px !important;
+                padding: 2px 7px !important;
+                font-size: 12px !important;
+                color: #38bdf8 !important;
+            }
+
+            /* 5. Forms, Inputs & Select2 */
+            .form-control, input.form-control, textarea.form-control, select.form-control,
+            .alx-admin-input, .alx-search-group .form-control, .alx-date-input {
+                background-color: var(--alx-bg-input) !important;
+                border: 1px solid var(--alx-border-strong) !important;
+                border-radius: 10px !important;
+                color: var(--alx-text-primary) !important;
+                box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+                padding: 8px 13px !important;
+                font-size: 13px !important;
+                height: auto !important;
+                min-height: 36px;
+                transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+            }
+            .form-control:focus, input.form-control:focus, textarea.form-control:focus, select.form-control:focus,
+            .alx-admin-input:focus, .alx-search-group .form-control:focus, .alx-date-input:focus {
+                border-color: var(--alx-accent) !important;
+                box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18), inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+                outline: none !important;
+            }
+            .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+                background-color: rgba(255, 255, 255, 0.03) !important;
+                color: var(--alx-text-muted) !important;
+            }
+            .input-group .input-group-addon {
+                background-color: var(--alx-bg-elevated) !important;
+                border-color: var(--alx-border-strong) !important;
+                color: var(--alx-text-secondary) !important;
+                border-radius: 10px 0 0 10px !important;
+            }
+            .input-group .form-control:last-child {
+                border-radius: 0 10px 10px 0 !important;
+            }
+            label, label.control-label, .form-label {
+                color: #d4d4d8 !important;
+                font-weight: 600 !important;
+                font-size: 12.5px !important;
+                margin-bottom: 6px !important;
+            }
+            .text-muted, p.small.text-muted, .help-block {
+                color: var(--alx-text-muted) !important;
+                font-size: 12px !important;
+            }
+
+            /* Select2 Dark Precision Overrides */
+            .select2-container--default .select2-selection--single,
+            .select2-container--default .select2-selection--multiple {
+                background-color: var(--alx-bg-input) !important;
+                border: 1px solid var(--alx-border-strong) !important;
+                border-radius: 10px !important;
+                min-height: 38px !important;
+                padding: 4px 8px !important;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                color: var(--alx-text-primary) !important;
+                line-height: 28px !important;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 36px !important;
+            }
+            .select2-dropdown {
+                background-color: var(--alx-bg-elevated) !important;
+                border: 1px solid var(--alx-border-strong) !important;
+                border-radius: 10px !important;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+                overflow: hidden;
+            }
+            .select2-results__option {
+                background-color: var(--alx-bg-elevated) !important;
+                color: var(--alx-text-primary) !important;
+                padding: 8px 12px !important;
+                font-size: 13px !important;
+            }
+            .select2-container--default .select2-results__option[aria-selected=true] {
+                background-color: rgba(14, 165, 233, 0.15) !important;
+                color: #38bdf8 !important;
+            }
+            .select2-container--default .select2-results__option--highlighted[aria-selected] {
+                background-color: var(--alx-accent) !important;
+                color: #ffffff !important;
+            }
+            .select2-container--default .select2-selection--multiple .select2-selection__choice {
+                background-color: rgba(14, 165, 233, 0.18) !important;
+                border: 1px solid rgba(56, 189, 248, 0.35) !important;
+                color: #38bdf8 !important;
+                border-radius: 6px !important;
+            }
+
+            /* 6. Industry-Standard Tactile Buttons (.btn, .alx-btn, .alx-admin-btn, .alx-link-btn) */
+            .btn, .alx-btn, .alx-admin-btn, .alx-link-btn {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 6px !important;
+                font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+                font-weight: 600 !important;
+                border-radius: 10px !important;
+                font-size: 12.5px !important;
+                line-height: 1.3 !important;
+                padding: 8px 16px !important;
+                border: 1px solid transparent !important;
+                transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease !important;
+                text-decoration: none !important;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+            .btn-sm, .btn-group-sm > .btn {
+                padding: 6px 13px !important;
+                font-size: 12px !important;
+                border-radius: 9px !important;
+            }
+            .btn-xs, .btn-group-xs > .btn {
+                padding: 4px 9px !important;
+                font-size: 11px !important;
+                border-radius: 7px !important;
+            }
+            .btn:hover:not(:disabled), .alx-btn:hover, .alx-admin-btn:hover, .alx-link-btn:hover {
+                transform: translateY(-1px) !important;
+            }
+            .btn:active:not(:disabled), .alx-btn:active, .alx-admin-btn:active, .alx-link-btn:active {
+                transform: translateY(0) scale(0.98) !important;
+            }
+
+            /* Button Variants */
+            .btn-primary, .alx-btn-create, .alx-admin-btn-create, .alx-link-btn-orange {
+                background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%) !important;
+                border-color: rgba(56, 189, 248, 0.4) !important;
+                color: #ffffff !important;
+                box-shadow: 0 2px 10px rgba(14, 165, 233, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+            }
+            .btn-primary:hover, .alx-btn-create:hover, .alx-admin-btn-create:hover, .alx-link-btn-orange:hover {
+                background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 100%) !important;
+                box-shadow: 0 6px 16px rgba(14, 165, 233, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+                color: #ffffff !important;
+            }
+            .btn-success, .btn-green {
+                background: linear-gradient(180deg, #10b981 0%, #059669 100%) !important;
+                border-color: rgba(52, 211, 153, 0.4) !important;
+                color: #ffffff !important;
+                box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+            }
+            .btn-success:hover, .btn-green:hover {
+                background: linear-gradient(180deg, #34d399 0%, #10b981 100%) !important;
+                box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+                color: #ffffff !important;
+            }
+            .btn-danger, .alx-btn-delete-all, .alx-link-btn-green {
+                background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%) !important;
+                border-color: rgba(248, 113, 113, 0.4) !important;
+                color: #ffffff !important;
+                box-shadow: 0 2px 10px rgba(239, 68, 68, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+            }
+            .btn-danger:hover, .alx-btn-delete-all:hover, .alx-link-btn-green:hover {
+                background: linear-gradient(180deg, #f87171 0%, #ef4444 100%) !important;
+                box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+                color: #ffffff !important;
+            }
+            .btn-warning {
+                background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%) !important;
+                border-color: rgba(251, 191, 36, 0.4) !important;
+                color: #ffffff !important;
+                box-shadow: 0 2px 10px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+            }
+            .btn-default, .alx-btn-search, .alx-admin-btn-search, .alx-link-btn-gray, .alx-btn-set {
+                background: var(--alx-bg-elevated) !important;
+                color: var(--alx-text-primary) !important;
+                border: 1px solid var(--alx-border-strong) !important;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+            }
+            .btn-default:hover, .alx-btn-search:hover, .alx-admin-btn-search:hover, .alx-link-btn-gray:hover, .alx-btn-set:hover {
+                background: #27272a !important;
+                border-color: rgba(56, 189, 248, 0.45) !important;
+                color: #ffffff !important;
+            }
+
+            /* 7. Labels, Badges & Status Pills */
+            .label {
+                display: inline-flex !important;
+                align-items: center !important;
+                font-weight: 700 !important;
+                border-radius: 6px !important;
+                padding: 3px 8px !important;
+                font-size: 11px !important;
+                letter-spacing: 0.02em;
+            }
+            .label-primary, .label-info {
+                background: rgba(14, 165, 233, 0.14) !important;
+                color: #38bdf8 !important;
+                border: 1px solid rgba(14, 165, 233, 0.3) !important;
+            }
+            .label-success {
+                background: rgba(16, 185, 129, 0.14) !important;
+                color: #34d399 !important;
+                border: 1px solid rgba(16, 185, 129, 0.3) !important;
+            }
+            .label-danger {
+                background: rgba(239, 68, 68, 0.14) !important;
+                color: #f87171 !important;
+                border: 1px solid rgba(239, 68, 68, 0.3) !important;
+            }
+            .label-warning {
+                background: rgba(245, 158, 11, 0.14) !important;
+                color: #fbbf24 !important;
+                border: 1px solid rgba(245, 158, 11, 0.3) !important;
+            }
+            .label-default {
+                background: rgba(255, 255, 255, 0.07) !important;
+                color: var(--alx-text-secondary) !important;
+                border: 1px solid var(--alx-border-strong) !important;
+            }
+
+            /* 8. Modals, Alerts & Callouts */
+            .modal-content {
+                background: var(--alx-bg-surface) !important;
+                border: 1px solid var(--alx-border-strong) !important;
+                border-radius: 16px !important;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65) !important;
+                overflow: hidden;
+            }
+            .modal-header {
+                background: rgba(255, 255, 255, 0.02) !important;
+                border-bottom: 1px solid var(--alx-border) !important;
+                padding: 16px 22px !important;
+                color: #ffffff !important;
+            }
+            .modal-title { font-weight: 700 !important; font-size: 16px !important; color: #ffffff !important; }
+            .modal-header .close { color: var(--alx-text-secondary) !important; opacity: 0.8; text-shadow: none; }
+            .modal-header .close:hover { color: #ffffff !important; opacity: 1; }
+            .modal-body { background: var(--alx-bg-surface) !important; padding: 22px !important; color: var(--alx-text-primary) !important; }
+            .modal-footer {
+                background: rgba(255, 255, 255, 0.015) !important;
+                border-top: 1px solid var(--alx-border) !important;
+                padding: 14px 22px !important;
+            }
+
+            .alert {
+                border-radius: 12px !important;
+                padding: 14px 18px !important;
+                font-size: 13px !important;
+                font-weight: 500 !important;
+            }
+            .alert-danger {
+                background: rgba(239, 68, 68, 0.12) !important;
+                border: 1px solid rgba(239, 68, 68, 0.35) !important;
+                color: #fca5a5 !important;
+            }
+            .alert-warning {
+                background: rgba(245, 158, 11, 0.12) !important;
+                border: 1px solid rgba(245, 158, 11, 0.35) !important;
+                color: #fde68a !important;
+            }
+            .alert-success {
+                background: rgba(16, 185, 129, 0.12) !important;
+                border: 1px solid rgba(16, 185, 129, 0.35) !important;
+                color: #a7f3d0 !important;
+            }
+            .alert-info {
+                background: rgba(14, 165, 233, 0.12) !important;
+                border: 1px solid rgba(14, 165, 233, 0.35) !important;
+                color: #bae6fd !important;
+            }
+
+            .callout {
+                border-radius: 12px !important;
+                background: var(--alx-bg-elevated) !important;
+                border: 1px solid var(--alx-border-strong) !important;
+                color: var(--alx-text-primary) !important;
+            }
+
+            /* 9. Nav Tabs & Pagination */
+            .nav-tabs-custom {
+                background: transparent !important;
+                box-shadow: none !important;
+                margin-bottom: 22px !important;
+            }
+            .nav-tabs-custom > .nav-tabs {
+                border-bottom: none !important;
+                display: flex;
+                gap: 6px;
+                overflow-x: auto;
+                background: var(--alx-bg-surface) !important;
+                border: 1px solid var(--alx-border) !important;
+                border-radius: 13px !important;
+                padding: 6px !important;
+                white-space: nowrap;
+            }
+            .nav-tabs-custom > .nav-tabs > li { margin-bottom: 0 !important; border-top: none !important; }
+            .nav-tabs-custom > .nav-tabs > li > a {
+                border: 1px solid transparent !important;
+                border-radius: 9px !important;
+                color: var(--alx-text-secondary) !important;
+                padding: 8px 16px !important;
+                font-size: 13px !important;
+                font-weight: 600 !important;
+                margin: 0 !important;
+                transition: all 0.15s ease;
+            }
+            .nav-tabs-custom > .nav-tabs > li > a:hover {
+                color: #ffffff !important;
+                background: var(--alx-bg-elevated) !important;
+            }
+            .nav-tabs-custom > .nav-tabs > li.active > a,
+            .nav-tabs-custom > .nav-tabs > li.active > a:hover {
+                background: rgba(14, 165, 233, 0.14) !important;
+                color: #38bdf8 !important;
+                border: 1px solid rgba(56, 189, 248, 0.3) !important;
+            }
+
+            .pagination > li > a, .pagination > li > span {
+                background: var(--alx-bg-elevated) !important;
+                border: 1px solid var(--alx-border-strong) !important;
+                color: var(--alx-text-secondary) !important;
+                border-radius: 8px !important;
+                margin: 0 3px !important;
+                padding: 5px 11px !important;
+                font-size: 12.5px !important;
+                font-weight: 600 !important;
+            }
+            .pagination > li > a:hover {
+                background: #27272a !important;
+                color: #ffffff !important;
+                border-color: rgba(56, 189, 248, 0.4) !important;
+            }
+            .pagination > .active > a, .pagination > .active > span {
+                background: var(--alx-accent) !important;
+                border-color: var(--alx-accent) !important;
+                color: #ffffff !important;
+            }
+
+            /* 10. Mobile & Tablet Responsiveness */
+            @media (max-width: 767px) {
+                .content-header { padding: 16px 14px 6px 14px !important; }
+                .content-header > h1 { font-size: 19px !important; }
+                .content-header > h1 > small { display: block; margin-left: 0 !important; margin-top: 4px; }
+                .content { padding: 12px 14px 24px 14px !important; }
+                .box-header, .alx-card-header, .alx-admin-header {
+                    flex-direction: column !important;
+                    align-items: stretch !important;
+                    padding: 14px 16px !important;
+                    gap: 10px !important;
+                }
+                .box-header > .box-tools {
+                    position: static !important;
+                    float: none !important;
+                    padding: 0 !important;
+                    margin-top: 8px !important;
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 8px;
+                }
+                .alx-admin-controls, .alx-search-group {
+                    width: 100% !important;
+                    flex-wrap: wrap !important;
+                }
+                .alx-admin-input, .alx-search-group .form-control {
+                    flex: 1 1 100% !important;
+                    width: 100% !important;
+                }
+                .box-body { padding: 16px !important; }
+            }
+        </style>
     </head>
     <body class="hold-transition skin-blue fixed sidebar-mini">
         <div class="wrapper">

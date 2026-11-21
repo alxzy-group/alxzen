@@ -7,11 +7,11 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'version' => 'v4.1.0',
+    'version' => 'v4.2.0',
     'author' => 'alxzy/alan',
-    'theme_version' => '3.0',
-    'protect_version' => '4.0',
-    'expiration_version' => '4.0',
+    'theme_version' => '4.2',
+    'protect_version' => '4.2',
+    'expiration_version' => '4.2',
 
     /*
     |--------------------------------------------------------------------------
