@@ -43,6 +43,24 @@ export default () => {
         });
         socket.on('status', (status) => setServerStatus(status));
 
+        // Smart status evaluation: if Wings reports "starting" because an Egg has no matching startup regex,
+        // promote status to "running" once container telemetry confirms active CPU/RAM/Uptime.
+        socket.on('stats', (data: string) => {
+            try {
+                const parsed = JSON.parse(data);
+                if (parsed.state === 'running') {
+                    setServerStatus('running');
+                } else if (
+                    parsed.state === 'starting' &&
+                    (parsed.uptime > 0 || parsed.memory_bytes > 0 || parsed.cpu_absolute > 0)
+                ) {
+                    setServerStatus('running');
+                }
+            } catch {
+                // ignore malformed stats payload
+            }
+        });
+
         socket.on('daemon error', (message) => {
             console.warn('Got error message from daemon socket:', message);
         });

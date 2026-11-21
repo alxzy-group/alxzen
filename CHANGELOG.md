@@ -1,5 +1,23 @@
 # Changelog
 
+## [v4.3.1] - 2026-11-21
+### Fixed & Improved
+- **Full-Width Client Server Console & 6-Card Live Telemetry Bento Bar (`ServerConsoleContainer.tsx`, `ServerDetailsBlock.tsx`, `StatBlock.tsx`)**:
+  - Fixed the broken console layout where placing 3 rows of telemetry cards alongside a 30-row terminal with `h-full content-between` created a 230px empty gap on the right and squeezed terminal logs into wrapping lines.
+  - Restructured `ServerDetailsBlock.tsx` into an edge-to-edge **6-Column Horizontal Live Telemetry Bento Strip** (`Instance Uptime`, `CPU Load`, `Memory Usage`, `Disk Storage`, `Net Inbound`, `Net Outbound`) with live mini progress bars directly above the full-width **100% Terminal Console**.
+- **Smart WebSocket `STARTING` -> `ONLINE` Status Promotion (`WebsocketHandler.tsx`, `ServerDetailsBlock.tsx`)**:
+  - Fixed custom Node.js / Python / Bot instances remaining stuck on the blue `STARTING` badge indefinitely when their startup log output doesn't match the Egg's startup regex. When Wings reports active `stats` (`uptime > 0`, `memory_bytes > 0`, or `cpu_absolute > 0`) while in `starting` state, the panel automatically promotes the server status to `running` (`ONLINE`).
+- **Comprehensive Admin Panel Bento Modernization**:
+  - Upgraded the remaining Admin Room pages to the unified AlxZen Bento Card UI:
+    - **Mail Settings (`admin/settings/mail.blade.php`)**: 2-Card Bento grid (*SMTP Relay Server* + *Sender Identity*) with unified Save & Test action bar.
+    - **Global Announcements (`admin/announcements/index.blade.php` & `new.blade.php`)**: Modern table with severity pills, content previews, count badge, and 2-column broadcast composer.
+    - **Datacenter Locations (`admin/locations/index.blade.php`)**: Region list with node/server counter badges and dark creation modal.
+    - **Database Hosts (`admin/databases/index.blade.php`)**: Cluster host list with endpoint badges, linked node indicators, and creation modal.
+    - **Service Nests & Eggs (`admin/nests/index.blade.php` & `view.blade.php`)**: Modern runtime safety banner, nest/egg counter pills, and 2-column nest editor + metadata view.
+    - **Volume Mounts (`admin/mounts/index.blade.php`)**: Host-to-container mount table with path badges and dark creation modal.
+    - **User Management (`admin/users/new.blade.php` & `view.blade.php`)**: 2-column Bento cards (*Account Identity*, *Access Permissions*, *Password & Credentials* with 1-click random password generator, and *Danger Zone*).
+    - **Server Management Detail (`admin/servers/view/index.blade.php` & `partials/navigation.blade.php`)**: Replaced legacy `.small-box.bg-gray` widgets with modern Bento telemetry cards (*Instance Owner*, *Host Daemon Node*, *Quick Actions*) and added icons to all server navigation tabs.
+
 ## [v4.3.0] - 2026-11-21
 ### Added
 - **Next-Gen SaaS Admin Control Plane Architecture**:

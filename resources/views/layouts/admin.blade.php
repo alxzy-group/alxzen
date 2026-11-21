@@ -194,6 +194,124 @@
                 padding: 16px 22px !important;
                 border-bottom: 1px solid var(--alx-border) !important;
                 background: rgba(255, 255, 255, 0.015) !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                flex-wrap: wrap !important;
+                gap: 12px !important;
+            }
+            .box-header::before, .box-header::after,
+            .box-body::before, .box-body::after,
+            .box-footer::before, .box-footer::after {
+                display: none !important;
+            }
+            .box-header > .box-tools {
+                position: static !important;
+                float: none !important;
+                margin-left: auto !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+            }
+            .box.box-danger {
+                border-color: rgba(239, 68, 68, 0.35) !important;
+                border-top-color: rgba(239, 68, 68, 0.35) !important;
+            }
+            .box.box-danger > .box-header {
+                background: rgba(239, 68, 68, 0.06) !important;
+                border-bottom-color: rgba(239, 68, 68, 0.2) !important;
+            }
+            .box.box-danger > .box-header .box-title {
+                color: #f87171 !important;
+            }
+            .box.box-warning {
+                border-color: rgba(245, 158, 11, 0.35) !important;
+                border-top-color: rgba(245, 158, 11, 0.35) !important;
+            }
+            .box.box-success {
+                border-color: rgba(16, 185, 129, 0.35) !important;
+                border-top-color: rgba(16, 185, 129, 0.35) !important;
+            }
+
+            /* Modernize AdminLTE .small-box & .info-box globally across Server/Node Views */
+            .small-box {
+                background: var(--alx-bg-surface) !important;
+                border: 1px solid var(--alx-border-strong) !important;
+                border-radius: 14px !important;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+                color: #ffffff !important;
+                overflow: hidden;
+                margin-bottom: 16px !important;
+            }
+            .small-box > .inner {
+                padding: 18px 20px !important;
+            }
+            .small-box h3 {
+                font-size: 20px !important;
+                font-weight: 800 !important;
+                color: #ffffff !important;
+                letter-spacing: -0.02em;
+                margin: 0 0 4px 0 !important;
+            }
+            .small-box p {
+                font-size: 12px !important;
+                color: var(--alx-text-secondary) !important;
+                margin: 0 !important;
+            }
+            .small-box .icon {
+                color: rgba(56, 189, 248, 0.18) !important;
+                font-size: 48px !important;
+                top: 12px !important;
+                right: 16px !important;
+            }
+            .small-box > .small-box-footer {
+                background: rgba(255, 255, 255, 0.03) !important;
+                border-top: 1px solid var(--alx-border) !important;
+                color: #38bdf8 !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                padding: 8px 16px !important;
+            }
+            .small-box > .small-box-footer:hover {
+                background: rgba(14, 165, 233, 0.12) !important;
+                color: #7dd3fc !important;
+            }
+            .info-box {
+                background: var(--alx-bg-surface) !important;
+                border: 1px solid var(--alx-border-strong) !important;
+                border-radius: 14px !important;
+                color: var(--alx-text-primary) !important;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+                min-height: 84px !important;
+                overflow: hidden;
+            }
+            .info-box-icon {
+                border-radius: 14px 0 0 14px !important;
+                background: rgba(14, 165, 233, 0.14) !important;
+                color: #38bdf8 !important;
+            }
+            .info-box-text {
+                font-size: 11px !important;
+                font-weight: 700 !important;
+                color: var(--alx-text-secondary) !important;
+                letter-spacing: 0.05em;
+            }
+            .info-box-number {
+                font-size: 18px !important;
+                font-weight: 800 !important;
+                color: #ffffff !important;
+            }
+            pre, .well {
+                background: #09090b !important;
+                border: 1px solid var(--alx-border-strong) !important;
+                border-radius: 12px !important;
+                color: #e4e4e7 !important;
+                font-family: 'JetBrains Mono', monospace !important;
+                font-size: 12.5px !important;
+                padding: 16px !important;
+            }
+            hr {
+                border-top: 1px solid var(--alx-border) !important;
             }
             .box-title, .alx-card-title, .alx-admin-title {
                 font-size: 15px !important;

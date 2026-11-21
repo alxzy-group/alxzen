@@ -6,26 +6,23 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.3.0"
+$tag = "v4.3.1"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.3.0 - Next-Gen Cloud Platform UI/UX Architecture
+### AlxZen Panel v4.3.1 - Full-Width Console Telemetry Bento & Complete Admin Room Redesign
 
-- **Next-Gen SaaS Admin Control Plane (No Longer Stock AdminLTE Look):**
-  - **Flattened Cloud Command Sidebar (`layouts/admin.blade.php`):** Removed old collapsible treeviews in favor of direct 1-click categorized navigation (`COMMAND CENTER`, `CLOUD FLEET & USERS`, `INFRASTRUCTURE`, `RUNTIME & EGGS`) with live database count badges and modern topbar pills.
-  - **Cloud Command Center Overview (`admin/index.blade.php`):** Added hero operational banner, 4 live KPI telemetry cards (Total Servers, Registered Accounts, Wings Daemon Nodes, Runtime Eggs), Recently Deployed Servers table, and Security Engine status panel.
-  - **Bento Settings & Interactive 2FA Cards (`admin/settings/index.blade.php` & `advanced.blade.php`):** Replaced old Bootstrap 3 `.btn-group` and flat forms with 12-column Bento Feature Cards, segmented pill tabs, and an interactive 3-card Zero-Trust 2FA selector.
-
-- **Next-Gen Client Cloud Cockpit & 1-Click Server Dock:**
-  - **Persistent 1-Click Server Command Dock (`ServerRouter.tsx`):** Added horizontal sticky pill navigation dock with icons across `/server/:id/*` for instant 1-click switching between Console, Files, Databases, Network, Subdomain, Backups, Startup, and Settings.
-  - **Asymmetric 12-Column Console Cockpit (`ServerConsoleContainer.tsx` & `ServerDetailsBlock.tsx`):** Side-by-side Terminal Console (`xl:col-span-8`) and Live Telemetry Bento Dock with progress bars (`xl:col-span-4`).
-  - **Bento Instance Cards (`ServerRow.tsx` & `DashboardContainer.tsx`):** Added Cloud Workspace fleet counter pills and instance card footer action strip (`ID · Open Console`).
+- **Fixed Client Server Console Layout (`ServerConsoleContainer.tsx`, `ServerDetailsBlock.tsx`, `StatBlock.tsx`):**
+  - Replaced the squeezed 8/4 split (which left a 230px empty black gap below CPU Load and wrapped JSON logs) with an edge-to-edge **6-Card Horizontal Live Telemetry Bento Strip** (`Instance Uptime`, `CPU Load`, `Memory Usage`, `Disk Storage`, `Net Inbound`, `Net Outbound` with live progress bars) directly above the **100% Full-Width Terminal Console**.
+- **Smart `STARTING` -> `ONLINE` Status Detection (`WebsocketHandler.tsx`, `ServerDetailsBlock.tsx`):**
+  - Fixed Node.js / Python / Auto-Order bot servers staying stuck on `STARTING` when an Egg's startup regex does not match; the panel now automatically promotes status to `ONLINE` as soon as Wings reports active CPU, RAM, or Uptime telemetry.
+- **Complete Admin Room Bento Redesign:**
+  - Modernized all remaining Admin pages (`settings/mail`, `announcements`, `locations`, `databases`, `nests`, `mounts`, `users/new`, `users/view`, `servers/view`, and `servers/partials/navigation`) with Bento cards, icon headers, counter badges, and dark modals.
 '@
-$releaseData = @{
+$releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag
     name = $tag
     body = $bodyText
-} | ConvertTo-Json
+} | ConvertTo-Json))
 
 Write-Host "Fetching or Creating GitHub Release $tag..." -ForegroundColor Yellow
 $headers = @{ 
@@ -50,6 +47,6 @@ if ($response.assets) {
 $uploadUrl = $response.upload_url -replace '\{.*\}', '?name=panel.tar.gz'
 
 Write-Host "Uploading panel.tar.gz ($([math]::Round((Get-Item 'panel.tar.gz').Length / 1MB, 2)) MB) to Release $tag..." -ForegroundColor Yellow
-Invoke-RestMethod -Uri $uploadUrl -Method Post -Headers @{ Authorization = "token $token"; "User-Agent" = "PowerShell"; "Content-Type" = "application/gzip" } -InFile "panel.tar.gz" -TimeoutSec 1200
+$assetResponse = Invoke-RestMethod -Uri $uploadUrl -Method Post -Headers @{ Authorization = "token $token"; "User-Agent" = "PowerShell"; "Content-Type" = "application/gzip" } -InFile "panel.tar.gz" -TimeoutSec 1200
 
-Write-Host "Release $tag created and panel.tar.gz uploaded successfully!" -ForegroundColor Green
+Write-Host "Release $tag created and panel.tar.gz uploaded successfully! Asset ID: $($assetResponse.id)" -ForegroundColor Green

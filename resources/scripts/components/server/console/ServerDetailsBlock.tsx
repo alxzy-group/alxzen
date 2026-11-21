@@ -43,6 +43,7 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
     const [stats, setStats] = useState<Stats>({ memory: 0, cpu: 0, disk: 0, uptime: 0, tx: 0, rx: 0 });
 
     const status = ServerContext.useStoreState((state) => state.status.value);
+    const setServerStatus = ServerContext.useStoreActions((actions) => actions.status.setServerStatus);
     const connected = ServerContext.useStoreState((state) => state.socket.connected);
     const instance = ServerContext.useStoreState((state) => state.socket.instance);
     const limits = ServerContext.useStoreState((state) => state.server.data!.limits);
@@ -86,6 +87,10 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
             rx: stats.network.rx_bytes,
             uptime: stats.uptime || 0,
         });
+
+        if (status === 'starting' && (stats.uptime > 0 || stats.memory_bytes > 0 || stats.cpu_absolute > 0)) {
+            setServerStatus('running');
+        }
     });
 
     const cpuPct = limits.cpu > 0 ? Math.min(100, (stats.cpu / limits.cpu) * 100) : Math.min(100, stats.cpu);
@@ -94,7 +99,7 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
     const barColor = (pct: number) => (pct > 85 ? '#ef4444' : pct > 65 ? '#f59e0b' : '#0ea5e9');
 
     return (
-        <div className={classNames('w-full h-full grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-2 gap-2.5 sm:gap-3 content-between', className)}>
+        <div className={classNames('w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 items-stretch', className)}>
             <StatBlock
                 icon={faClock}
                 title={'Instance Uptime'}

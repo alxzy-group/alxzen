@@ -227,16 +227,16 @@ const ServerConsoleContainer = () => {
                 </div>
             </HeaderCard>
 
-            {/* Next-Gen Asymmetric Cloud Cockpit: Terminal (Left 8 cols) + Live Telemetry Bento (Right 4 cols) */}
-            <div className={'grid grid-cols-1 xl:grid-cols-12 gap-4 mb-4 items-stretch'}>
-                <div className={'xl:col-span-8 flex flex-col'}>
-                    <Spinner.Suspense>
-                        <Console />
-                    </Spinner.Suspense>
-                </div>
-                <div className={'xl:col-span-4 flex flex-col justify-between'}>
-                    <ServerDetailsBlock />
-                </div>
+            {/* Full-Width 6-Card Live Telemetry Bento Strip ( Perfectly aligned with Header & Terminal ) */}
+            <div className={'mb-4'}>
+                <ServerDetailsBlock />
+            </div>
+
+            {/* Full-Width Pro Terminal Console ( No cramped log wrapping or empty side gaps ) */}
+            <div className={'mb-4'}>
+                <Spinner.Suspense>
+                    <Console />
+                </Spinner.Suspense>
             </div>
 
             {/* Real-Time Resource Charts */}
