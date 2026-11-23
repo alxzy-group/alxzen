@@ -15,6 +15,8 @@ import { usePersistedState } from '@/plugins/usePersistedState';
 import { SocketEvent, SocketRequest } from '@/components/server/events';
 import classNames from 'classnames';
 import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCompressAlt, faExpandAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import 'xterm/css/xterm.css';
 import styles from './style.module.css';
@@ -79,6 +81,7 @@ export default () => {
 
     const [isMobile, setIsMobile] = useState<boolean>(isMobileScreen);
     const [fontSize, setFontSize] = useState<number>(initialFontSize);
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
     const [isLightMode, setIsLightMode] = useState(
         document.documentElement.classList.contains('theme-light') || localStorage.getItem('theme') === 'light'
@@ -94,15 +97,17 @@ export default () => {
 
     useEffect(() => {
         if (terminal) {
-            terminal.options.theme = isLightMode ? {
-                ...theme,
-                foreground: '#0f172a',
-                cursor: '#0f172a',
-                black: '#0f172a',
-                white: '#334155',
-                brightBlack: 'rgba(0, 0, 0, 0.5)',
-                brightWhite: '#020617',
-            } : theme;
+            terminal.options.theme = isLightMode
+                ? {
+                    ...theme,
+                    foreground: '#0f172a',
+                    cursor: '#0f172a',
+                    black: '#0f172a',
+                    white: '#334155',
+                    brightBlack: 'rgba(0, 0, 0, 0.5)',
+                    brightWhite: '#020617',
+                }
+                : theme;
         }
     }, [isLightMode, terminal]);
 
@@ -188,7 +193,6 @@ export default () => {
         }
     }, [terminal, connected]);
 
-    // Auto-detect mobile vs desktop on screen resize and adapt font & fit
     useEffect(() => {
         const handleResize = debounce(() => {
             const mobile = isMobileScreen();
@@ -208,7 +212,6 @@ export default () => {
         return () => window.removeEventListener('resize', handleResize);
     }, [terminal, fitAddon]);
 
-    // Observe outer container resizing (e.g. user drags resize-y handle)
     useEffect(() => {
         if (!containerRef.current) return;
 
@@ -226,7 +229,6 @@ export default () => {
         return () => resizeObserver.disconnect();
     }, [terminal, fitAddon]);
 
-    // Handle manual font size adjustment
     useEffect(() => {
         if (terminal && terminal.element) {
             terminal.options.fontSize = fontSize;
@@ -275,14 +277,26 @@ export default () => {
             fitAddon.fit();
         } catch (e) { }
     };
+    const handleToggleExpand = () => {
+        setIsExpanded((prev) => !prev);
+        setTimeout(() => {
+            try {
+                fitAddon.fit();
+            } catch (e) { }
+        }, 80);
+    };
 
     return (
         <div
             ref={containerRef}
-            style={{ zIndex: 40, backgroundColor: 'hsl(var(--bg-card))' }}
+            style={{
+                zIndex: 40,
+                backgroundColor: 'hsl(var(--bg-card))',
+                minHeight: isExpanded ? '640px' : '380px',
+            }}
             className={classNames(
                 styles.terminal,
-                'relative rounded-2xl overflow-hidden resize-y transition-colors duration-200 min-h-[360px] border shadow-xl',
+                'relative rounded-2xl overflow-hidden resize-y transition-colors duration-200 border shadow-xl',
                 {
                     'border-emerald-500/35': status === 'running',
                     'border-sky-500/35': status === 'starting',
@@ -290,12 +304,11 @@ export default () => {
                 }
             )}
         >
-            {/* Top Toolbar: macOS dots, Accent Bar, Device Mode, Clear & Font Zoom */}
+            {/* Top Toolbar */}
             <div
-                className="w-full h-10 transition-colors flex items-center justify-between px-3.5 select-none border-b"
+                className="w-full h-11 transition-colors flex items-center justify-between px-3.5 select-none border-b"
                 style={{ backgroundColor: 'hsl(var(--bg-elevated))', borderBottomColor: 'hsl(var(--border) / 0.8)' }}
             >
-                {/* Left: Window Dots & Status */}
                 <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1.5 mr-1">
                         <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
@@ -306,27 +319,34 @@ export default () => {
                         Terminal Console
                     </span>
                     <span
-                        className={classNames('text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full', {
-                            'bg-emerald-500/12 text-emerald-400 border border-emerald-500/30': status === 'running',
-                            'bg-sky-500/12 text-sky-400 border border-sky-500/30': status === 'starting',
-                            'bg-gray-500/12 text-gray-400 border border-gray-500/30': status === 'offline' || status === 'stopping',
-                        })}
+                        className={classNames(
+                            'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full',
+                            {
+                                'bg-emerald-500/12 text-emerald-400 border border-emerald-500/30': status === 'running',
+                                'bg-sky-500/12 text-sky-400 border border-sky-500/30': status === 'starting',
+                                'bg-gray-500/12 text-gray-400 border border-gray-500/30':
+                                    status === 'offline' || status === 'stopping',
+                            }
+                        )}
                     >
                         {status || 'Connecting'}
                     </span>
                 </div>
 
-                {/* Center: Accent Bar */}
-                <div className="flex-1 h-full flex items-center justify-center px-2">
-                    <div className="w-12 h-1 rounded-full opacity-25 bg-gray-500" />
-                </div>
-
-                {/* Right: Device Detection Badge, Clear & Zoom Controls */}
                 <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-medium text-gray-400 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 hidden sm:inline-block">
+                    <span className="text-[10px] font-medium text-gray-400 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 hidden md:inline-block">
                         {isMobile ? 'Mobile' : 'Desktop'} · {fontSize}px
                     </span>
                     <div className="flex items-center bg-white/[0.04] border border-white/10 rounded-lg p-0.5 gap-0.5">
+                        <button
+                            type="button"
+                            onClick={() => searchBar.show()}
+                            className="px-2 py-0.5 text-[10px] font-bold text-gray-300 hover:text-sky-300 hover:bg-white/10 rounded transition-colors flex items-center gap-1"
+                            title="Cari Log Terminal (Ctrl+F)"
+                        >
+                            <FontAwesomeIcon icon={faSearch} />
+                            <span className="hidden sm:inline">Search</span>
+                        </button>
                         <button
                             type="button"
                             onClick={handleClear}
@@ -359,15 +379,24 @@ export default () => {
                         >
                             Fit
                         </button>
+                        <button
+                            type="button"
+                            onClick={handleToggleExpand}
+                            className="px-2 py-0.5 text-[10px] font-bold text-gray-300 hover:text-sky-300 hover:bg-white/10 rounded transition-colors"
+                            title={isExpanded ? 'Compact Terminal Height' : 'Expand Terminal Height'}
+                        >
+                            <FontAwesomeIcon icon={isExpanded ? faCompressAlt : faExpandAlt} />
+                        </button>
                     </div>
                 </div>
             </div>
 
             <SpinnerOverlay visible={!connected} size={'large'} />
 
-            {/* Terminal Viewport Container */}
             <div
-                className={classNames(styles.container, styles.overflows_container, 'bg-transparent flex-1', { 'rounded-b': !canSendCommands })}
+                className={classNames(styles.container, styles.overflows_container, 'bg-transparent flex-1', {
+                    'rounded-b': !canSendCommands,
+                })}
             >
                 <div className={'h-full flex-1 w-full'}>
                     <div id={styles.terminal} ref={ref} />
@@ -375,20 +404,29 @@ export default () => {
             </div>
 
             {canSendCommands && (
-                <div className={classNames('relative', styles.overflows_container)}>
+                <div
+                    className={classNames('relative border-t', styles.overflows_container)}
+                    style={{ borderTopColor: 'hsl(var(--border) / 0.7)' }}
+                >
                     <input
-                        className={classNames('peer', styles.command_input)}
+                        className={classNames('peer', styles.command_input, 'pr-36')}
                         type={'text'}
-                        placeholder={'Type a command...'}
+                        placeholder={'Type a command and press Enter...'}
                         aria-label={'Console command input.'}
                         disabled={!instance || !connected}
                         onKeyDown={handleCommandKeyDown}
                         autoCorrect={'off'}
                         autoCapitalize={'none'}
                     />
-                    <div className={styles.command_icon}>
+                    <div className={classNames(styles.command_icon, 'peer-focus:text-sky-400')}>
                         <ChevronDoubleRightIcon className={'w-4 h-4'} />
                     </div>
+                    <span
+                        className="hidden sm:inline-block absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-mono select-none pointer-events-none"
+                        style={{ color: 'hsl(var(--text-muted))' }}
+                    >
+                        ↑↓ History · Enter
+                    </span>
                 </div>
             )}
         </div>

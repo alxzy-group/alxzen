@@ -4,53 +4,49 @@ import { SocketEvent } from '@/components/server/events';
 import useWebsocketEvent from '@/plugins/useWebsocketEvent';
 import { Line } from 'react-chartjs-2';
 import { useChart, useChartTickLabel } from '@/components/server/console/chart';
-import { hexToRgba } from '@/lib/helpers';
 import { bytesToString } from '@/lib/formatters';
-import { theme } from 'twin.macro';
 import ChartBlock from '@/components/server/console/ChartBlock';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import styled, { keyframes } from 'styled-components';
 
-// Animated pulse dot
 const pulseAnim = keyframes`
     0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(1.3); }
+    50% { opacity: 0.5; transform: scale(1.25); }
 `;
 
 const NetBadgeContainer = styled.div`
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 `;
 
-const NetBadge = styled.div<{ $color: string }>`
+const NetBadge = styled.div<{ $color: 'in' | 'out' }>`
     display: flex;
     align-items: center;
     gap: 5px;
     padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    background: ${p => p.$color === 'in' ? 'rgba(99,102,241,0.12)' : 'rgba(168,85,247,0.12)'};
-    border: 1px solid ${p => p.$color === 'in' ? 'rgba(99,102,241,0.3)' : 'rgba(168,85,247,0.3)'};
-    color: ${p => p.$color === 'in' ? '#818cf8' : '#c084fc'};
-    transition: all 0.3s;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    background: ${(p) => (p.$color === 'in' ? 'rgba(14, 165, 233, 0.12)' : 'rgba(16, 185, 129, 0.12)')};
+    border: 1px solid ${(p) => (p.$color === 'in' ? 'rgba(56, 189, 248, 0.3)' : 'rgba(52, 211, 153, 0.3)')};
+    color: ${(p) => (p.$color === 'in' ? '#38bdf8' : '#34d399')};
+    transition: all 0.2s ease;
 `;
 
-const PulseDot = styled.span<{ $active?: boolean; $color: string }>`
+const PulseDot = styled.span<{ $active?: boolean; $color: 'in' | 'out' }>`
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: ${p => p.$color === 'in' ? '#818cf8' : '#c084fc'};
+    background: ${(p) => (p.$color === 'in' ? '#38bdf8' : '#34d399')};
     display: inline-block;
-    animation: ${p => p.$active ? pulseAnim : 'none'} 1s ease-in-out infinite;
+    animation: ${(p) => (p.$active ? pulseAnim : 'none')} 1.4s ease-in-out infinite;
 `;
 
 export default () => {
     const status = ServerContext.useStoreState((state) => state.status.value);
     const limits = ServerContext.useStoreState((state) => state.server.data!.limits);
     const previous = useRef<Record<'tx' | 'rx', number>>({ tx: -1, rx: -1 });
-    const lastRates = useRef<{ rx: number; tx: number }>({ rx: 0, tx: 0 });
 
     const cpu = useChartTickLabel('CPU', limits.cpu, '%', 2);
     const memory = useChartTickLabel('Memory', limits.memory, 'MiB');
@@ -71,16 +67,16 @@ export default () => {
             return {
                 ...opts,
                 label: !index ? 'Inbound' : 'Outbound',
-                borderColor: !index ? '#0ea5e9' : '#3b82f6', // Sky Blue vs Blue
+                borderColor: !index ? '#38bdf8' : '#10b981',
                 backgroundColor: (context: any) => {
                     const ctx = context.chart.ctx;
-                    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                    gradient.addColorStop(0, !index ? 'rgba(14, 165, 233, 0.4)' : 'rgba(59, 130, 246, 0.4)');
-                    gradient.addColorStop(1, !index ? 'rgba(14, 165, 233, 0.0)' : 'rgba(59, 130, 246, 0.0)');
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+                    gradient.addColorStop(0, !index ? 'rgba(56, 189, 248, 0.28)' : 'rgba(16, 185, 129, 0.28)');
+                    gradient.addColorStop(1, !index ? 'rgba(56, 189, 248, 0.0)' : 'rgba(16, 185, 129, 0.0)');
                     return gradient;
                 },
                 borderWidth: 2,
-                tension: 0.4,
+                tension: 0.35,
                 fill: true,
             };
         },
@@ -91,7 +87,6 @@ export default () => {
             cpu.clear();
             memory.clear();
             network.clear();
-            lastRates.current = { rx: 0, tx: 0 };
         }
     }, [status]);
 
@@ -109,8 +104,6 @@ export default () => {
         const txRate = previous.current.tx < 0 ? 0 : Math.max(0, values.network.tx_bytes - previous.current.tx);
 
         network.push([rxRate, txRate]);
-        lastRates.current = { rx: rxRate, tx: txRate };
-
         previous.current = { tx: values.network.tx_bytes, rx: values.network.rx_bytes };
     });
 

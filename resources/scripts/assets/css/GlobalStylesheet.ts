@@ -48,31 +48,28 @@ export default createGlobalStyle`
         -moz-appearance: textfield !important;
     }
 
-    /* Scroll Bar Style */
+    /* Ultra-thin Cloud Dashboard Scrollbar */
     ::-webkit-scrollbar {
-        background: none;
-        width: 16px;
-        height: 16px;
+        background: transparent;
+        width: 8px;
+        height: 8px;
     }
 
     ::-webkit-scrollbar-thumb {
-        border: solid 0 rgb(0 0 0 / 0%);
-        border-right-width: 4px;
-        border-left-width: 4px;
-        -webkit-border-radius: 9px 4px;
-        -webkit-box-shadow: inset 0 0 0 1px hsl(211, 10%, 53%), inset 0 0 0 4px hsl(209deg 18% 30%);
+        background: hsl(var(--border));
+        border-radius: 9999px;
+        border: 2px solid transparent;
+        background-clip: content-box;
     }
 
-    ::-webkit-scrollbar-track-piece {
-        margin: 4px 0;
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(56, 189, 248, 0.55);
+        border: 2px solid transparent;
+        background-clip: content-box;
     }
 
-    ::-webkit-scrollbar-thumb:horizontal {
-        border-right-width: 0;
-        border-left-width: 0;
-        border-top-width: 4px;
-        border-bottom-width: 4px;
-        -webkit-border-radius: 4px 9px;
+    ::-webkit-scrollbar-track {
+        background: transparent;
     }
 
     ::-webkit-scrollbar-corner {

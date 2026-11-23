@@ -13,6 +13,7 @@ import getServerStartup from '@/api/swr/getServerStartup';
 import Select from '@/components/elements/Select';
 import isEqual from 'react-fast-compare';
 import { ServerContext } from '@/state/server';
+import CopyOnClick from '@/components/elements/CopyOnClick';
 
 interface Props {
     variable: ServerEggVariable;
@@ -62,7 +63,7 @@ const VariableBox = ({ variable }: Props) => {
             title={
                 <div className='flex items-center justify-between w-full gap-2 flex-wrap'>
                     <div className='flex items-center gap-2'>
-                        {!variable.isEditable && (
+                        {!variable.isEditable ? (
                             <span
                                 className='px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border'
                                 style={{
@@ -73,19 +74,29 @@ const VariableBox = ({ variable }: Props) => {
                             >
                                 Read Only
                             </span>
+                        ) : (
+                            canEdit && (
+                                <span
+                                    className='w-2 h-2 rounded-full bg-green-400 inline-block'
+                                    title='Editable Variable'
+                                />
+                            )
                         )}
                         <span style={{ color: 'hsl(var(--text-primary))' }}>{variable.name}</span>
                     </div>
-                    <code
-                        className='font-mono text-[10px] px-2 py-0.5 rounded-md border'
-                        style={{
-                            background: 'hsl(var(--bg-elevated))',
-                            borderColor: 'hsl(var(--border))',
-                            color: '#38bdf8',
-                        }}
-                    >
-                        {variable.envVariable}
-                    </code>
+                    <CopyOnClick text={variable.envVariable}>
+                        <code
+                            className='font-mono text-[10px] px-2 py-0.5 rounded-md border cursor-pointer hover:border-sky-400/60 transition-colors'
+                            style={{
+                                background: 'hsl(var(--bg-elevated))',
+                                borderColor: 'hsl(var(--border))',
+                                color: '#38bdf8',
+                            }}
+                            title='Click to copy environment key'
+                        >
+                            {variable.envVariable}
+                        </code>
+                    </CopyOnClick>
                 </div>
             }
         >

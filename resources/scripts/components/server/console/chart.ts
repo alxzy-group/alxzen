@@ -12,7 +12,6 @@ import { DeepPartial } from 'ts-essentials';
 import { useState } from 'react';
 import { deepmerge, deepmergeCustom } from 'deepmerge-ts';
 import { theme } from 'twin.macro';
-import { hexToRgba } from '@/lib/helpers';
 
 ChartJS.register(LineElement, PointElement, Filler, LinearScale);
 
@@ -45,17 +44,17 @@ const options: ChartOptions<'line'> = {
             type: 'linear',
             grid: {
                 display: true,
-                color: 'rgba(156, 163, 175, 0.2)', // gray-400 with opacity
+                color: 'rgba(255, 255, 255, 0.06)',
                 drawBorder: false,
             },
             ticks: {
                 display: true,
                 count: 3,
-                color: '#9ca3af', // gray-400
+                color: '#71717a',
                 font: {
                     family: theme('fontFamily.sans'),
-                    size: 12,
-                    weight: 'bold',
+                    size: 11,
+                    weight: '600',
                 },
             },
         },
@@ -65,7 +64,7 @@ const options: ChartOptions<'line'> = {
             radius: 0,
         },
         line: {
-            tension: 0.4,
+            tension: 0.35,
             borderWidth: 2,
         },
     },
@@ -92,11 +91,11 @@ function getEmptyData(label: string, sets = 1, callback?: ChartDatasetCallback |
                         fill: true,
                         label,
                         data: Array(20).fill(-5),
-                        borderColor: '#38bdf8', // Sky Blue 400
+                        borderColor: '#38bdf8',
                         backgroundColor: (context: any) => {
                             const ctx = context.chart.ctx;
-                            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                            gradient.addColorStop(0, 'rgba(56, 189, 248, 0.4)');
+                            const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+                            gradient.addColorStop(0, 'rgba(56, 189, 248, 0.28)');
                             gradient.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
                             return gradient;
                         },

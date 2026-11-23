@@ -6,19 +6,19 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.4.0"
+$tag = "v4.5.0"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.4.0 - Zero-Duplicate Sidebar Navigation & Full Client/Admin UI Modernization
+### AlxZen Panel v4.5.0 - Cloud-Native UI/UX Enhancement (Ultra-Lightweight 60fps)
 
-- **Zero-Duplicate Navigation Architecture (`NavigationBar.tsx`, `ServerRouter.tsx`, `DashboardRouter.tsx`):**
-  - Removed the redundant horizontal `ServerDockBar` and `SubNavigation` bars so all Server Operations & Account navigation lives cleanly in the redesigned 288px Sidebar Drawer with categorized SaaS groups and cyan active accents.
-  - Compacted the top bar (`64px`) with a live `/ {Server Name}` breadcrumb pill, `Cmd/Ctrl+K` Quick Search bar, Admin/Manage shortcut pill, and Light/Dark mode toggle.
-- **Unified Obsidian + Electric Cyan Primitives & Full Sub-Page Overhaul:**
-  - Upgraded legacy gray/purple `Modal`, `Dialog`, `Select`, `Code`, `SearchModal`, `ContentBox`, and `TitledGreyBox` components to unified Obsidian + Electric Cyan surfaces.
-  - Added unified `PageHeader` and composed `EmptyState` across all Server tabs (`Files`, `Databases`, `Schedules`, `Users`, `Backups`, `Network`, `Domains`, `Startup`, `Settings`, `Activity`) and Account tabs (`Overview`, `API Keys`, `SSH Keys`, `Activity`).
-- **Complete Admin List View Unification (`admin/servers`, `admin/users`, `admin/nodes`, `admin/expiration`):**
-  - Upgraded the remaining 4 legacy list templates to the unified AlxZen Admin Bento system with tabular-nums telemetry pills and responsive toolbars.
+- **Dashboard Command Toolbar & Grid/List ServerRow (`DashboardContainer.tsx`, `ServerRow.tsx`):**
+  - Added instant client-side server filter, persisted Grid / Compact List view toggle, and Streamer IP Privacy Mask toggle (`Hide IP`).
+  - Added 1-click Quick Files shortcut buttons, percentage usage labels next to limits, subtle CSS pulse status dots, and lightweight CSS transitions (zero Framer Motion loops).
+- **Enhanced Terminal Console & Telemetry Charts (`Console.tsx`, `StatGraphs.tsx`, `chart.ts`):**
+  - Added 1-click Search Logs (`Ctrl+F`), Expand/Compact terminal height toggle, and command input history hint (`History / Enter`).
+  - Refined Network I/O badges and charts to Electric Cyan (Inbound) and Emerald (Outbound) with ultra-clean gridlines.
+- **Enhanced File Manager & Startup (`FileManagerContainer.tsx`, `FileObjectRow.tsx`, `StartupContainer.tsx`, `VariableBox.tsx`):**
+  - Added instant directory file filtering, Sort selector (`Name / Size / Modified`), tinted rounded-xl file/folder icon badges, 1-click Copy Startup Command button, and Environment Variable search filter.
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag

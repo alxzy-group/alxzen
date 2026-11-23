@@ -1,5 +1,21 @@
 # Changelog
 
+## [v4.5.0] - 2026-11-23
+### Enhanced (Cloud-Native UI/UX & 60fps Lightweight Polish)
+- **Dashboard Command Toolbar & Grid/List `ServerRow` (`DashboardContainer.tsx`, `ServerRow.tsx`)**:
+  - Added an instant client-side filter bar (search by server name, ID, node, or allocation with zero API requests), a persisted **Grid / List View Switcher** (compact single-row Vercel/Railway cloud rows alongside Bento cards), and a **Streamer IP Privacy Mask** toggle (`Hide IP`).
+  - Added 1-click **Quick Files** shortcut pills, percentage usage readouts (`%`) next to CPU/RAM/Disk limits, subtle GPU-composited live pulse dots on active servers, and smart expiring-soon amber/red badges.
+  - Replaced heavy Framer Motion wrappers in dashboard headers and empty states with lightweight CSS compositor transitions.
+- **Enhanced Terminal Console & Clean Minimalist Telemetry Charts (`Console.tsx`, `StatGraphs.tsx`, `chart.ts`)**:
+  - Added 1-click **Search Logs (`Ctrl+F`)** and **Expand / Compact Height Toggle (`380px` ↔ `640px`)** controls to the terminal toolbar, plus an inline `↑↓ History · Enter` keyboard hint in the command input bar.
+  - Unified `StatGraphs.tsx` and `chart.ts` with the AlxZen Electric Cyan (Inbound) & Emerald (Outbound) palette and clean subtle gridlines (removing legacy purple network pills).
+- **Enhanced File Manager (`FileManagerContainer.tsx`, `FileObjectRow.tsx`, `style.module.css`)**:
+  - Added instant **In-Directory File Filter**, **Sort Selector** (`Name`, `Size`, `Modified`), rounded-xl tinted file/folder icon containers, and tabular monospace file size pills in List View.
+- **Enhanced Startup Configuration (`StartupContainer.tsx`, `VariableBox.tsx`)**:
+  - Added a **1-Click Copy Command** button on the Startup Command box, an instant **Environment Variable Search Filter**, click-to-copy `ENV_VAR` badges, and editable indicator dots.
+- **Ultra-Thin 8px Cloud Scrollbar (`GlobalStylesheet.ts`)**:
+  - Replaced legacy 16px stock scrollbars with a sleek 8px pill scrollbar with cyan hover highlights.
+
 ## [v4.4.0] - 2026-11-21
 ### Changed & Upgraded
 - **Eliminated Duplicate Horizontal Navigation & Upgraded Sidebar Control Architecture (`NavigationBar.tsx`, `ServerRouter.tsx`, `DashboardRouter.tsx`, `SearchContainer.tsx`)**:
