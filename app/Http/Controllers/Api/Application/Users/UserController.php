@@ -70,8 +70,21 @@ class UserController extends ApplicationApiController
      */
     public function update(UpdateUserRequest $request, User $user): array
     {
+        if ($user->id === 1 && $request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh mengubah akun Owner Utama.');
+        }
+
+        if ($request->user()->id !== 1 && $user->root_admin && $user->id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Anda tidak diizinkan mengubah akun Administrator lain.');
+        }
+
+        $data = $request->validated();
+        if ($request->user()->id !== 1) {
+            $data['root_admin'] = $user->root_admin;
+        }
+
         $this->updateService->setUserLevel(User::USER_LEVEL_ADMIN);
-        $user = $this->updateService->handle($user, $request->validated());
+        $user = $this->updateService->handle($user, $data);
 
         $response = $this->fractal->item($user)
             ->transformWith($this->getTransformer(UserTransformer::class));
@@ -88,7 +101,12 @@ class UserController extends ApplicationApiController
      */
     public function store(StoreUserRequest $request): JsonResponse
     {
-        $user = $this->creationService->handle($request->validated());
+        $data = $request->validated();
+        if ($request->user()->id !== 1) {
+            $data['root_admin'] = false;
+        }
+
+        $user = $this->creationService->handle($data);
 
         return $this->fractal->item($user)
             ->transformWith($this->getTransformer(UserTransformer::class))

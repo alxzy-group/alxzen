@@ -72,7 +72,7 @@
                             type="text"
                             name="filter[*]"
                             class="form-control alx-toolbar-input"
-                            value="{{ request()->input()['filter']['*'] ?? '' }}"
+                            value="{{ request()->input('filter.*', '') }}"
                             placeholder="Search servers or UUID..."
                         >
                         <button type="submit" class="btn btn-sm btn-default">
@@ -117,7 +117,7 @@
                                         <i class="fa fa-sitemap" style="color:#71717a;margin-right:5px;"></i>{{ $server->node->name }}
                                     </a>
                                 </td>
-                                <td><code style="font-variant-numeric:tabular-nums;">{{ $server->allocation->alias }}:{{ $server->allocation->port }}</code></td>
+                                <td><code style="font-variant-numeric:tabular-nums;">{{ $server->allocation->alias ?: $server->allocation->ip }}:{{ $server->allocation->port }}</code></td>
                                 <td class="text-center">
                                     @if($server->isSuspended())
                                         <span class="alx-status alx-status-suspended">

@@ -128,7 +128,7 @@
                                             @if (Auth::user()->is($key->user))
                                                 @php $fullToken = $key->identifier . decrypt($key->token); @endphp
                                                 <span>{{ $key->identifier . decrypt($key->token) }}</span>
-                                                <button type="button" class="alx-copy-btn" onclick="copyToClipboard('{{ $fullToken }}', this)" title="Copy API Key">
+                                                <button type="button" class="alx-copy-btn" data-token="{{ $fullToken }}" onclick="copyToClipboard(this.dataset.token, this)" title="Copy API Key">
                                                     <i class="fa fa-copy"></i>
                                                 </button>
                                             @else

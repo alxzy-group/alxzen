@@ -1,5 +1,20 @@
 # Changelog
 
+## [v4.7.0] - 2026-11-27
+### Security Hardening & Bug Fixes (Full Panel Audit)
+- **Privilege Escalation & Anti-Intip Hardening**:
+  - Locked `/admin/settings` and `/admin/announcements` behind `admin.superuser` middleware and `AnnouncementController::validateOwner()` so sub-admins cannot view SMTP/reCAPTCHA secrets or broadcast banners.
+  - Hardened `Admin\UserController::update()` and `Application\Users\UserController` (`store()` & `update()`) so sub-admins cannot promote themselves or others to `root_admin`, nor modify Owner ID 1 or other Administrators (while keeping bot user creation intact).
+  - Enforced Super Admin (ID 1) or server ownership checks across `Application\Servers` endpoints (`delete`, `suspend`, `unsuspend`, `reinstall`, `extend`, `details`, `build`, `startup`), `ServerTransferController::transfer()`, `NodeAutoDeployController`, `LocationController`, and `MountController`.
+- **Crash, Logic & Search Fixes**:
+  - Fixed fatal `ArgumentCountError` bugs when deleting a Location or Mount from `LocationController::update()` and `MountController::update()`.
+  - Fixed `ExpirationController::update()` ignoring `+30D` when a date input was present, added missing-input validation, and upgraded `ExpirationController::index()` + `AdminServerFilter.php` with trimmed case-insensitive `LOWER(...)` search.
+- **XSS, Secret Leakage & UI Anomaly Cleanups**:
+  - Replaced `dangerouslySetInnerHTML` in `AnnounceBar.tsx` with plain text (`whitespace-pre-line`) to eliminate Stored XSS.
+  - Masked Wings node daemon tokens and hid Super-Admin-only creation/purge actions in `admin/nodes/index.blade.php` and `admin/expiration/index.blade.php` for sub-admins, and fixed pagination query appending (`filter`).
+  - Removed duplicate `id="allocationLoader"` in `admin/servers/new.blade.php`, fixed `old('node_id')` pre-selection, sanitized inline Blade JS with `@json(...)` in `servers/new` and `servers/view/details`, fixed `data-token` copying in `admin/api/index.blade.php`, fixed allocation fallback & filter input in `admin/servers/index.blade.php`, fixed label bindings/stray tag in `servers/view/build.blade.php`, and added null-safe author handling in `admin/announcements/index.blade.php`.
+  - Hardened `multiplayer/server.js` Socket.IO event handlers (`join_world`, `move`, `chat_message`, WebRTC signaling) against malformed payloads, property injection, and chat spam.
+
 ## [v4.6.1] - 2026-11-27
 ### Fixed (Custom Domain Availability During Maintenance Mode)
 - **Exempt `/api/public/resolve-domain` from `php artisan down` (`PreventRequestsDuringMaintenance.php`, `Kernel.php`, `public/index.php`)**:

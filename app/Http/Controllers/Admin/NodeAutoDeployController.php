@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Pterodactyl\Http\Controllers\Controller;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Pterodactyl\Services\Api\KeyCreationService;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class NodeAutoDeployController extends Controller
 {
@@ -29,6 +30,9 @@ class NodeAutoDeployController extends Controller
      */
     public function __invoke(Request $request, Node $node): JsonResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang diizinkan menghasilkan token deploy node.');
+        }
         $key = ApiKey::query()
             ->where('user_id', $request->user()->id)
             ->where('key_type', ApiKey::TYPE_APPLICATION)

@@ -142,16 +142,25 @@ class UserController extends Controller
             return redirect()->back();
         }
 
-        // 2. Admin lain (ID != 1) dilarang membuat Admin baru (root_admin).
-        // Jadi bot tetap bisa create/edit user biasa, tapi gak bisa bikin admin siluman.
-        if ($request->input('root_admin') == 1 && $request->user()->id !== 1) {
-             $this->alert->danger('Aksi Ilegal: Hanya Owner Utama yang bisa mengangkat Admin baru!')->flash();
-             return redirect()->back();
+        // 2. Sub-admin tidak boleh mengubah akun Administrator lain.
+        if ($request->user()->id !== 1 && $user->root_admin && $user->id !== $request->user()->id) {
+            $this->alert->danger('Keamanan: Anda tidak diizinkan mengubah data sesama Administrator!')->flash();
+            return redirect()->back();
+        }
+
+        // 3. Admin lain (ID != 1) dilarang membuat Admin baru atau mengubah status root_admin.
+        $data = $request->normalize();
+        if ($request->user()->id !== 1) {
+            if (!empty($data['root_admin']) && !$user->root_admin) {
+                $this->alert->danger('Aksi Ilegal: Hanya Owner Utama yang bisa mengangkat Admin baru!')->flash();
+                return redirect()->back();
+            }
+            $data['root_admin'] = $user->root_admin;
         }
 
         $this->updateService
             ->setUserLevel(User::USER_LEVEL_ADMIN)
-            ->handle($user, $request->normalize());
+            ->handle($user, $data);
 
         $this->alert->success(trans('admin/user.notices.account_updated'))->flash();
 

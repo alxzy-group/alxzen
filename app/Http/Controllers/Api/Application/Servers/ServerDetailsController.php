@@ -9,6 +9,7 @@ use Pterodactyl\Transformers\Api\Application\ServerTransformer;
 use Pterodactyl\Http\Controllers\Api\Application\ApplicationApiController;
 use Pterodactyl\Http\Requests\Api\Application\Servers\UpdateServerDetailsRequest;
 use Pterodactyl\Http\Requests\Api\Application\Servers\UpdateServerBuildConfigurationRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class ServerDetailsController extends ApplicationApiController
 {
@@ -31,6 +32,10 @@ class ServerDetailsController extends ApplicationApiController
      */
     public function details(UpdateServerDetailsRequest $request, Server $server): array
     {
+        if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses ditolak: Anda tidak diizinkan mengubah detail server milik pengguna lain.');
+        }
+
         $updated = $this->detailsModificationService->returnUpdatedModel()->handle(
             $server,
             $request->validated()
@@ -50,6 +55,10 @@ class ServerDetailsController extends ApplicationApiController
      */
     public function build(UpdateServerBuildConfigurationRequest $request, Server $server): array
     {
+        if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses ditolak: Anda tidak diizinkan mengubah konfigurasi build server milik pengguna lain.');
+        }
+
         $server = $this->buildModificationService->handle($server, $request->validated());
 
         return $this->fractal->item($server)

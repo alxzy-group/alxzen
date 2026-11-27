@@ -18,17 +18,25 @@ class AdminServerFilter implements Filter
         if ($query->getQuery()->from !== 'servers') {
             throw new \BadMethodCallException('Cannot use the AdminServerFilter against a non-server model.');
         }
+        $value = trim((string) $value);
+        if ($value === '') {
+            return;
+        }
+
+        $lower = mb_strtolower($value);
+
         $query
             ->select('servers.*')
             ->leftJoin('users', 'users.id', '=', 'servers.owner_id')
-            ->where(function (Builder $builder) use ($value) {
-                $builder->where('servers.uuid', $value)
-                    ->orWhere('servers.uuid', 'LIKE', "$value%")
-                    ->orWhere('servers.uuidShort', $value)
-                    ->orWhere('servers.external_id', $value)
-                    ->orWhereRaw('LOWER(users.username) LIKE ?', ["%$value%"])
-                    ->orWhereRaw('LOWER(users.email) LIKE ?', ["$value%"])
-                    ->orWhereRaw('LOWER(servers.name) LIKE ?', ["%$value%"]);
+            ->where(function (Builder $builder) use ($lower) {
+                $builder->whereRaw('LOWER(servers.uuid) = ?', [$lower])
+                    ->orWhereRaw('LOWER(servers.uuid) LIKE ?', [$lower . '%'])
+                    ->orWhereRaw('LOWER(servers.uuidShort) = ?', [$lower])
+                    ->orWhereRaw('LOWER(servers.uuidShort) LIKE ?', [$lower . '%'])
+                    ->orWhereRaw('LOWER(servers.external_id) = ?', [$lower])
+                    ->orWhereRaw('LOWER(users.username) LIKE ?', ['%' . $lower . '%'])
+                    ->orWhereRaw('LOWER(users.email) LIKE ?', [$lower . '%'])
+                    ->orWhereRaw('LOWER(servers.name) LIKE ?', ['%' . $lower . '%']);
             })
             ->groupBy('servers.id');
     }

@@ -23,7 +23,10 @@ class ExpirationController extends Controller
         }
 
         if ($request->filled('filter.name')) {
-            $query->where('servers.name', 'LIKE', '%' . $request->input('filter.name') . '%');
+            $lower = mb_strtolower(trim((string) $request->input('filter.name')));
+            if ($lower !== '') {
+                $query->whereRaw('LOWER(servers.name) LIKE ?', ['%' . $lower . '%']);
+            }
         }
 
         $servers = $query->orderBy('expires_at', 'asc') // Urutkan dari yang mau expired duluan
@@ -43,17 +46,20 @@ class ExpirationController extends Controller
 
         $request->validate([
             'new_date' => 'nullable|date',
+            'days' => 'nullable|integer|min:1|max:3650',
         ]);
 
-        if ($request->filled('new_date')) {
+        if ($request->filled('days')) {
+            $days = (int) $request->input('days', 30);
+            if ($server->expires_at && $server->expires_at->isFuture()) {
+                $newDate = $server->expires_at->copy()->addDays($days);
+            } else {
+                $newDate = Carbon::now()->addDays($days);
+            }
+        } elseif ($request->filled('new_date')) {
             $newDate = Carbon::parse($request->input('new_date'))->endOfDay();
         } else {
-            // Logika tambah 30 hari otomatis
-            if ($server->expires_at && $server->expires_at->isFuture()) {
-                $newDate = $server->expires_at->addDays(30);
-            } else {
-                $newDate = Carbon::now()->addDays(30);
-            }
+            return redirect()->back()->with('error', 'Silakan pilih tanggal terlebih dahulu atau klik tombol +30D.');
         }
 
         // Simpan tanggal baru

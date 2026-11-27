@@ -102,11 +102,11 @@
         templateSelection: function (data) {
             if (typeof data.name_first === 'undefined') {
                 data = {
-                    md5: '{{ md5(strtolower($server->user->email)) }}',
-                    name_first: '{{ $server->user->name_first }}',
-                    name_last: '{{ $server->user->name_last }}',
-                    email: '{{ $server->user->email }}',
-                    id: {{ $server->owner_id }}
+                    md5: @json(md5(strtolower($server->user->email))),
+                    name_first: @json($server->user->name_first),
+                    name_last: @json($server->user->name_last),
+                    email: @json($server->user->email),
+                    id: {{ (int) $server->owner_id }}
                 };
             }
 

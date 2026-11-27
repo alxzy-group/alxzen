@@ -54,12 +54,14 @@
                             <i class="fa fa-search" style="margin-right:4px;"></i> Search
                         </button>
                     </form>
-                    <form action="{{ route('admin.expiration.deleteAll') }}" method="POST" style="display:inline-flex;" onsubmit="return confirm('Are you sure you want to delete all expired servers? This action cannot be undone and will delete server files and databases.');">
-                        {!! csrf_field() !!}
-                        <button type="submit" class="btn btn-sm btn-danger">
-                            <i class="fa fa-trash-o" style="margin-right:4px;"></i> Purge Expired
-                        </button>
-                    </form>
+                    @if(Auth::user()->id === 1)
+                        <form action="{{ route('admin.expiration.deleteAll') }}" method="POST" style="display:inline-flex;" onsubmit="return confirm('Are you sure you want to delete all expired servers? This action cannot be undone and will delete server files and databases.');">
+                            {!! csrf_field() !!}
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="fa fa-trash-o" style="margin-right:4px;"></i> Purge Expired
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
 

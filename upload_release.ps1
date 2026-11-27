@@ -6,17 +6,22 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.6.1"
+$tag = "v4.7.0"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.6.1 - Custom Domains Stay Online During Maintenance Mode
+### AlxZen Panel v4.7.0 - Full Security Hardening, Bug Fixes & Page Cleanup
 
-- **Maintenance Mode Exemption (`PreventRequestsDuringMaintenance.php`, `Kernel.php`, `public/index.php`):**
-  - Exempted `/api/public/resolve-domain` from Laravel maintenance mode (`php artisan down`) and pre-boot `maintenance.php` interception so user custom domains/subdomains keep resolving while only the Panel UI & API show maintenance.
-- **Stateless Resolver Route (`RouteServiceProvider.php`, `routes/base.php`):**
-  - Moved `/api/public/resolve-domain` outside `web` session middleware for faster, stateless proxy lookups.
-- **Proxy Stale-If-Error Cache (`setup.sh`):**
-  - Upgraded the Subdomain Auto-Proxy template with in-memory (`15s`) + disk (`routes-cache.json`) caching, `3s` timeout, and stale-if-error fallback during transient 5xx/restarts.
+- **Privilege Escalation & Anti-Intip Hardening:**
+  - Protected `/admin/settings` and `/admin/announcements` with `admin.superuser` middleware and controller owner checks.
+  - Hardened Web & Application API User/Server/Node/Location/Mount controllers against sub-admin privilege escalation (`root_admin` lock, owner checks on server modifications, Super Admin ID 1 lock on delete/suspend/reinstall/transfer/auto-deploy/locations/mounts).
+  - Masked Wings daemon tokens in `admin/nodes/index` from non-ID-1 admins.
+- **Crash, Search & Expiration Fixes:**
+  - Fixed fatal `ArgumentCountError` on delete in `LocationController::update()` and `MountController::update()`.
+  - Fixed `ExpirationController::update()` `+30D` priority, missing input feedback, and case-insensitive `LOWER(...)` search in `AdminServerFilter` & `ExpirationController`.
+  - Fixed `admin/servers/index` filter input crash, `ip:port` fallback, and `admin/announcements/index` null-safe author rendering.
+- **XSS, Duplicate Input & Multiplayer Server Hardening:**
+  - Removed Stored XSS in `AnnounceBar.tsx` and sanitized Blade-to-JS output with `@json(...)` in `servers/new` and `servers/view/details`.
+  - Removed duplicate `id="allocationLoader"` in `admin/servers/new`, fixed label `for=` & stray `</code>` in `servers/view/build`, and hardened Socket.IO validation/rate limiting in `multiplayer/server.js`.
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag

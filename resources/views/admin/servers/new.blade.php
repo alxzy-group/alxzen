@@ -73,7 +73,7 @@
                                 @foreach($location->nodes as $node)
 
                                 <option value="{{ $node->id }}"
-                                    @if($location->id === old('location_id')) selected @endif
+                                    @if($node->id == old('node_id')) selected @endif
                                 >{{ $node->name }}</option>
 
                                 @endforeach
@@ -103,7 +103,6 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box">
-                <div class="overlay" id="allocationLoader" style="display:none;"><i class="fa fa-refresh fa-spin"></i></div>
                 <div class="box-header with-border">
                     <h3 class="box-title">Application Feature Limits</h3>
                 </div>
@@ -328,18 +327,20 @@
         function serviceVariablesUpdated(eggId, ids) {
             @if (old('egg_id'))
                 // Check if the egg id matches.
-                if (eggId != '{{ old('egg_id') }}') {
+                if (eggId != @json(old('egg_id'))) {
                     return;
                 }
 
                 @if (old('environment'))
-                    @foreach (old('environment') as $key => $value)
-                        $('#' + ids['{{ $key }}']).val('{{ $value }}');
+                    @foreach ((array) old('environment') as $key => $value)
+                        if (ids[@json($key)]) {
+                            $('#' + ids[@json($key)]).val(@json($value));
+                        }
                     @endforeach
                 @endif
             @endif
             @if(old('image'))
-                $('#pDefaultContainer').val('{{ old('image') }}');
+                $('#pDefaultContainer').val(@json(old('image')));
             @endif
         }
         // END Persist 'Service Variables'
@@ -352,7 +353,7 @@
             // Persist 'Server Owner' select2
             @if (old('owner_id'))
                 $.ajax({
-                    url: '/admin/users/accounts.json?user_id={{ old('owner_id') }}',
+                    url: '/admin/users/accounts.json?user_id=' + encodeURIComponent(String(@json(old('owner_id')))),
                     dataType: 'json',
                 }).then(function (data) {
                     initUserIdSelect([ data ]);
@@ -364,21 +365,17 @@
 
             // Persist 'Node' select2
             @if (old('node_id'))
-                $('#pNodeId').val('{{ old('node_id') }}').change();
+                $('#pNodeId').val(@json(old('node_id'))).change();
 
                 // Persist 'Default Allocation' select2
                 @if (old('allocation_id'))
-                    $('#pAllocation').val('{{ old('allocation_id') }}').change();
+                    $('#pAllocation').val(@json(old('allocation_id'))).change();
                 @endif
                 // END Persist 'Default Allocation' select2
 
                 // Persist 'Additional Allocations' select2
                 @if (old('allocation_additional'))
-                    const additional_allocations = [];
-
-                    @for ($i = 0; $i < count(old('allocation_additional')); $i++)
-                        additional_allocations.push('{{ old('allocation_additional.'.$i)}}');
-                    @endfor
+                    const additional_allocations = (@json((array) old('allocation_additional', []))).map(String);
 
                     $('#pAllocationAdditional').val(additional_allocations).change();
                 @endif
@@ -388,11 +385,11 @@
 
             // Persist 'Nest' select2
             @if (old('nest_id'))
-                $('#pNestId').val('{{ old('nest_id') }}').change();
+                $('#pNestId').val(@json(old('nest_id'))).change();
 
                 // Persist 'Egg' select2
                 @if (old('egg_id'))
-                    $('#pEggId').val('{{ old('egg_id') }}').change();
+                    $('#pEggId').val(@json(old('egg_id'))).change();
                 @endif
                 // END Persist 'Egg' select2
             @endif

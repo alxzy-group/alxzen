@@ -32,7 +32,7 @@
                     <div class="form-group" style="margin-bottom:0;">
                         <label for="content" class="control-label">Announcement Body <span class="field-required"></span></label>
                         <textarea name="content" id="content" class="form-control" rows="6" placeholder="Write the announcement message that clients will see..." required>{{ old('content') }}</textarea>
-                        <p class="text-muted small" style="margin-bottom:0;">Markdown formatting is supported and rendered directly in the client dashboard and console.</p>
+                        <p class="text-muted small" style="margin-bottom:0;">Plain text with line breaks is supported and safely rendered in the client dashboard and console.</p>
                     </div>
                 </div>
             </div>

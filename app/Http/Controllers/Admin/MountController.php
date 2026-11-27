@@ -17,6 +17,7 @@ use Pterodactyl\Http\Requests\Admin\MountFormRequest;
 use Pterodactyl\Repositories\Eloquent\MountRepository;
 use Pterodactyl\Contracts\Repository\NestRepositoryInterface;
 use Pterodactyl\Contracts\Repository\LocationRepositoryInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class MountController extends Controller
 {
@@ -66,6 +67,10 @@ class MountController extends Controller
      */
     public function create(MountFormRequest $request): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh membuat Mount.');
+        }
+
         $model = (new Mount())->fill($request->validated());
         $model->forceFill(['uuid' => Uuid::uuid4()->toString()]);
 
@@ -84,8 +89,12 @@ class MountController extends Controller
      */
     public function update(MountFormRequest $request, Mount $mount): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh mengubah Mount.');
+        }
+
         if ($request->input('action') === 'delete') {
-            return $this->delete($mount);
+            return $this->delete($request, $mount);
         }
 
         $mount->forceFill($request->validated())->save();
@@ -117,6 +126,10 @@ class MountController extends Controller
      */
     public function addEggs(Request $request, Mount $mount): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh mengubah relasi Mount.');
+        }
+
         $validatedData = $request->validate([
             'eggs' => 'required|exists:eggs,id',
         ]);
@@ -136,6 +149,10 @@ class MountController extends Controller
      */
     public function addNodes(Request $request, Mount $mount): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh mengubah relasi Mount.');
+        }
+
         $data = $request->validate(['nodes' => 'required|exists:nodes,id']);
 
         $nodes = $data['nodes'] ?? [];
@@ -151,8 +168,12 @@ class MountController extends Controller
     /**
      * Deletes an egg from the mount's many-to-many relation.
      */
-    public function deleteEgg(Mount $mount, int $egg_id): Response
+    public function deleteEgg(Request $request, Mount $mount, int $egg_id): Response
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh mengubah relasi Mount.');
+        }
+
         $mount->eggs()->detach($egg_id);
 
         return response('', 204);
@@ -161,8 +182,12 @@ class MountController extends Controller
     /**
      * Deletes a node from the mount's many-to-many relation.
      */
-    public function deleteNode(Mount $mount, int $node_id): Response
+    public function deleteNode(Request $request, Mount $mount, int $node_id): Response
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh mengubah relasi Mount.');
+        }
+
         $mount->nodes()->detach($node_id);
 
         return response('', 204);

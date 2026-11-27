@@ -8,6 +8,7 @@ use Pterodactyl\Services\Servers\SuspensionService;
 use Pterodactyl\Services\Servers\ReinstallServerService;
 use Pterodactyl\Http\Requests\Api\Application\Servers\ServerWriteRequest;
 use Pterodactyl\Http\Controllers\Api\Application\ApplicationApiController;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class ServerManagementController extends ApplicationApiController
 {
@@ -28,6 +29,10 @@ class ServerManagementController extends ApplicationApiController
      */
     public function suspend(ServerWriteRequest $request, Server $server): Response
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Fitur suspend hanya diizinkan untuk Super Admin (ID 1).');
+        }
+
         $this->suspensionService->toggle($server);
 
         return $this->returnNoContent();
@@ -40,6 +45,10 @@ class ServerManagementController extends ApplicationApiController
      */
     public function unsuspend(ServerWriteRequest $request, Server $server): Response
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Fitur unsuspend hanya diizinkan untuk Super Admin (ID 1).');
+        }
+
         $this->suspensionService->toggle($server, SuspensionService::ACTION_UNSUSPEND);
 
         return $this->returnNoContent();
@@ -54,6 +63,10 @@ class ServerManagementController extends ApplicationApiController
      */
     public function reinstall(ServerWriteRequest $request, Server $server): Response
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Fitur reinstall hanya diizinkan untuk Super Admin (ID 1).');
+        }
+
         $this->reinstallServerService->handle($server);
 
         return $this->returnNoContent();
@@ -66,8 +79,11 @@ class ServerManagementController extends ApplicationApiController
      */
     public function extend(ServerWriteRequest $request, Server $server): Response
     {
-        $days = (int) $request->input('days', 30);
-        if ($days <= 0) $days = 30;
+        if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses ditolak: Anda tidak diizinkan memperpanjang masa aktif server milik pengguna lain.');
+        }
+
+        $days = min(max((int) $request->input('days', 30), 1), 3650);
 
         if ($server->expires_at && $server->expires_at->isFuture()) {
             $newDate = $server->expires_at->addDays($days);

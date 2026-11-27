@@ -8,6 +8,7 @@ use Pterodactyl\Services\Servers\StartupModificationService;
 use Pterodactyl\Transformers\Api\Application\ServerTransformer;
 use Pterodactyl\Http\Controllers\Api\Application\ApplicationApiController;
 use Pterodactyl\Http\Requests\Api\Application\Servers\UpdateServerStartupRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class StartupController extends ApplicationApiController
 {
@@ -29,6 +30,10 @@ class StartupController extends ApplicationApiController
      */
     public function index(UpdateServerStartupRequest $request, Server $server): array
     {
+        if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses ditolak: Anda tidak diizinkan mengubah konfigurasi startup server milik pengguna lain.');
+        }
+
         $server = $this->modificationService
             ->setUserLevel(User::USER_LEVEL_ADMIN)
             ->handle($server, $request->validated());

@@ -56,7 +56,7 @@
                         <p class="text-muted small">Setting this to <code>0</code> will disable swap space on this server. Setting to <code>-1</code> will allow unlimited swap.</p>
                     </div>
                     <div class="form-group">
-                        <label for="cpu" class="control-label">Disk Space Limit</label>
+                        <label for="disk" class="control-label">Disk Space Limit</label>
                         <div class="input-group">
                             <input type="text" name="disk" class="form-control" value="{{ old('disk', $server->disk) }}"/>
                             <span class="input-group-addon">MiB</span>
@@ -68,10 +68,10 @@
                         <div>
                             <input type="text" name="io" class="form-control" value="{{ old('io', $server->io) }}"/>
                         </div>
-                        <p class="text-muted small"><strong>Advanced</strong>: The IO performance of this server relative to other <em>running</em> containers on the system. Value should be between <code>10</code> and <code>1000</code>.</code></p>
+                        <p class="text-muted small"><strong>Advanced</strong>: The IO performance of this server relative to other <em>running</em> containers on the system. Value should be between <code>10</code> and <code>1000</code>.</p>
                     </div>
                     <div class="form-group">
-                        <label for="cpu" class="control-label">OOM Killer</label>
+                        <label for="pOomKillerEnabled" class="control-label">OOM Killer</label>
                         <div>
                             <div class="radio radio-danger radio-inline">
                                 <input type="radio" id="pOomKillerEnabled" value="0" name="oom_disabled" @if(!$server->oom_disabled)checked @endif>

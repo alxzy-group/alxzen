@@ -15,6 +15,7 @@ use Pterodactyl\Services\Nodes\NodeJWTService;
 use Pterodactyl\Repositories\Eloquent\NodeRepository;
 use Pterodactyl\Repositories\Wings\DaemonTransferRepository;
 use Pterodactyl\Contracts\Repository\AllocationRepositoryInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class ServerTransferController extends Controller
 {
@@ -38,6 +39,9 @@ class ServerTransferController extends Controller
      */
     public function transfer(Request $request, Server $server): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh memindahkan server antar node.');
+        }
         $validatedData = $request->validate([
             'node_id' => 'required|exists:nodes,id',
             'allocation_id' => 'required|bail|unique:servers|exists:allocations,id',

@@ -61,7 +61,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <span style="color:#e4e4e7;font-weight:600;"><i class="fa fa-user-circle-o" style="color:#71717a;margin-right:5px;"></i>{{ $announcement->author->username }}</span>
+                                    <span style="color:#e4e4e7;font-weight:600;"><i class="fa fa-user-circle-o" style="color:#71717a;margin-right:5px;"></i>{{ optional($announcement->author)->username ?? 'System' }}</span>
                                 </td>
                                 <td style="color:#a1a1aa;font-size:12px;">{{ $announcement->created_at->diffForHumans() }}</td>
                                 <td class="text-right">

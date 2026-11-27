@@ -118,7 +118,7 @@ export default ({ displayLocation }: Props) => {
                     </div>
                     <Content>
                         <h3>{announcement.title}</h3>
-                        <p dangerouslySetInnerHTML={{ __html: announcement.content }} />
+                        <p className="whitespace-pre-line">{announcement.content}</p>
                     </Content>
                     <CloseButton onClick={() => handleDismiss(announcement.id)}>
                         <XIcon className="w-5 h-5" />

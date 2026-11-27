@@ -69,9 +69,11 @@
                         <button type="submit" class="btn btn-sm btn-default">
                             <i class="fa fa-search" style="margin-right:4px;"></i> Search
                         </button>
-                        <a href="{{ route('admin.nodes.new') }}" class="btn btn-sm btn-primary">
-                            <i class="fa fa-plus" style="margin-right:5px;"></i> Create Node
-                        </a>
+                        @if(Auth::user()->id === 1)
+                            <a href="{{ route('admin.nodes.new') }}" class="btn btn-sm btn-primary">
+                                <i class="fa fa-plus" style="margin-right:5px;"></i> Create Node
+                            </a>
+                        @endif
                     </form>
                 </div>
             </div>
@@ -93,11 +95,17 @@
                     <tbody>
                         @forelse ($nodes as $node)
                             <tr>
-                                <td class="text-center" data-action="ping"
-                                    data-secret="{{ $node->getDecryptedKey() }}"
-                                    data-location="{{ $node->scheme }}://{{ $node->fqdn }}:{{ $node->daemonListen }}/api/system">
-                                    <span class="alx-node-status loading" title="Checking..."></span>
-                                </td>
+                                @if(Auth::user()->id === 1)
+                                    <td class="text-center" data-action="ping"
+                                        data-secret="{{ $node->getDecryptedKey() }}"
+                                        data-location="{{ $node->scheme }}://{{ $node->fqdn }}:{{ $node->daemonListen }}/api/system">
+                                        <span class="alx-node-status loading" title="Checking..."></span>
+                                    </td>
+                                @else
+                                    <td class="text-center">
+                                        <span class="alx-node-status" style="background:#38bdf8;" title="Protected"></span>
+                                    </td>
+                                @endif
                                 <td>
                                     @if($node->maintenance_mode)
                                         <span class="label label-warning" style="margin-right:6px;"><i class="fa fa-wrench"></i> Maintenance</span>
@@ -149,7 +157,7 @@
             </div>
             @if($nodes->hasPages())
                 <div class="box-footer with-border">
-                    <div class="col-md-12 text-center">{!! $nodes->appends(['query' => Request::input('query')])->render() !!}</div>
+                    <div class="col-md-12 text-center">{!! $nodes->appends(['filter' => Request::input('filter')])->render() !!}</div>
                 </div>
             @endif
         </div>
@@ -159,6 +167,7 @@
 
 @section('footer-scripts')
     @parent
+    @if(Auth::user()->id === 1)
     <script>
     (function pingNodes() {
         $('td[data-action="ping"]').each(function(i, element) {
@@ -179,4 +188,5 @@
         });
     })();
     </script>
+    @endif
 @endsection

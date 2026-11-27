@@ -28,7 +28,7 @@ Route::group(['prefix' => 'databases'], function () {
     Route::delete('/view/{host:id}', [Admin\DatabaseController::class, 'delete']);
 });
 
-Route::group(['prefix' => 'settings'], function () {
+Route::group(['prefix' => 'settings', 'middleware' => ['admin.superuser']], function () {
     Route::get('/', [Admin\Settings\IndexController::class, 'index'])->name('admin.settings');
     Route::get('/mail', [Admin\Settings\MailController::class, 'index'])->name('admin.settings.mail');
     Route::get('/advanced', [Admin\Settings\AdvancedController::class, 'index'])->name('admin.settings.advanced');
@@ -150,7 +150,7 @@ Route::group(['prefix' => 'expiration'], function () {
     Route::post('/{id}', [Admin\ExpirationController::class, 'update'])->name('admin.expiration.update');
 });
 
-Route::group(['prefix' => 'announcements'], function () {
+Route::group(['prefix' => 'announcements', 'middleware' => ['admin.superuser']], function () {
     Route::get('/', [Admin\AnnouncementController::class, 'index'])->name('admin.announcements');
     Route::get('/new', [Admin\AnnouncementController::class, 'create'])->name('admin.announcements.new');
     Route::post('/new', [Admin\AnnouncementController::class, 'store'])->name('admin.announcements.store');

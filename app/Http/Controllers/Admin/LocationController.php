@@ -3,6 +3,7 @@
 namespace Pterodactyl\Http\Controllers\Admin;
 
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 use Pterodactyl\Models\Location;
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
@@ -14,6 +15,7 @@ use Pterodactyl\Services\Locations\LocationUpdateService;
 use Pterodactyl\Services\Locations\LocationCreationService;
 use Pterodactyl\Services\Locations\LocationDeletionService;
 use Pterodactyl\Contracts\Repository\LocationRepositoryInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class LocationController extends Controller
 {
@@ -59,6 +61,10 @@ class LocationController extends Controller
      */
     public function create(LocationFormRequest $request): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh menambah Location.');
+        }
+
         $location = $this->creationService->handle($request->normalize());
         $this->alert->success('Location was created successfully.')->flash();
 
@@ -72,8 +78,12 @@ class LocationController extends Controller
      */
     public function update(LocationFormRequest $request, Location $location): RedirectResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh mengubah Location.');
+        }
+
         if ($request->input('action') === 'delete') {
-            return $this->delete($location);
+            return $this->delete($request, $location);
         }
 
         $this->updateService->handle($location->id, $request->normalize());

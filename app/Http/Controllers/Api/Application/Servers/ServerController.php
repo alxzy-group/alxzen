@@ -91,6 +91,10 @@ class ServerController extends ApplicationApiController
      */
     public function delete(ServerWriteRequest $request, Server $server, string $force = ''): Response
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan menghapus server via Application API.');
+        }
+
         $this->deletionService->withForce($force === 'force')->handle($server);
 
         return $this->returnNoContent();

@@ -8,6 +8,7 @@ use Pterodactyl\Models\Announcement;
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
 use Pterodactyl\Http\Controllers\Controller;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AnnouncementController extends Controller
 {
@@ -25,10 +26,22 @@ class AnnouncementController extends Controller
     }
 
     /**
+     * Only Super Admin (ID 1) may manage panel announcements.
+     */
+    protected function validateOwner(Request $request): void
+    {
+        if (!$request->user() || $request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses Ditolak: Hanya Super Admin (ID 1) yang boleh mengelola pengumuman panel.');
+        }
+    }
+
+    /**
      * Display the index page for announcements.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
+        $this->validateOwner($request);
+
         $announcements = Announcement::with('author')
             ->orderBy('created_at', 'desc')
             ->paginate(15);
@@ -39,8 +52,10 @@ class AnnouncementController extends Controller
     /**
      * Show the create form.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        $this->validateOwner($request);
+
         return view('admin.announcements.new');
     }
 
@@ -51,6 +66,8 @@ class AnnouncementController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $data = $this->validate($request, Announcement::$validationRules);
 
         $data['created_by'] = $request->user()->id;
@@ -68,8 +85,10 @@ class AnnouncementController extends Controller
     /**
      * Delete an announcement.
      */
-    public function destroy(int $id): RedirectResponse
+    public function destroy(Request $request, int $id): RedirectResponse
     {
+        $this->validateOwner($request);
+
         $announcement = Announcement::findOrFail($id);
         $announcement->delete();
 
