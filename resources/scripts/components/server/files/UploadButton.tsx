@@ -1,5 +1,5 @@
 import axios, { AxiosProgressEvent } from 'axios';
-import getFileUploadUrl from '@/api/server/files/getFileUploadUrl';
+import { getFileUploadInfo } from '@/api/server/files/getFileUploadUrl';
 import tw from 'twin.macro';
 import { Button } from '@/components/elements/button/index';
 import React, { useEffect, useRef } from 'react';
@@ -68,32 +68,44 @@ export default ({ className }: WithClassname) => {
             return addError('Folder uploads are not supported.', 'Error');
         }
 
-        const uploads = list.map((file) => {
-            const controller = new AbortController();
-            pushFileUpload({
-                name: file.name,
-                data: { abort: controller, loaded: 0, total: file.size },
-            });
+        getFileUploadInfo(uuid)
+            .then((info) => {
+                const maxBytes = info.uploadLimitMb * 1024 * 1024;
+                const oversized = list.find((file) => file.size > maxBytes);
+                if (oversized) {
+                    const sizeMb = (oversized.size / (1024 * 1024)).toFixed(1);
+                    addError(
+                        `File "${oversized.name}" (${sizeMb} MB) melebihi batas upload web node (${info.uploadLimitMb} MB). Gunakan SFTP untuk file besar atau naikkan "Maximum Web Upload Filesize" di Admin -> Nodes -> Settings & Wings config.yml.`,
+                        'Error'
+                    );
+                    return;
+                }
 
-            return () =>
-                getFileUploadUrl(uuid).then((url) =>
-                    axios
-                        .post(
-                            url,
-                            { files: file },
-                            {
-                                signal: controller.signal,
-                                headers: { 'Content-Type': 'multipart/form-data' },
-                                params: { directory },
-                                onUploadProgress: (data) => onUploadProgress(data, file.name),
-                            }
-                        )
-                        .then(() => timeouts.value.push(setTimeout(() => removeFileUpload(file.name), 500)))
-                );
-        });
+                const uploads = list.map((file) => {
+                    const controller = new AbortController();
+                    pushFileUpload({
+                        name: file.name,
+                        data: { abort: controller, loaded: 0, total: file.size },
+                    });
 
-        Promise.all(uploads.map((fn) => fn()))
-            .then(() => mutate())
+                    return () =>
+                        axios
+                            .post(
+                                info.url,
+                                { files: file },
+                                {
+                                    signal: controller.signal,
+                                    timeout: 0,
+                                    headers: { 'Content-Type': 'multipart/form-data' },
+                                    params: { directory },
+                                    onUploadProgress: (data) => onUploadProgress(data, file.name),
+                                }
+                            )
+                            .then(() => timeouts.value.push(setTimeout(() => removeFileUpload(file.name), 500)));
+                });
+
+                return Promise.all(uploads.map((fn) => fn())).then(() => mutate());
+            })
             .catch((error) => {
                 clearFileUploads();
                 clearAndAddHttpError(error);

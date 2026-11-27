@@ -31,6 +31,7 @@ class FileUploadController extends ClientApiController
             'object' => 'signed_url',
             'attributes' => [
                 'url' => $this->getUploadUrl($server, $request->user()),
+                'upload_limit_mb' => (int) ($server->node->upload_size ?: 100),
             ],
         ]);
     }
@@ -41,7 +42,7 @@ class FileUploadController extends ClientApiController
     protected function getUploadUrl(Server $server, User $user): string
     {
         $token = $this->jwtService
-            ->setExpiresAt(CarbonImmutable::now()->addMinutes(15))
+            ->setExpiresAt(CarbonImmutable::now()->addMinutes(60))
             ->setUser($user)
             ->setClaims(['server_uuid' => $server->uuid])
             ->setScopes(JwtScope::FileUpload)

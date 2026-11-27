@@ -6,16 +6,16 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.10.0"
+$tag = "v4.10.1"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.10.0 - Flagship Split-Layout Auth UI & Nginx/PHP-FPM Hardening
+### AlxZen Panel v4.10.1 - Pre-Flight Upload Size Guard & 1024MB Defaults
 
-- **Split-Layout Auth & Login Redesign (`LoginFormContainer`, `Login`, `ForgotPassword`, `ResetPassword`, `LoginCheckpoint`):**
-  - Replaced the narrow card and stock Pterodactyl bird with a sleek two-column Cloud Platform authentication workspace on desktop and a crisp responsive layout on mobile (zero heavy GPU blur).
-  - Added icon-prefixed inputs, fixed vertical centering of Show/Hide password toggles, moved Forgot Password inline beside the Password label, and removed the redundant `xl:pt-32` top offset.
-- **Nginx & PHP-FPM Reliability (`setup.sh`):**
-  - Switched Nginx `SCRIPT_FILENAME` to `$realpath_root$fastcgi_script_name`, verified `public/index.php` presence during extract/update, enforced `755` directory traversal permissions, and restarted `php8.3-fpm` to prevent PHP-FPM `File not found.` (`Primary script unknown`) issues.
+- **Instant Upload Size Guard (`FileUploadController`, `getFileUploadUrl`, `UploadButton`):**
+  - Exposes the target node's `upload_limit_mb` before starting upload and extends signed Wings upload JWT expiry from 15 minutes to 60 minutes.
+  - Rejects oversized files immediately in the browser before wasting bandwidth/time uploading to Wings, and sets `timeout: 0` for large valid uploads.
+- **Higher Defaults (`Node`, `MakeNodeCommand`, `setup.sh`):**
+  - Sets default node `upload_size` and Nginx/PHP-FPM upload limits to `1024` MiB (`1024M`).
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag

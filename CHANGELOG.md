@@ -1,5 +1,13 @@
 # Changelog
 
+## [v4.10.1] - 2026-11-27
+### Improved & Fixed (Pre-Flight Upload Size Guard & 1024MB Defaults)
+- **Instant Pre-Flight Upload Size Validation (`FileUploadController.php`, `getFileUploadUrl.ts`, `UploadButton.tsx`)**:
+  - Exposed node `upload_limit_mb` in `GET /api/client/servers/{server}/files/upload` and extended signed upload JWT expiration from 15 minutes to 60 minutes.
+  - Added instant client-side validation against `uploadLimitMb` before transferring any bytes, with a clear Indonesian actionable error message and `timeout: 0` on large file POST requests.
+- **Higher Default Upload Limits (`Node.php`, `MakeNodeCommand.php`, `setup.sh`)**:
+  - Raised default `upload_size` for newly created nodes to `1024` MiB and updated Nginx `client_max_body_size` / PHP-FPM `upload_max_filesize` + `post_max_size` defaults to `1024M`.
+
 ## [v4.10.0] - 2026-11-27
 ### Improved & Fixed (Flagship Split-Layout Auth UI & Nginx/PHP-FPM Hardening)
 - **Split-Layout Auth & Login Redesign (`LoginFormContainer.tsx`, `LoginContainer.tsx`, `ForgotPasswordContainer.tsx`, `ResetPasswordContainer.tsx`, `LoginCheckpointContainer.tsx`, `AuthenticationRouter.tsx`)**:

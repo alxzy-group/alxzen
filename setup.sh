@@ -512,7 +512,7 @@ server {
     error_log  /var/log/nginx/pterodactyl.app-error.log error;
 
     # allow larger file uploads and longer script runtimes
-    client_max_body_size 100m;
+    client_max_body_size 1024m;
     client_body_timeout 120s;
 
     sendfile off;
@@ -541,7 +541,7 @@ server {
         fastcgi_pass unix:/run/php/php8.3-fpm.sock;
         fastcgi_index index.php;
         include fastcgi_params;
-        fastcgi_param PHP_VALUE "upload_max_filesize = 100M \n post_max_size=100M";
+        fastcgi_param PHP_VALUE "upload_max_filesize = 1024M \n post_max_size=1024M";
         fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;
         fastcgi_param DOCUMENT_ROOT \$realpath_root;
         fastcgi_param HTTP_PROXY "";
@@ -583,7 +583,7 @@ server {
     error_log  /var/log/nginx/pterodactyl.app-error.log error;
 
     # allow larger file uploads and longer script runtimes
-    client_max_body_size 100m;
+    client_max_body_size 1024m;
     client_body_timeout 120s;
 
     sendfile off;
@@ -605,7 +605,7 @@ server {
         fastcgi_pass unix:/run/php/php8.3-fpm.sock;
         fastcgi_index index.php;
         include fastcgi_params;
-        fastcgi_param PHP_VALUE "upload_max_filesize = 100M \n post_max_size=100M";
+        fastcgi_param PHP_VALUE "upload_max_filesize = 1024M \n post_max_size=1024M";
         fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;
         fastcgi_param DOCUMENT_ROOT \$realpath_root;
         fastcgi_param HTTP_PROXY "";
