@@ -126,7 +126,7 @@ class UserController extends Controller
         // Hanya Super Admin (ID 1) yang berhak membuat akun Root Admin baru
         if ($request->user()->id !== 1) {
             $data['root_admin'] = false;
-            unset($data['server_create_limit'], $data['memory_create_limit'], $data['disk_create_limit'], $data['cpu_create_limit']);
+            unset($data['server_create_limit']);
         }
 
         $user = $this->creationService->handle($data);
@@ -161,14 +161,12 @@ class UserController extends Controller
                 return redirect()->back();
             }
             $data['root_admin'] = $user->root_admin;
-            unset($data['server_create_limit'], $data['memory_create_limit'], $data['disk_create_limit'], $data['cpu_create_limit']);
+            unset($data['server_create_limit']);
         } elseif (!app(\Pterodactyl\Services\Admin\AdminQuotaService::class)->hasSchemaColumns()) {
-            unset($data['server_create_limit'], $data['memory_create_limit'], $data['disk_create_limit'], $data['cpu_create_limit']);
+            unset($data['server_create_limit']);
         } else {
-            foreach (['server_create_limit', 'memory_create_limit', 'disk_create_limit', 'cpu_create_limit'] as $qField) {
-                if (array_key_exists($qField, $data) && ($data[$qField] === '' || $data[$qField] === null)) {
-                    $data[$qField] = null;
-                }
+            if (array_key_exists('server_create_limit', $data) && ($data['server_create_limit'] === '' || $data['server_create_limit'] === null)) {
+                $data['server_create_limit'] = null;
             }
         }
 

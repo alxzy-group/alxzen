@@ -105,33 +105,19 @@
             @if(Auth::user()->id === 1 && $user->id !== 1 && $user->root_admin && !empty($quotaSchemaReady))
                 <div class="box box-primary">
                     <div class="box-header with-border">
-                        <h3 class="box-title"><i class="fa fa-sliders" style="color:#38bdf8;margin-right:8px;"></i>Admin Creation Quotas</h3>
+                        <h3 class="box-title"><i class="fa fa-sliders" style="color:#38bdf8;margin-right:8px;"></i>Batas Create Server Admin</h3>
                     </div>
                     <div class="box-body">
                         @if(isset($quotaUsage))
                             <div style="background:#09090b;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#cbd5e1;">
-                                <div>Used: <strong>{{ $quotaUsage['servers_used'] }}</strong> Srv &middot; <strong>{{ number_format($quotaUsage['memory_used']) }} MiB</strong> RAM &middot; <strong>{{ number_format($quotaUsage['disk_used']) }} MiB</strong> Disk &middot; <strong>{{ $quotaUsage['cpu_used'] }}%</strong> CPU</div>
+                                Total Server Dibuat: <strong>{{ $quotaUsage['servers_used'] }} / {{ $quotaUsage['server_limit'] === null ? '∞' : $quotaUsage['server_limit'] }}</strong>
                             </div>
                         @endif
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label class="control-label">Max Server Create</label>
-                                <input type="number" min="0" name="server_create_limit" value="{{ old('server_create_limit', $user->server_create_limit) }}" placeholder="∞ Unlimited" class="form-control">
-                            </div>
-                            <div class="form-group col-xs-6">
-                                <label class="control-label">Max RAM (MiB)</label>
-                                <input type="number" min="0" name="memory_create_limit" value="{{ old('memory_create_limit', $user->memory_create_limit) }}" placeholder="∞ Unlimited" class="form-control">
-                            </div>
-                            <div class="form-group col-xs-6" style="margin-bottom:0;">
-                                <label class="control-label">Max Disk (MiB)</label>
-                                <input type="number" min="0" name="disk_create_limit" value="{{ old('disk_create_limit', $user->disk_create_limit) }}" placeholder="∞ Unlimited" class="form-control">
-                            </div>
-                            <div class="form-group col-xs-6" style="margin-bottom:0;">
-                                <label class="control-label">Max CPU (%)</label>
-                                <input type="number" min="0" name="cpu_create_limit" value="{{ old('cpu_create_limit', $user->cpu_create_limit) }}" placeholder="∞ Unlimited" class="form-control">
-                            </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="control-label">Batas Total Create Server</label>
+                            <input type="number" min="0" name="server_create_limit" value="{{ old('server_create_limit', $user->server_create_limit) }}" placeholder="∞ Unlimited" class="form-control">
+                            <p class="text-muted small" style="margin-top:8px;margin-bottom:0;">Kosongkan untuk Unlimited (&infin;). Isi <code>0</code> untuk memblokir admin ini membuat server.</p>
                         </div>
-                        <p class="text-muted small" style="margin-top:10px;margin-bottom:0;">Kosongkan untuk Unlimited (&infin;). Isi <code>0</code> pada Max Server untuk memblokir pembuatan server.</p>
                     </div>
                 </div>
             @endif

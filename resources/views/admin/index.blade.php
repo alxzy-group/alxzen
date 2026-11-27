@@ -249,11 +249,11 @@
         <div class="box-header with-border" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
             <div>
                 <h3 class="box-title">
-                    <i class="fa fa-sliders" style="color:#38bdf8; margin-right:8px;"></i>Sub-Admin Creation Quotas (Batas Create Admin)
+                    <i class="fa fa-sliders" style="color:#38bdf8; margin-right:8px;"></i>Batas Create Server per Admin
                     <span class="label label-primary" style="margin-left:8px;">{{ $subAdmins->count() }} Sub-Admin</span>
                 </h3>
                 <div style="font-size:12px; color:#a1a1aa; margin-top:4px;">
-                    Atur batas maksimal Server, RAM, Disk, dan CPU untuk setiap akun admin selain ID 1 (berlaku di Panel &amp; PTLA API).
+                    Atur batas total server yang bisa dibuat oleh setiap akun admin selain Owner ID 1 (berlaku di Panel &amp; PTLA API).
                 </div>
             </div>
             <a href="{{ route('admin.users.new') }}" class="btn btn-xs btn-default">
@@ -274,16 +274,13 @@
                     Belum ada akun admin tambahan selain Owner Utama (ID 1).
                 </div>
             @else
-                <table class="table table-hover" style="min-width:960px;">
+                <table class="table table-hover" style="min-width:680px;">
                     <thead>
                         <tr>
                             <th>Admin Account</th>
-                            <th>Pemakaian Saat Ini (Used / Limit)</th>
-                            <th>Max Server</th>
-                            <th>Max RAM (MiB)</th>
-                            <th>Max Disk (MiB)</th>
-                            <th>Max CPU (%)</th>
-                            <th style="text-align:right; width:100px;">Action</th>
+                            <th>Total Server Dibuat</th>
+                            <th>Batas Maksimal Server</th>
+                            <th style="text-align:right; width:110px;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -300,27 +297,24 @@
                                     </a>
                                     <div style="font-size:11.5px; color:#71717a;">#{{ $adm->id }} &middot; {{ $adm->email }}</div>
                                 </td>
-                                <td style="font-size:12px; font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;">
-                                    <div style="color:{{ $srvColor }}; font-weight:700;">
-                                        Srv: {{ $q['servers_used'] }} / {{ $q['server_limit'] === null ? '∞' : $q['server_limit'] }}
+                                <td style="font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;">
+                                    <span style="color:{{ $srvColor }}; font-weight:700; font-size:13px;">
+                                        {{ $q['servers_used'] }} / {{ $q['server_limit'] === null ? '∞' : $q['server_limit'] }} Server
+                                    </span>
+                                    <div style="font-size:11px; color:#71717a; margin-top:2px;">
+                                        @if($q['server_limit'] === null)
+                                            Unlimited (&infin;)
+                                        @elseif($q['server_limit'] === 0)
+                                            Create Server Diblokir
+                                        @elseif($q['remaining'] === 0)
+                                            Batas Tercapai (Penuh)
+                                        @else
+                                            Sisa kuota: {{ $q['remaining'] }} server
+                                        @endif
                                     </div>
-                                    <div style="color:#a1a1aa; font-size:11px; margin-top:2px;">
-                                        RAM {{ number_format($q['memory_used']) }}/{{ $q['memory_limit'] === null ? '∞' : number_format($q['memory_limit']) }} MiB
-                                        &middot; Disk {{ number_format($q['disk_used']) }}/{{ $q['disk_limit'] === null ? '∞' : number_format($q['disk_limit']) }} MiB
-                                        &middot; CPU {{ $q['cpu_used'] }}/{{ $q['cpu_limit'] === null ? '∞' : $q['cpu_limit'] }}%
-                                    </div>
                                 </td>
                                 <td>
-                                    <input type="number" min="0" name="server_create_limit" form="quota-form-{{ $adm->id }}" value="{{ $adm->server_create_limit }}" placeholder="∞ Unlimited" class="form-control input-sm" style="min-width:95px; font-family:'JetBrains Mono',monospace;" {{ $quotaSchemaReady ? '' : 'disabled' }}>
-                                </td>
-                                <td>
-                                    <input type="number" min="0" name="memory_create_limit" form="quota-form-{{ $adm->id }}" value="{{ $adm->memory_create_limit }}" placeholder="∞ MiB" class="form-control input-sm" style="min-width:110px; font-family:'JetBrains Mono',monospace;" {{ $quotaSchemaReady ? '' : 'disabled' }}>
-                                </td>
-                                <td>
-                                    <input type="number" min="0" name="disk_create_limit" form="quota-form-{{ $adm->id }}" value="{{ $adm->disk_create_limit }}" placeholder="∞ MiB" class="form-control input-sm" style="min-width:110px; font-family:'JetBrains Mono',monospace;" {{ $quotaSchemaReady ? '' : 'disabled' }}>
-                                </td>
-                                <td>
-                                    <input type="number" min="0" name="cpu_create_limit" form="quota-form-{{ $adm->id }}" value="{{ $adm->cpu_create_limit }}" placeholder="∞ %" class="form-control input-sm" style="min-width:95px; font-family:'JetBrains Mono',monospace;" {{ $quotaSchemaReady ? '' : 'disabled' }}>
+                                    <input type="number" min="0" name="server_create_limit" form="quota-form-{{ $adm->id }}" value="{{ $adm->server_create_limit }}" placeholder="∞ Unlimited" class="form-control input-sm" style="max-width:170px; font-family:'JetBrains Mono',monospace;" {{ $quotaSchemaReady ? '' : 'disabled' }}>
                                 </td>
                                 <td style="text-align:right;">
                                     <button type="submit" form="quota-form-{{ $adm->id }}" class="btn btn-xs btn-primary" {{ $quotaSchemaReady ? '' : 'disabled' }}>
@@ -341,37 +335,31 @@
         </div>
         <div class="box-footer" style="font-size:12px; color:#71717a;">
             <i class="fa fa-info-circle" style="color:#38bdf8; margin-right:6px;"></i>
-            Kosongkan input untuk akses <strong>Unlimited (&infin;)</strong>. Isi <strong><code>0</code></strong> pada Max Server untuk menonaktifkan hak create server admin tersebut.
+            Kosongkan input untuk akses <strong>Unlimited (&infin;)</strong>. Isi <strong><code>0</code></strong> untuk menonaktifkan hak create server admin tersebut.
         </div>
     </div>
 @elseif($myQuota && $quotaSchemaReady)
     <div class="box box-primary" style="margin-bottom:24px !important;">
         <div class="box-header with-border">
-            <h3 class="box-title"><i class="fa fa-tachometer" style="color:#38bdf8; margin-right:8px;"></i>Kuota Create Server Akun Anda</h3>
+            <h3 class="box-title"><i class="fa fa-tachometer" style="color:#38bdf8; margin-right:8px;"></i>Batas Create Server Akun Anda</h3>
         </div>
-        <div class="box-body" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px;">
+        <div class="box-body" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
             <div style="background:#09090b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:12px 14px;">
-                <div style="font-size:11px; color:#71717a; font-weight:700; text-transform:uppercase;">Servers Created</div>
+                <div style="font-size:11px; color:#71717a; font-weight:700; text-transform:uppercase;">Total Server Dibuat</div>
                 <div style="font-size:18px; font-weight:800; color:#f4f4f5; font-family:'JetBrains Mono',monospace; margin-top:4px;">
-                    {{ $myQuota['servers_used'] }} / {{ $myQuota['server_limit'] === null ? '∞' : $myQuota['server_limit'] }}
+                    {{ $myQuota['servers_used'] }} / {{ $myQuota['server_limit'] === null ? '∞' : $myQuota['server_limit'] }} Server
                 </div>
             </div>
             <div style="background:#09090b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:12px 14px;">
-                <div style="font-size:11px; color:#71717a; font-weight:700; text-transform:uppercase;">RAM Quota</div>
-                <div style="font-size:18px; font-weight:800; color:#38bdf8; font-family:'JetBrains Mono',monospace; margin-top:4px;">
-                    {{ number_format($myQuota['memory_used']) }} / {{ $myQuota['memory_limit'] === null ? '∞' : number_format($myQuota['memory_limit']) }} MiB
-                </div>
-            </div>
-            <div style="background:#09090b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:12px 14px;">
-                <div style="font-size:11px; color:#71717a; font-weight:700; text-transform:uppercase;">Disk Quota</div>
-                <div style="font-size:18px; font-weight:800; color:#34d399; font-family:'JetBrains Mono',monospace; margin-top:4px;">
-                    {{ number_format($myQuota['disk_used']) }} / {{ $myQuota['disk_limit'] === null ? '∞' : number_format($myQuota['disk_limit']) }} MiB
-                </div>
-            </div>
-            <div style="background:#09090b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:12px 14px;">
-                <div style="font-size:11px; color:#71717a; font-weight:700; text-transform:uppercase;">CPU Quota</div>
-                <div style="font-size:18px; font-weight:800; color:#fbbf24; font-family:'JetBrains Mono',monospace; margin-top:4px;">
-                    {{ $myQuota['cpu_used'] }} / {{ $myQuota['cpu_limit'] === null ? '∞' : $myQuota['cpu_limit'] }}%
+                <div style="font-size:11px; color:#71717a; font-weight:700; text-transform:uppercase;">Sisa Kuota Create</div>
+                <div style="font-size:18px; font-weight:800; color:{{ $myQuota['server_limit'] !== null && $myQuota['remaining'] === 0 ? '#fb7185' : '#34d399' }}; font-family:'JetBrains Mono',monospace; margin-top:4px;">
+                    @if($myQuota['server_limit'] === null)
+                        Unlimited (&infin;)
+                    @elseif($myQuota['server_limit'] === 0)
+                        Diblokir (0)
+                    @else
+                        {{ $myQuota['remaining'] }} Server
+                    @endif
                 </div>
             </div>
         </div>

@@ -6,17 +6,15 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.9.0"
+$tag = "v4.9.1"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.9.0 - Per-Admin Creation Quotas & Dashboard Controls
+### AlxZen Panel v4.9.1 - Simplified Total Server Creation Limit per Admin
 
-- **Per-Admin Creation Limits (`AdminQuotaService`, `2026_11_27_000000_add_admin_creation_quotas.php`):**
-  - Restricts sub-admins (`id !== 1`) across both Web Admin Panel and Application API (`POST /api/application/servers`) by Max Servers, Max RAM (MiB), Max Disk (MiB), and Max CPU (%).
-  - Blocks quota bypass via post-creation Build modifications (`ServersController::updateBuild`, `ServerDetailsController::build`).
-- **Admin Dashboard Quota Control Center (`admin/index.blade.php`, `AdminQuotaController`, `admin/users/view.blade.php`):**
-  - Super Admin (ID 1) can view real-time quota usage and adjust every sub-admin's creation limits inline directly from `/admin` or `/admin/users/view/{id}` (blank = Unlimited, `0` = Blocked).
-  - Displays live remaining quota status to sub-admins on `/admin` and `/admin/servers/new`.
+- **Total Server Limit Focus (`AdminQuotaService.php`, `AdminQuotaController.php`):**
+  - Simplified per-admin creation quotas to restrict strictly by **total server count (`server_create_limit`)** across Web Admin Panel and Application API (`POST /api/application/servers`), without RAM/Disk/CPU caps.
+- **Streamlined Admin Dashboard & User Edit UI (`admin/index.blade.php`, `admin/users/view.blade.php`, `admin/servers/new.blade.php`):**
+  - Clean inline table on `/admin` showing each sub-admin's created servers (`Used / Limit`), remaining slots, and a single `Batas Maksimal Server` input (`blank = Unlimited`, `0 = Blocked`).
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag

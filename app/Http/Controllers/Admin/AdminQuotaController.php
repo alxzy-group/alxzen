@@ -20,7 +20,7 @@ class AdminQuotaController extends Controller
     }
 
     /**
-     * Update creation quotas for a specific sub-admin account.
+     * Update total server creation limit for a specific sub-admin account.
      */
     public function update(Request $request, User $user): RedirectResponse
     {
@@ -41,31 +41,20 @@ class AdminQuotaController extends Controller
         }
 
         $validated = $request->validate([
-            'server_create_limit' => 'nullable|integer|min:0|max:100000000',
-            'memory_create_limit' => 'nullable|integer|min:0|max:100000000',
-            'disk_create_limit' => 'nullable|integer|min:0|max:100000000',
-            'cpu_create_limit' => 'nullable|integer|min:0|max:100000000',
+            'server_create_limit' => 'nullable|integer|min:0|max:1000000',
         ]);
 
-        $parseNullableInt = function (string $key) use ($request, $validated): ?int {
-            $raw = $request->input($key);
-            if ($raw === null || $raw === '') {
-                return null;
-            }
-
-            return isset($validated[$key]) ? (int) $validated[$key] : null;
-        };
+        $raw = $request->input('server_create_limit');
+        $limit = ($raw === null || $raw === '') ? null : (int) $validated['server_create_limit'];
 
         $user->forceFill([
-            'server_create_limit' => $parseNullableInt('server_create_limit'),
-            'memory_create_limit' => $parseNullableInt('memory_create_limit'),
-            'disk_create_limit' => $parseNullableInt('disk_create_limit'),
-            'cpu_create_limit' => $parseNullableInt('cpu_create_limit'),
+            'server_create_limit' => $limit,
         ])->save();
 
         Cache::forget('alx:admin_overview:all');
 
-        $this->alert->success("Batas create untuk admin {$user->username} berhasil diperbarui.")->flash();
+        $label = $limit === null ? 'Unlimited (∞)' : "{$limit} server";
+        $this->alert->success("Batas create server untuk admin {$user->username} diatur ke {$label}.")->flash();
 
         return redirect()->back();
     }

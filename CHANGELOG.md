@@ -1,5 +1,11 @@
 # Changelog
 
+## [v4.9.1] - 2026-11-27
+### Changed (Simplified Admin Total Server Creation Limit)
+- **Focused Per-Admin Limit on Total Servers Only (`AdminQuotaService.php`, `AdminQuotaController.php`, `admin/index.blade.php`, `admin/users/view.blade.php`, `admin/servers/new.blade.php`)**:
+  - Removed RAM/Disk/CPU quota checks and build-upgrade quota restrictions so sub-admin limits strictly govern the **maximum total number of servers (`server_create_limit`)** an admin can create (both in Panel and PTLA API).
+  - Streamlined the Admin Overview Dashboard (`/admin`), Edit User (`/admin/users/view/{id}`), and Deploy Server (`/admin/servers/new`) UI to cleanly display and configure `Total Server Dibuat` (`Used / Limit` & remaining count).
+
 ## [v4.9.0] - 2026-11-27
 ### Added (Per-Admin Server & Resource Creation Quotas)
 - **Per-Admin Quota System (`2026_11_27_000000_add_admin_creation_quotas.php`, `AdminQuotaService.php`)**:
