@@ -1162,53 +1162,127 @@ install_subdomain_proxy() {
         panel_fqdn=$(ask_input "Enter your Panel FQDN (e.g. panel.alxzyy.my.id)")
         
         cat > server.js <<EOF
+const fs = require('fs');
+const path = require('path');
 const http = require('http');
 const httpProxy = require('http-proxy');
 const fetch = require('node-fetch');
 
 const FQDN = '${panel_fqdn}';
 const PANEL_URL = FQDN.startsWith('http') ? FQDN : 'https://' + FQDN;
+const ROUTER_KEY = process.env.DOMAIN_ROUTER_KEY || '';
+const CACHE_FILE = path.join(__dirname, 'routes-cache.json');
+const CACHE_TTL_MS = 15000;
+const FETCH_TIMEOUT_MS = 3000;
+
 const proxy = httpProxy.createProxyServer({ ws: true, xfwd: true });
+const routeCache = new Map();
+
+function loadDiskCache() {
+    try {
+        if (!fs.existsSync(CACHE_FILE)) return;
+        const parsed = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
+        for (const [domain, target] of Object.entries(parsed)) {
+            if (typeof target === 'string' && target.length > 0) {
+                routeCache.set(domain, { target, expiresAt: 0 });
+            }
+        }
+    } catch (err) {
+        console.error('Failed to load disk route cache:', err.message);
+    }
+}
+
+function saveDiskCache() {
+    try {
+        const snapshot = {};
+        for (const [domain, entry] of routeCache.entries()) {
+            snapshot[domain] = entry.target;
+        }
+        fs.writeFileSync(CACHE_FILE, JSON.stringify(snapshot), 'utf8');
+    } catch (err) {
+        console.error('Failed to persist disk route cache:', err.message);
+    }
+}
+
+loadDiskCache();
+
+async function resolveDomainTarget(rawHost) {
+    const host = String(rawHost || '').split(':')[0].trim().toLowerCase();
+    if (!host) return { status: 400, error: 'No host header' };
+
+    const now = Date.now();
+    const cached = routeCache.get(host);
+    if (cached && cached.expiresAt > now) {
+        return { status: 200, target: cached.target };
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+    try {
+        const url = \`\${PANEL_URL}/api/public/resolve-domain?domain=\${encodeURIComponent(host)}\`;
+        const headers = ROUTER_KEY ? { 'X-Router-Key': ROUTER_KEY } : {};
+        const response = await fetch(url, { headers, signal: controller.signal });
+        clearTimeout(timer);
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data && data.target) {
+                routeCache.set(host, { target: data.target, expiresAt: now + CACHE_TTL_MS });
+                saveDiskCache();
+                return { status: 200, target: data.target };
+            }
+        }
+
+        if (response.status === 403 || response.status === 404) {
+            if (routeCache.delete(host)) {
+                saveDiskCache();
+            }
+            return { status: response.status, error: 'Subdomain not found or inactive' };
+        }
+
+        // Stale-if-error fallback during Panel maintenance (503) or temporary 5xx
+        if (cached && cached.target) {
+            return { status: 200, target: cached.target, stale: true };
+        }
+
+        return { status: response.status || 502, error: 'Panel resolver temporarily unavailable' };
+    } catch (err) {
+        clearTimeout(timer);
+        if (cached && cached.target) {
+            return { status: 200, target: cached.target, stale: true };
+        }
+        return { status: 502, error: 'Failed to connect to Panel API.' };
+    }
+}
 
 const server = http.createServer(async (req, res) => {
-    const host = req.headers.host;
-    if (!host) return res.writeHead(400), res.end('No host header');
-    
-    try {
-        const url = \`\${PANEL_URL}/api/public/resolve-domain?domain=\${host}\`;
-        const response = await fetch(url);
-        
-        if (!response.ok) return res.writeHead(404), res.end('Subdomain not found or inactive');
-        
-        const data = await response.json();
-        proxy.web(req, res, { target: \`http://\${data.target}\` }, (e) => {
-            res.writeHead(502), res.end('Server container is offline or booting up.');
-        });
-    } catch (e) {
-        res.writeHead(500), res.end('Failed to connect to Panel API.');
+    const result = await resolveDomainTarget(req.headers.host);
+    if (result.status !== 200) {
+        res.writeHead(result.status);
+        return res.end(result.error);
     }
+
+    proxy.web(req, res, { target: \`http://\${result.target}\` }, () => {
+        if (!res.headersSent) {
+            res.writeHead(502);
+        }
+        res.end('Server container is offline or booting up.');
+    });
 });
 
 server.on('upgrade', async (req, socket, head) => {
-    const host = req.headers.host;
-    if (!host) return socket.destroy();
-    
-    try {
-        const url = \`\${PANEL_URL}/api/public/resolve-domain?domain=\${host}\`;
-        const response = await fetch(url);
-        
-        if (!response.ok) return socket.destroy();
-        
-        const data = await response.json();
-        proxy.ws(req, socket, head, { target: \`http://\${data.target}\` }, (e) => {
-            socket.destroy();
-        });
-    } catch (e) {
-        socket.destroy();
+    const result = await resolveDomainTarget(req.headers.host);
+    if (result.status !== 200) {
+        return socket.destroy();
     }
+
+    proxy.ws(req, socket, head, { target: \`http://\${result.target}\` }, () => {
+        socket.destroy();
+    });
 });
 
-server.listen(8081, () => console.log('Subdomain Auto-Proxy listening on port 8081'));
+server.listen(8081, () => console.log('Subdomain Auto-Proxy listening on port 8081 (stale-if-error cache enabled)'));
 EOF
 
         if ! command -v pm2 &> /dev/null; then

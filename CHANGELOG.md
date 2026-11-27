@@ -1,5 +1,15 @@
 # Changelog
 
+## [v4.6.1] - 2026-11-27
+### Fixed (Custom Domain Availability During Maintenance Mode)
+- **Exempt `/api/public/resolve-domain` from `php artisan down` (`PreventRequestsDuringMaintenance.php`, `Kernel.php`, `public/index.php`)**:
+  - Added custom `Pterodactyl\Http\Middleware\PreventRequestsDuringMaintenance` middleware with `$except = ['api/public/resolve-domain', 'api/public/resolve-domain/*']` and wired it into `app/Http/Kernel.php` so the custom domain resolver keeps responding with HTTP 200 while the Panel is in maintenance mode.
+  - Added a pre-boot path guard in `public/index.php` so `storage/framework/maintenance.php` (when `--render` is used) never intercepts `/api/public/resolve-domain`.
+- **Stateless Domain Resolution (`RouteServiceProvider.php`, `routes/base.php`)**:
+  - Moved `/api/public/resolve-domain` out of the `web` + `auth.session` middleware group to a stateless top-level route so subdomain proxy lookups avoid session overhead.
+- **Subdomain Proxy Stale-If-Error Cache (`setup.sh`)**:
+  - Upgraded the `install_subdomain_proxy()` `server.js` template with a 15-second in-memory cache + persistent disk cache (`routes-cache.json`), 3-second fetch timeout, host normalization, optional `DOMAIN_ROUTER_KEY` header support, and stale-if-error fallback so custom domains remain reachable even if the Panel returns 5xx or restarts.
+
 ## [v4.6.0] - 2026-11-27
 ### Fixed & Polished (Admin Panel Mobile UX, Global Search & Sub-Page Cohesion)
 - **Fixed Server Search (`SearchModal.tsx`, `DashboardContainer.tsx`, `MultiFieldServerFilter.php`)**:

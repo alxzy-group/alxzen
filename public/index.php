@@ -18,7 +18,11 @@ define('LARAVEL_START', microtime(true));
 |
 */
 
-if (file_exists(__DIR__ . '/../storage/framework/maintenance.php')) {
+$requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$isDomainResolver = $requestPath === '/api/public/resolve-domain'
+    || str_starts_with($requestPath, '/api/public/resolve-domain/');
+
+if (!$isDomainResolver && file_exists(__DIR__ . '/../storage/framework/maintenance.php')) {
     require __DIR__ . '/../storage/framework/maintenance.php';
 }
 

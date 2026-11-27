@@ -36,6 +36,9 @@ class RouteServiceProvider extends ServiceProvider
         Route::model('database', Database::class);
 
         $this->routes(function () {
+            Route::get('/api/public/resolve-domain', [\Pterodactyl\Http\Controllers\Api\Public\DomainRouterController::class, 'resolve'])
+                ->name('api.public.resolve-domain');
+
             Route::middleware('web')->group(function () {
                 Route::middleware(['auth.session', RequireTwoFactorAuthentication::class])
                     ->group(base_path('routes/base.php'));

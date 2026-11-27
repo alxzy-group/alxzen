@@ -6,19 +6,17 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.6.0"
+$tag = "v4.6.1"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.6.0 - Server Search Fix, Mobile Admin Scroll & "Admin Panel" Polish
+### AlxZen Panel v4.6.1 - Custom Domains Stay Online During Maintenance Mode
 
-- **Fixed Global & Dashboard Server Search (`SearchModal.tsx`, `DashboardContainer.tsx`, `MultiFieldServerFilter.php`):**
-  - Rebuilt `SearchModal` without Formik input unmounting bugs: instant focus, `220ms` debounce, initial server list on open, and clean empty states.
-  - Wired dashboard filter bar to backend `/api/client?filter[*]=...` (`280ms` debounce) + case-insensitive `LOWER(...)` search across server name, UUID, short ID, external ID, description, IP:port, and node name.
-  - Simplified topbar search trigger (`SearchContainer.tsx`) into a compact `Ctrl+K` icon button.
-- **Fixed Mobile Horizontal Table Scrolling & Renamed to "Admin Panel" (`layouts/admin.blade.php`, `admin/api/index.blade.php`, `NavigationBar.tsx`, `admin/index.blade.php`):**
-  - Replaced `overflow: hidden` traps on `Application API` and added global `.table-responsive` / `.table-responsible` touch-scroll CSS across all Admin pages.
-  - Renamed all `Control Plane` / `Command Center` references to `Admin Panel`.
-  - Unified remaining Admin sub-pages (`nodes/view/index`, `nodes/view/servers`, `locations/view`, `databases/view`, `servers/view/database`, `servers/view/mounts`) with Obsidian + Electric Cyan cards, icons, and empty states.
+- **Maintenance Mode Exemption (`PreventRequestsDuringMaintenance.php`, `Kernel.php`, `public/index.php`):**
+  - Exempted `/api/public/resolve-domain` from Laravel maintenance mode (`php artisan down`) and pre-boot `maintenance.php` interception so user custom domains/subdomains keep resolving while only the Panel UI & API show maintenance.
+- **Stateless Resolver Route (`RouteServiceProvider.php`, `routes/base.php`):**
+  - Moved `/api/public/resolve-domain` outside `web` session middleware for faster, stateless proxy lookups.
+- **Proxy Stale-If-Error Cache (`setup.sh`):**
+  - Upgraded the Subdomain Auto-Proxy template with in-memory (`15s`) + disk (`routes-cache.json`) caching, `3s` timeout, and stale-if-error fallback during transient 5xx/restarts.
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag
