@@ -14,6 +14,7 @@ use Pterodactyl\Http\Requests\Api\Application\Servers\Databases\GetServerDatabas
 use Pterodactyl\Http\Requests\Api\Application\Servers\Databases\GetServerDatabasesRequest;
 use Pterodactyl\Http\Requests\Api\Application\Servers\Databases\ServerDatabaseWriteRequest;
 use Pterodactyl\Http\Requests\Api\Application\Servers\Databases\StoreServerDatabaseRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class DatabaseController extends ApplicationApiController
 {
@@ -33,6 +34,10 @@ class DatabaseController extends ApplicationApiController
      */
     public function index(GetServerDatabasesRequest $request, Server $server): array
     {
+        if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses ditolak: Anda tidak diizinkan melihat database milik pengguna lain.');
+        }
+
         return $this->fractal->collection($server->databases)
             ->transformWith($this->getTransformer(ServerDatabaseTransformer::class))
             ->toArray();
@@ -43,6 +48,10 @@ class DatabaseController extends ApplicationApiController
      */
     public function view(GetServerDatabaseRequest $request, Server $server, Database $database): array
     {
+        if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses ditolak: Anda tidak diizinkan melihat database milik pengguna lain.');
+        }
+
         return $this->fractal->item($database)
             ->transformWith($this->getTransformer(ServerDatabaseTransformer::class))
             ->toArray();
@@ -55,6 +64,10 @@ class DatabaseController extends ApplicationApiController
      */
     public function resetPassword(ServerDatabaseWriteRequest $request, Server $server, Database $database): JsonResponse
     {
+        if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses ditolak: Anda tidak diizinkan mengubah password database milik pengguna lain.');
+        }
+
         $this->databasePasswordService->handle($database);
 
         return new JsonResponse([], JsonResponse::HTTP_NO_CONTENT);
@@ -67,6 +80,10 @@ class DatabaseController extends ApplicationApiController
      */
     public function store(StoreServerDatabaseRequest $request, Server $server): JsonResponse
     {
+        if ($request->user()->id !== 1 && $server->owner_id !== $request->user()->id) {
+            throw new AccessDeniedHttpException('Akses ditolak: Anda tidak diizinkan membuat database untuk server milik pengguna lain.');
+        }
+
         $database = $this->databaseManagementService->create($server, array_merge($request->validated(), [
             'database' => $request->databaseName(),
         ]));
@@ -87,6 +104,10 @@ class DatabaseController extends ApplicationApiController
      */
     public function delete(ServerDatabaseWriteRequest $request, Server $server, Database $database): Response
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan menghapus database melalui Application API.');
+        }
+
         $this->databaseManagementService->delete($database);
 
         return response('', 204);

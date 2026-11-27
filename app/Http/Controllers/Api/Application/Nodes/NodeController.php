@@ -15,6 +15,7 @@ use Pterodactyl\Http\Requests\Api\Application\Nodes\StoreNodeRequest;
 use Pterodactyl\Http\Requests\Api\Application\Nodes\DeleteNodeRequest;
 use Pterodactyl\Http\Requests\Api\Application\Nodes\UpdateNodeRequest;
 use Pterodactyl\Http\Controllers\Api\Application\ApplicationApiController;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class NodeController extends ApplicationApiController
 {
@@ -62,6 +63,10 @@ class NodeController extends ApplicationApiController
      */
     public function store(StoreNodeRequest $request): JsonResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan membuat Node.');
+        }
+
         $node = $this->creationService->handle($request->validated());
 
         return $this->fractal->item($node)
@@ -81,6 +86,10 @@ class NodeController extends ApplicationApiController
      */
     public function update(UpdateNodeRequest $request, Node $node): array
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan mengubah Node.');
+        }
+
         $node = $this->updateService->handle(
             $node,
             $request->validated(),
@@ -100,6 +109,10 @@ class NodeController extends ApplicationApiController
      */
     public function delete(DeleteNodeRequest $request, Node $node): JsonResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan menghapus Node.');
+        }
+
         $this->deletionService->handle($node);
 
         return new JsonResponse([], JsonResponse::HTTP_NO_CONTENT);

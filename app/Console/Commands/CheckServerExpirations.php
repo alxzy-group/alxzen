@@ -38,34 +38,36 @@ class CheckServerExpirations extends Command
      * Eksekusi logika utama.
      */
     public function handle()
-{
-    $this->info('ALXZEN PROTECT: Scanning...');
+    {
+        $this->info('ALXZEN PROTECT: Scanning...');
 
-    $servers = \Pterodactyl\Models\Server::query()
-        ->whereNotNull('expires_at')
-        ->whereRaw('expires_at < NOW()') // Menggunakan jam server database langsung
-        ->where(function ($query) {
-            $query->where('status', '!=', \Pterodactyl\Models\Server::STATUS_SUSPENDED)
-                  ->orWhereNull('status');
-        })
-        ->get();
+        $processed = 0;
 
-    if ($servers->isEmpty()) {
-        $this->info('STATUS: CLEAN');
-        return;
-    }
+        \Pterodactyl\Models\Server::query()
+            ->whereNotNull('expires_at')
+            ->whereRaw('expires_at < NOW()') // Menggunakan jam server database langsung
+            ->where(function ($query) {
+                $query->where('status', '!=', \Pterodactyl\Models\Server::STATUS_SUSPENDED)
+                    ->orWhereNull('status');
+            })
+            ->chunkById(50, function ($servers) use (&$processed) {
+                foreach ($servers as $server) {
+                    $processed++;
+                    try {
+                        $this->line("SUSPENDING: {$server->name}");
+                        $this->suspensionService->toggle($server, \Pterodactyl\Services\Servers\SuspensionService::ACTION_SUSPEND);
+                        $this->info("SUCCESS: {$server->name}");
+                    } catch (\Exception $exception) {
+                        $this->error("ERROR: " . $exception->getMessage());
+                        // Jangan paksa update ke database jika gagal ke Wings.
+                        // Biarkan cronjob mencoba suspend kembali di putaran berikutnya.
+                    }
+                }
+            });
 
-    foreach ($servers as $server) {
-        try {
-            $this->line("SUSPENDING: {$server->name}");
-            $this->suspensionService->toggle($server, \Pterodactyl\Services\Servers\SuspensionService::ACTION_SUSPEND);
-            $this->info("SUCCESS: {$server->name}");
-        } catch (\Exception $exception) {
-            $this->error("ERROR: " . $exception->getMessage());
-            // Jangan paksa update ke database jika gagal ke Wings.
-            // Biarkan cronjob mencoba suspend kembali di putaran berikutnya.
+        if ($processed === 0) {
+            $this->info('STATUS: CLEAN');
         }
     }
-}
 
 }

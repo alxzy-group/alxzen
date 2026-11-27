@@ -66,7 +66,6 @@ interface Props {
 }
 
 export default ({ displayLocation }: Props) => {
-    const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [visible, setVisible] = useState<Announcement[]>([]);
 
     useEffect(() => {
@@ -83,13 +82,14 @@ export default ({ displayLocation }: Props) => {
                 return isTargetLocation && !isDismissedToday;
             });
 
-            setAnnouncements(filtered);
             setVisible(filtered);
         }).catch(console.error);
     }, [displayLocation]);
 
     const handleDismiss = (id: number) => {
         setVisible((s) => s.filter((a) => a.id !== id));
+
+        markAnnouncementRead(id).catch(() => undefined);
 
         const today = new Date().toDateString();
         let dismissed: Record<number, string> = {};

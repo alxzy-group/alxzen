@@ -15,6 +15,7 @@ use Pterodactyl\Http\Controllers\Api\Application\ApplicationApiController;
 use Pterodactyl\Http\Requests\Api\Application\Allocations\GetAllocationsRequest;
 use Pterodactyl\Http\Requests\Api\Application\Allocations\StoreAllocationRequest;
 use Pterodactyl\Http\Requests\Api\Application\Allocations\DeleteAllocationRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AllocationController extends ApplicationApiController
 {
@@ -64,6 +65,10 @@ class AllocationController extends ApplicationApiController
      */
     public function store(StoreAllocationRequest $request, Node $node): JsonResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan menambah alokasi Node.');
+        }
+
         $this->assignmentService->handle($node, $request->validated());
 
         return new JsonResponse([], JsonResponse::HTTP_NO_CONTENT);
@@ -76,6 +81,10 @@ class AllocationController extends ApplicationApiController
      */
     public function delete(DeleteAllocationRequest $request, Node $node, Allocation $allocation): JsonResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan menghapus alokasi Node.');
+        }
+
         $this->deletionService->handle($allocation);
 
         return new JsonResponse([], JsonResponse::HTTP_NO_CONTENT);

@@ -6,22 +6,21 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.7.0"
+$tag = "v4.8.0"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.7.0 - Full Security Hardening, Bug Fixes & Page Cleanup
+### AlxZen Panel v4.8.0 - Deep API Hardening, Dunia Alxzy Code-Splitting & Performance Polish
 
-- **Privilege Escalation & Anti-Intip Hardening:**
-  - Protected `/admin/settings` and `/admin/announcements` with `admin.superuser` middleware and controller owner checks.
-  - Hardened Web & Application API User/Server/Node/Location/Mount controllers against sub-admin privilege escalation (`root_admin` lock, owner checks on server modifications, Super Admin ID 1 lock on delete/suspend/reinstall/transfer/auto-deploy/locations/mounts).
-  - Masked Wings daemon tokens in `admin/nodes/index` from non-ID-1 admins.
-- **Crash, Search & Expiration Fixes:**
-  - Fixed fatal `ArgumentCountError` on delete in `LocationController::update()` and `MountController::update()`.
-  - Fixed `ExpirationController::update()` `+30D` priority, missing input feedback, and case-insensitive `LOWER(...)` search in `AdminServerFilter` & `ExpirationController`.
-  - Fixed `admin/servers/index` filter input crash, `ip:port` fallback, and `admin/announcements/index` null-safe author rendering.
-- **XSS, Duplicate Input & Multiplayer Server Hardening:**
-  - Removed Stored XSS in `AnnounceBar.tsx` and sanitized Blade-to-JS output with `@json(...)` in `servers/new` and `servers/view/details`.
-  - Removed duplicate `id="allocationLoader"` in `admin/servers/new`, fixed label `for=` & stray `</code>` in `servers/view/build`, and hardened Socket.IO validation/rate limiting in `multiplayer/server.js`.
+- **Deep Application API & Network Hardening:**
+  - Restricted `NodeConfigurationController` (Wings daemon config/token) and write/delete endpoints on `NodeController`, `AllocationController`, and `LocationController` to Super Admin (ID 1).
+  - Enforced server ownership / ID 1 Anti-Intip checks across `Application\Servers\DatabaseController`.
+  - Added Panel-side SSRF protection on remote file Pull URLs (`PullFileRequest`) and upgraded security headers (`SetSecurityHeaders`).
+- **Frontend Code-Splitting, Auth Fixes & Lightweight Rendering:**
+  - Split `DuniaAlxzyOverlay` (Three.js/WebGL) into an on-demand lazy chunk (`React.lazy`) to shrink the initial Dashboard bundle.
+  - Optimized `BackgroundEngine` (`localforage` loaded only for video mode) and removed heavy `backdrop-filter` / `filter: blur(40px)` on Auth cards.
+  - Added Show/Hide Password toggle on Login, fixed flex form bugs & missing 2FA label on Forgot/Reset/Checkpoint screens, and persisted announcement dismissals to DB (`markAnnouncementRead`).
+- **Backend & Admin Performance:**
+  - Switched `CheckServerExpirations` to `chunkById(50)` and added 30s cache to Admin sidebar counters and Overview KPI counts.
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag

@@ -34,14 +34,9 @@ interface Values {
 }
 
 export default ({ match, location }: RouteComponentProps<{ token: string }>) => {
-    const [email, setEmail] = useState('');
+    const [email] = useState(() => new URLSearchParams(location.search).get('email') || '');
 
     const { clearFlashes, addFlash } = useStoreActions((actions: Actions<ApplicationStore>) => actions.flashes);
-
-    const parsed = new URLSearchParams(location.search);
-    if (email.length === 0 && parsed.get('email')) {
-        setEmail(parsed.get('email') || '');
-    }
 
     const submit = ({ password, passwordConfirmation }: Values, { setSubmitting }: FormikHelpers<Values>) => {
         clearFlashes();
@@ -76,7 +71,7 @@ export default ({ match, location }: RouteComponentProps<{ token: string }>) => 
             })}
         >
             {({ isSubmitting }) => (
-                <LoginFormContainer title={'Reset Password'} css={tw`w-full flex`}>
+                <LoginFormContainer title={'Reset Password'}>
                     <div>
                         <label css={tw`text-neutral-300 text-sm`}>Email</label>
                         <Input value={email} disabled />

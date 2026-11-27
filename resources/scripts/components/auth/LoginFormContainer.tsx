@@ -21,22 +21,19 @@ const Wrapper = styled.div`
         content: '';
         position: absolute;
         pointer-events: none;
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(circle, rgba(14, 165, 233, 0.12) 0%, rgba(56, 189, 248, 0.04) 45%, transparent 70%);
+        width: 680px;
+        height: 680px;
+        background: radial-gradient(circle, rgba(14, 165, 233, 0.14) 0%, rgba(56, 189, 248, 0.04) 45%, transparent 70%);
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         z-index: 0;
-        filter: blur(40px);
     }
 `;
 
 const GlassCard = styled(motion.div)`
     ${tw`relative z-10 w-full max-w-[440px] p-7 sm:p-9 rounded-3xl flex flex-col`}
-    background: hsl(var(--bg-surface) / 0.78);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: hsl(var(--bg-surface) / 0.94);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 
         0 0 0 1px rgba(255, 255, 255, 0.05),
@@ -80,7 +77,6 @@ const DefaultLogoBadge = styled.div`
     background: linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(6, 182, 212, 0.15) 50%, rgba(59, 130, 246, 0.25) 100%);
     border: 1px solid rgba(14, 165, 233, 0.35);
     box-shadow: 0 0 25px rgba(14, 165, 233, 0.25);
-    backdrop-filter: blur(8px);
 `;
 
 const CustomLogoBox = styled.div`

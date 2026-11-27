@@ -16,6 +16,7 @@ use Pterodactyl\Http\Requests\Api\Application\Locations\GetLocationsRequest;
 use Pterodactyl\Http\Requests\Api\Application\Locations\StoreLocationRequest;
 use Pterodactyl\Http\Requests\Api\Application\Locations\DeleteLocationRequest;
 use Pterodactyl\Http\Requests\Api\Application\Locations\UpdateLocationRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class LocationController extends ApplicationApiController
 {
@@ -63,6 +64,10 @@ class LocationController extends ApplicationApiController
      */
     public function store(StoreLocationRequest $request): JsonResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan membuat Location.');
+        }
+
         $location = $this->creationService->handle($request->validated());
 
         return $this->fractal->item($location)
@@ -83,6 +88,10 @@ class LocationController extends ApplicationApiController
      */
     public function update(UpdateLocationRequest $request, Location $location): array
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan mengubah Location.');
+        }
+
         $location = $this->updateService->handle($location, $request->validated());
 
         return $this->fractal->item($location)
@@ -97,6 +106,10 @@ class LocationController extends ApplicationApiController
      */
     public function delete(DeleteLocationRequest $request, Location $location): Response
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan menghapus Location.');
+        }
+
         $this->deletionService->handle($location);
 
         return response('', 204);

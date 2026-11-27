@@ -11,6 +11,9 @@ import Button from '@/components/elements/Button';
 import Reaptcha from 'reaptcha';
 import useFlash from '@/plugins/useFlash';
 import styled from 'styled-components/macro';
+import Label from '@/components/elements/Label';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const SubmitButton = styled(Button)`
     ${tw`w-full border-none rounded-xl text-white font-bold py-3.5 transition-all duration-200 tracking-wide text-sm`}
@@ -34,6 +37,7 @@ interface Values {
 const LoginContainer = ({ history }: RouteComponentProps) => {
     const ref = useRef<Reaptcha>(null);
     const [token, setToken] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const { clearFlashes, clearAndAddHttpError } = useFlash();
     const { enabled: recaptchaEnabled, siteKey } = useStoreState((state) => state.settings.data!.recaptcha);
@@ -98,13 +102,26 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                         placeholder={'Masukkan username atau email'}
                     />
                     <div css={tw`mt-5`}>
-                        <Field
-                            type={'password'}
-                            label={'Kata Sandi / Password'}
-                            name={'password'}
-                            disabled={isSubmitting}
-                            placeholder={'••••••••••••'}
-                        />
+                        <Label htmlFor={'login-password'}>Kata Sandi / Password</Label>
+                        <div css={tw`relative`}>
+                            <Field
+                                id={'login-password'}
+                                type={showPassword ? 'text' : 'password'}
+                                name={'password'}
+                                disabled={isSubmitting}
+                                placeholder={'••••••••••••'}
+                                css={tw`pr-10`}
+                            />
+                            <button
+                                type={'button'}
+                                onClick={() => setShowPassword((s) => !s)}
+                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                title={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+                                css={tw`absolute right-3 top-2.5 text-gray-400 hover:text-sky-400 transition-colors duration-150 p-1.5 bg-transparent border-0 cursor-pointer`}
+                            >
+                                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} css={tw`text-sm`} />
+                            </button>
+                        </div>
                     </div>
                     <div css={tw`mt-7`}>
                         <SubmitButton

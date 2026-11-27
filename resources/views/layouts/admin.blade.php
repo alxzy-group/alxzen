@@ -899,11 +899,22 @@
         <div class="wrapper">
             @php
                 $isSuperOwner = Auth::user()->id === 1;
-                $navServerCount = $isSuperOwner
-                    ? \Pterodactyl\Models\Server::count()
-                    : \Pterodactyl\Models\Server::where('owner_id', Auth::user()->id)->count();
-                $navUserCount = \Pterodactyl\Models\User::count();
-                $navNodeCount = \Pterodactyl\Models\Node::count();
+                $navCounts = \Illuminate\Support\Facades\Cache::remember(
+                    'alx:nav_counts:' . ($isSuperOwner ? 'all' : Auth::user()->id),
+                    30,
+                    function () use ($isSuperOwner) {
+                        return [
+                            'servers' => $isSuperOwner
+                                ? \Pterodactyl\Models\Server::count()
+                                : \Pterodactyl\Models\Server::where('owner_id', Auth::user()->id)->count(),
+                            'users' => \Pterodactyl\Models\User::count(),
+                            'nodes' => \Pterodactyl\Models\Node::count(),
+                        ];
+                    }
+                );
+                $navServerCount = $navCounts['servers'];
+                $navUserCount = $navCounts['users'];
+                $navNodeCount = $navCounts['nodes'];
             @endphp
             <header class="main-header">
                 <a href="{{ route('admin.index') }}" class="logo">

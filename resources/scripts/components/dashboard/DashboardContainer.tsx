@@ -14,8 +14,11 @@ import Pagination from '@/components/elements/Pagination';
 import { useLocation } from 'react-router-dom';
 import AnnounceBar from '@/components/elements/AnnounceBar';
 import { AnimatePresence } from 'framer-motion';
-import DuniaAlxzyOverlay from '@/components/alxzy-theme/DuniaAlxzy/DuniaAlxzyOverlay';
 import { GlobeIcon, EyeIcon } from '@heroicons/react/solid';
+
+const DuniaAlxzyOverlay = React.lazy(
+    () => import(/* webpackChunkName: "dunia-alxzy" */ '@/components/alxzy-theme/DuniaAlxzy/DuniaAlxzyOverlay')
+);
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash, faList, faSearch, faThLarge, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ip } from '@/lib/formatters';
@@ -486,7 +489,11 @@ export default () => {
                 )}
 
                 <AnimatePresence>
-                    {isWorldOpen && <DuniaAlxzyOverlay onClose={() => setIsWorldOpen(false)} />}
+                    {isWorldOpen && (
+                        <React.Suspense fallback={null}>
+                            <DuniaAlxzyOverlay onClose={() => setIsWorldOpen(false)} />
+                        </React.Suspense>
+                    )}
                 </AnimatePresence>
             </RootContainer>
         </PageContentBlock>

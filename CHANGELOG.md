@@ -1,5 +1,20 @@
 # Changelog
 
+## [v4.8.0] - 2026-11-27
+### Enhanced & Hardened (Deep API Audit, Bundle Code-Splitting & Auth/Admin Performance)
+- **Application API & SSRF Security Hardening**:
+  - Locked `Application\Nodes\NodeConfigurationController` behind Super Admin ID 1 so read-only `r_nodes` Application API keys can no longer export Wings daemon tokens.
+  - Added Anti-Intip owner/ID 1 enforcement to `Application\Servers\DatabaseController` and Super Admin ID 1 restrictions on write/delete operations in `Application\Nodes\NodeController`, `AllocationController`, and `Locations\LocationController`.
+  - Added Panel-side SSRF validation in `PullFileRequest` blocking `file://`, `localhost`, `.local`/`.internal`, link-local metadata (`169.254.169.254`), and private/reserved IP ranges.
+  - Upgraded `SetSecurityHeaders` with `Referrer-Policy: strict-origin-when-cross-origin` and `Permissions-Policy`.
+- **Frontend Code-Splitting & 60fps Auth/Dashboard Optimizations**:
+  - Lazy-loaded `DuniaAlxzyOverlay` (`dunia-alxzy` dynamic webpack chunk via `React.lazy` + `Suspense`) so Three.js/WebGL libraries no longer bloat the initial Dashboard bundle.
+  - Only load `localforage` in `BackgroundEngine.tsx` when `theme.type === 'video'`, and removed heavy GPU `backdrop-filter: blur(...)` / `filter: blur(40px)` from `LoginFormContainer.tsx` and `BackgroundEngine.tsx`.
+  - Added Show/Hide Password toggle in `LoginContainer.tsx`, fixed broken flex `<Form>` layout and missing input label in `ForgotPasswordContainer.tsx`, `ResetPasswordContainer.tsx`, and `LoginCheckpointContainer.tsx`, and wired persistent DB read state in `AnnounceBar.tsx`.
+- **Backend & Admin Query Scalability**:
+  - Switched `ptero:check-expiration` (`CheckServerExpirations.php`) to bounded `chunkById(50)` iteration.
+  - Added 30-second Laravel `Cache::remember` caching for Admin sidebar badge counters (`layouts/admin.blade.php`) and overview stats cards (`admin/index.blade.php`).
+
 ## [v4.7.0] - 2026-11-27
 ### Security Hardening & Bug Fixes (Full Panel Audit)
 - **Privilege Escalation & Anti-Intip Hardening**:

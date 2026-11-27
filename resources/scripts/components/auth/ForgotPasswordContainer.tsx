@@ -11,6 +11,8 @@ import { object, string } from 'yup';
 import tw from 'twin.macro';
 import Button from '@/components/elements/Button';
 import styled from 'styled-components/macro';
+import Reaptcha from 'reaptcha';
+import useFlash from '@/plugins/useFlash';
 
 const SubmitButton = styled(Button)`
     ${tw`w-full border-none rounded-xl text-white font-bold py-3.5 transition-all duration-200 tracking-wide text-sm`}
@@ -25,8 +27,6 @@ const SubmitButton = styled(Button)`
         transform: translateY(0) scale(0.99);
     }
 `;
-import Reaptcha from 'reaptcha';
-import useFlash from '@/plugins/useFlash';
 
 interface Values {
     email: string;
@@ -87,7 +87,7 @@ export default () => {
             })}
         >
             {({ isSubmitting, setSubmitting, submitForm }) => (
-                <LoginFormContainer title={'Request Password Reset'} css={tw`w-full flex`}>
+                <LoginFormContainer title={'Request Password Reset'}>
                     <Field
                         label={'Email'}
                         description={

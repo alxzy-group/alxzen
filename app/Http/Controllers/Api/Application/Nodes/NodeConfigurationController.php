@@ -6,6 +6,7 @@ use Pterodactyl\Models\Node;
 use Illuminate\Http\JsonResponse;
 use Pterodactyl\Http\Requests\Api\Application\Nodes\GetNodeRequest;
 use Pterodactyl\Http\Controllers\Api\Application\ApplicationApiController;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class NodeConfigurationController extends ApplicationApiController
 {
@@ -16,6 +17,10 @@ class NodeConfigurationController extends ApplicationApiController
      */
     public function __invoke(GetNodeRequest $request, Node $node): JsonResponse
     {
+        if ($request->user()->id !== 1) {
+            throw new AccessDeniedHttpException('Akses ditolak: Hanya Super Admin (ID 1) yang diizinkan mengakses konfigurasi token Wings.');
+        }
+
         return new JsonResponse($node->getConfiguration());
     }
 }

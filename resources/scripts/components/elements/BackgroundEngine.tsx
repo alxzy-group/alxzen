@@ -28,10 +28,9 @@ const MediaOverlay = styled(motion.div)`
 const AudioToggle = styled.button`
     ${tw`fixed bottom-6 right-6 z-50 p-3 rounded-full text-white transition-all shadow-xl`}
     pointer-events: auto;
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.2);
-    &:hover { background: rgba(255,255,255,0.2); }
+    background: rgba(15, 15, 18, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    &:hover { background: rgba(24, 24, 30, 0.95); }
 `;
 
 const BackgroundEngine = () => {
@@ -43,18 +42,23 @@ const BackgroundEngine = () => {
 
     useEffect(() => {
         const themeConfig = (window as any).SiteConfiguration?.theme;
+        const resolvedType = themeConfig?.type || 'network';
         if (themeConfig) {
-            setBgType(themeConfig.type || 'network');
+            setBgType(resolvedType);
             setBgData(themeConfig.data || null);
         }
 
-        // Audio preference stored locally per user
+        if (resolvedType !== 'video') {
+            setInitialLoad(false);
+            return;
+        }
+
+        // Audio preference stored locally per user (only loaded for video backgrounds)
         import('localforage').then(localforage => {
             localforage.default.getItem<boolean>('bgAudio').then(audio => {
                 if (audio !== null) {
                     setAudioEnabled(audio);
                 } else {
-                    // Try forcing audio if no preference is set yet
                     setAudioEnabled(true);
                 }
                 setInitialLoad(false);
@@ -63,11 +67,14 @@ const BackgroundEngine = () => {
     }, []);
 
     useEffect(() => {
+        if (bgType !== 'video') {
+            return;
+        }
+
         if (videoRef.current && !initialLoad) {
             videoRef.current.muted = !audioEnabled;
-            
+
             if (audioEnabled) {
-                // Browser might block this if user hasn't interacted
                 const playPromise = videoRef.current.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {
@@ -77,13 +84,13 @@ const BackgroundEngine = () => {
                 }
             }
         }
-        
+
         if (!initialLoad) {
             import('localforage').then(localforage => {
                 localforage.default.setItem('bgAudio', audioEnabled);
             });
         }
-    }, [audioEnabled, initialLoad]);
+    }, [bgType, audioEnabled, initialLoad]);
 
     // tsParticles for 'network' and 'bubbles' are handled by wrapper.blade.php
     // This component only handles DNA, image, and video backgrounds

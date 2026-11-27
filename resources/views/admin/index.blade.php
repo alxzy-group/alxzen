@@ -15,18 +15,34 @@
 @section('content')
 @php
     $isSuperOwner = Auth::user()->id === 1;
-    $totalServers = $isSuperOwner
-        ? \Pterodactyl\Models\Server::count()
-        : \Pterodactyl\Models\Server::where('owner_id', Auth::user()->id)->count();
-    $suspendedServers = $isSuperOwner
-        ? \Pterodactyl\Models\Server::where('status', 'suspended')->count()
-        : \Pterodactyl\Models\Server::where('owner_id', Auth::user()->id)->where('status', 'suspended')->count();
-    $totalUsers = \Pterodactyl\Models\User::count();
-    $totalAdmins = \Pterodactyl\Models\User::where('root_admin', true)->count();
-    $totalNodes = \Pterodactyl\Models\Node::count();
-    $totalAllocations = \Pterodactyl\Models\Allocation::count();
-    $usedAllocations = \Pterodactyl\Models\Allocation::whereNotNull('server_id')->count();
-    $totalEggs = \Pterodactyl\Models\Egg::count();
+    $overviewStats = \Illuminate\Support\Facades\Cache::remember(
+        'alx:admin_overview:' . ($isSuperOwner ? 'all' : Auth::user()->id),
+        30,
+        function () use ($isSuperOwner) {
+            return [
+                'totalServers' => $isSuperOwner
+                    ? \Pterodactyl\Models\Server::count()
+                    : \Pterodactyl\Models\Server::where('owner_id', Auth::user()->id)->count(),
+                'suspendedServers' => $isSuperOwner
+                    ? \Pterodactyl\Models\Server::where('status', 'suspended')->count()
+                    : \Pterodactyl\Models\Server::where('owner_id', Auth::user()->id)->where('status', 'suspended')->count(),
+                'totalUsers' => \Pterodactyl\Models\User::count(),
+                'totalAdmins' => \Pterodactyl\Models\User::where('root_admin', true)->count(),
+                'totalNodes' => \Pterodactyl\Models\Node::count(),
+                'totalAllocations' => \Pterodactyl\Models\Allocation::count(),
+                'usedAllocations' => \Pterodactyl\Models\Allocation::whereNotNull('server_id')->count(),
+                'totalEggs' => \Pterodactyl\Models\Egg::count(),
+            ];
+        }
+    );
+    $totalServers = $overviewStats['totalServers'];
+    $suspendedServers = $overviewStats['suspendedServers'];
+    $totalUsers = $overviewStats['totalUsers'];
+    $totalAdmins = $overviewStats['totalAdmins'];
+    $totalNodes = $overviewStats['totalNodes'];
+    $totalAllocations = $overviewStats['totalAllocations'];
+    $usedAllocations = $overviewStats['usedAllocations'];
+    $totalEggs = $overviewStats['totalEggs'];
     $recentServers = ($isSuperOwner
         ? \Pterodactyl\Models\Server::with(['user', 'node', 'allocation'])->latest('id')->limit(5)->get()
         : \Pterodactyl\Models\Server::with(['user', 'node', 'allocation'])->where('owner_id', Auth::user()->id)->latest('id')->limit(5)->get());
