@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 
 @section('title')
-    Command Center
+    Admin Panel
 @endsection
 
 @section('content-header')
-    <h1>Cloud Command Center<small>Real-time infrastructure telemetry, fleet overview, and security engine status.</small></h1>
+    <h1>Admin Panel<small>Real-time infrastructure telemetry, fleet overview, and security engine status.</small></h1>
     <ol class="breadcrumb">
         <li><a href="{{ route('admin.index') }}">Admin</a></li>
         <li class="active">Overview</li>
@@ -113,6 +113,9 @@
         gap: 20px;
         margin-bottom: 24px;
     }
+    .alx-bento-row > * {
+        min-width: 0;
+    }
     @media (max-width: 991px) { .alx-bento-row { grid-template-columns: 1fr; } }
     .alx-sec-item {
         display: flex;
@@ -141,7 +144,7 @@
             Welcome back, <span style="color:#38bdf8;">{{ Auth::user()->username }}</span>
         </h2>
         <p style="margin:4px 0 0 0; font-size:13px; color:#a1a1aa;">
-            Next-Gen Game &amp; Cloud Container Control Plane — Hardware-Accelerated UI &amp; Zero-Trust Endpoint Isolation.
+            Next-Gen Game &amp; Cloud Container Admin Panel — Hardware-Accelerated UI &amp; Zero-Trust Endpoint Isolation.
         </p>
     </div>
     <div style="display:flex; flex-wrap:wrap; gap:10px;">

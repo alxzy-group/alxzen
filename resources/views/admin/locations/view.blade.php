@@ -18,7 +18,7 @@
     <div class="col-sm-6">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Location Details</h3>
+                <h3 class="box-title"><i class="fa fa-globe" style="color: #38bdf8; margin-right: 8px;"></i>Location Details</h3>
             </div>
             <form action="{{ route('admin.locations.view', $location->id) }}" method="POST">
                 <div class="box-body">
@@ -41,27 +41,36 @@
         </div>
     </div>
     <div class="col-sm-6">
-        <div class="box">
+        <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Nodes</h3>
+                <h3 class="box-title">
+                    <i class="fa fa-sitemap" style="color: #38bdf8; margin-right: 8px;"></i>Nodes
+                    <span class="label label-primary" style="margin-left: 8px;">{{ $location->nodes->count() }}</span>
+                </h3>
             </div>
             <div class="box-body table-responsive no-padding">
-                <table class="table table-hover">
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>FQDN</th>
-                        <th>Servers</th>
-                    </tr>
-                    @foreach($location->nodes as $node)
+                @if($location->nodes->isEmpty())
+                    <div style="padding: 36px 20px; text-align: center; color: #71717a;">
+                        <p style="margin: 0; font-size: 13px;">No nodes attached to this location yet.</p>
+                    </div>
+                @else
+                    <table class="table table-hover">
                         <tr>
-                            <td><code>{{ $node->id }}</code></td>
-                            <td><a href="{{ route('admin.nodes.view', $node->id) }}">{{ $node->name }}</a></td>
-                            <td><code>{{ $node->fqdn }}</code></td>
-                            <td>{{ $node->servers->count() }}</td>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>FQDN</th>
+                            <th>Servers</th>
                         </tr>
-                    @endforeach
-                </table>
+                        @foreach($location->nodes as $node)
+                            <tr>
+                                <td><code>{{ $node->id }}</code></td>
+                                <td><a href="{{ route('admin.nodes.view', $node->id) }}">{{ $node->name }}</a></td>
+                                <td><code>{{ $node->fqdn }}</code></td>
+                                <td>{{ $node->servers->count() }}</td>
+                            </tr>
+                        @endforeach
+                    </table>
+                @endif
             </div>
         </div>
     </div>

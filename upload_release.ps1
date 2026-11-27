@@ -6,19 +6,19 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.5.0"
+$tag = "v4.6.0"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.5.0 - Cloud-Native UI/UX Enhancement (Ultra-Lightweight 60fps)
+### AlxZen Panel v4.6.0 - Server Search Fix, Mobile Admin Scroll & "Admin Panel" Polish
 
-- **Dashboard Command Toolbar & Grid/List ServerRow (`DashboardContainer.tsx`, `ServerRow.tsx`):**
-  - Added instant client-side server filter, persisted Grid / Compact List view toggle, and Streamer IP Privacy Mask toggle (`Hide IP`).
-  - Added 1-click Quick Files shortcut buttons, percentage usage labels next to limits, subtle CSS pulse status dots, and lightweight CSS transitions (zero Framer Motion loops).
-- **Enhanced Terminal Console & Telemetry Charts (`Console.tsx`, `StatGraphs.tsx`, `chart.ts`):**
-  - Added 1-click Search Logs (`Ctrl+F`), Expand/Compact terminal height toggle, and command input history hint (`History / Enter`).
-  - Refined Network I/O badges and charts to Electric Cyan (Inbound) and Emerald (Outbound) with ultra-clean gridlines.
-- **Enhanced File Manager & Startup (`FileManagerContainer.tsx`, `FileObjectRow.tsx`, `StartupContainer.tsx`, `VariableBox.tsx`):**
-  - Added instant directory file filtering, Sort selector (`Name / Size / Modified`), tinted rounded-xl file/folder icon badges, 1-click Copy Startup Command button, and Environment Variable search filter.
+- **Fixed Global & Dashboard Server Search (`SearchModal.tsx`, `DashboardContainer.tsx`, `MultiFieldServerFilter.php`):**
+  - Rebuilt `SearchModal` without Formik input unmounting bugs: instant focus, `220ms` debounce, initial server list on open, and clean empty states.
+  - Wired dashboard filter bar to backend `/api/client?filter[*]=...` (`280ms` debounce) + case-insensitive `LOWER(...)` search across server name, UUID, short ID, external ID, description, IP:port, and node name.
+  - Simplified topbar search trigger (`SearchContainer.tsx`) into a compact `Ctrl+K` icon button.
+- **Fixed Mobile Horizontal Table Scrolling & Renamed to "Admin Panel" (`layouts/admin.blade.php`, `admin/api/index.blade.php`, `NavigationBar.tsx`, `admin/index.blade.php`):**
+  - Replaced `overflow: hidden` traps on `Application API` and added global `.table-responsive` / `.table-responsible` touch-scroll CSS across all Admin pages.
+  - Renamed all `Control Plane` / `Command Center` references to `Admin Panel`.
+  - Unified remaining Admin sub-pages (`nodes/view/index`, `nodes/view/servers`, `locations/view`, `databases/view`, `servers/view/database`, `servers/view/mounts`) with Obsidian + Electric Cyan cards, icons, and empty states.
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag

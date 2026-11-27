@@ -23,9 +23,11 @@ export default () => {
             {visible && <SearchModal appear visible={visible} onDismissed={() => setVisible(false)} />}
             <Tooltip placement={'bottom'} content={'Quick Search (Ctrl+K)'}>
                 <button
+                    type={'button'}
+                    aria-label={'Quick Server Search'}
                     onClick={() => setVisible(true)}
                     css={`
-                        ${tw`h-9 w-9 sm:w-auto sm:px-3 flex items-center justify-center gap-2.5 transition-all duration-150 cursor-pointer rounded-xl outline-none text-xs font-medium`}
+                        ${tw`h-9 w-9 flex items-center justify-center transition-all duration-150 cursor-pointer rounded-xl outline-none text-xs font-medium flex-shrink-0`}
                         color: hsl(var(--text-secondary));
                         background: hsl(var(--bg-elevated));
                         border: 1px solid hsl(var(--border));
@@ -37,18 +39,7 @@ export default () => {
                         }
                     `}
                 >
-                    <FontAwesomeIcon icon={faSearch} style={{ fontSize: 12 }} />
-                    <span css={tw`hidden sm:inline`}>Search servers...</span>
-                    <kbd
-                        css={tw`hidden md:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono`}
-                        style={{
-                            background: 'hsl(var(--bg-surface))',
-                            border: '1px solid hsl(var(--border))',
-                            color: 'hsl(var(--text-muted))',
-                        }}
-                    >
-                        ⌘K
-                    </kbd>
+                    <FontAwesomeIcon icon={faSearch} style={{ fontSize: 13 }} />
                 </button>
             </Tooltip>
         </>

@@ -52,12 +52,38 @@
                 --alx-accent-light: #38bdf8;
             }
 
+            html, body {
+                overflow-x: hidden !important;
+                max-width: 100vw;
+            }
             body, .wrapper, .content-wrapper, .main-footer {
                 font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
                 background-color: var(--alx-bg-page) !important;
                 color: var(--alx-text-primary) !important;
                 -webkit-font-smoothing: antialiased;
             }
+            .content-wrapper {
+                overflow-x: hidden !important;
+                min-width: 0;
+                background-image: radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.05) 0%, transparent 55%) !important;
+            }
+            .table-responsive, .table-responsible, .alx-table-container {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+                border: none !important;
+            }
+            .row > [class*="col-"] {
+                min-width: 0;
+            }
+            /* Ultra-thin 6px Admin Scrollbars */
+            ::-webkit-scrollbar { width: 6px; height: 6px; }
+            ::-webkit-scrollbar-track { background: #09090b; }
+            ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 999px; }
+            ::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.45); }
 
             /* 1. Top Navbar & Sidebar */
             .main-header {
@@ -752,6 +778,19 @@
                     width: 100% !important;
                 }
                 .box-body { padding: 16px !important; }
+                .box-body.no-padding, .box-body.table-responsive.no-padding, .box-body.table-responsible.no-padding {
+                    padding: 0 !important;
+                }
+                .table-responsive > .table, .table-responsible > .table, .alx-table-container > .table {
+                    margin-bottom: 0 !important;
+                }
+                .table-responsive > .table > thead > tr > th,
+                .table-responsive > .table > tbody > tr > td,
+                .table-responsible > .table > thead > tr > th,
+                .table-responsible > .table > tbody > tr > td {
+                    white-space: nowrap;
+                }
+                .box-footer .btn { margin-bottom: 4px; }
             }
             /* 11. Segmented Control Fix for Bootstrap .btn-group[data-toggle="buttons"] */
             .btn-group[data-toggle="buttons"] {
@@ -914,7 +953,7 @@
             <aside class="main-sidebar">
                 <section class="sidebar">
                     <ul class="sidebar-menu" data-widget="tree" style="padding-top: 8px; padding-bottom: 24px;">
-                        <li class="header">COMMAND CENTER</li>
+                        <li class="header">ADMIN PANEL</li>
                         <li class="{{ Route::currentRouteName() !== 'admin.index' ?: 'active' }}">
                             <a href="{{ route('admin.index') }}">
                                 <i class="fa fa-compass"></i> <span>Overview</span>
@@ -938,7 +977,7 @@
                             </a>
                         </li>
 
-                        <li class="header">CLOUD FLEET &amp; USERS</li>
+                        <li class="header">SERVERS &amp; USERS</li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.servers') ?: 'active' }}">
                             <a href="{{ route('admin.servers') }}">
                                 <i class="fa fa-server"></i> <span>Servers</span>
@@ -975,7 +1014,7 @@
                             </a>
                         </li>
 
-                        <li class="header">RUNTIME &amp; EGGS</li>
+                        <li class="header">NESTS &amp; EGGS</li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.nests') ?: 'active' }}">
                             <a href="{{ route('admin.nests') }}">
                                 <i class="fa fa-cubes"></i> <span>Nests &amp; Eggs</span>

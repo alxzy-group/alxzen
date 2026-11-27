@@ -358,7 +358,7 @@ export default ({ serverName, adminServerId }: NavigationBarProps) => {
                         {rootAdmin && (
                             <AdminTopLink
                                 href={adminServerId ? `/admin/servers/view/${adminServerId}` : '/admin'}
-                                title={adminServerId ? 'Manage Server in Admin Panel' : 'Open Admin Control Plane'}
+                                title={adminServerId ? 'Manage Server in Admin Panel' : 'Open Admin Panel'}
                             >
                                 <FontAwesomeIcon icon={faShieldAlt} />
                                 <span css={tw`hidden sm:inline`}>{adminServerId ? 'Manage' : 'Admin'}</span>
@@ -465,7 +465,7 @@ export default ({ serverName, adminServerId }: NavigationBarProps) => {
                             <div style={{ margin: '10px 4px 2px', borderTop: '1px solid hsl(var(--border))' }} />
                             <SectionTitle style={{ color: '#fbbf24' }}>Administration</SectionTitle>
                             <AdminLink href={'/admin'}>
-                                <FontAwesomeIcon icon={faShieldAlt} style={{ width: 14 }} /> Admin Control Plane
+                                <FontAwesomeIcon icon={faShieldAlt} style={{ width: 14 }} /> Admin Panel
                             </AdminLink>
                             {adminServerId && (
                                 <AdminLink href={`/admin/servers/view/${adminServerId}`}>

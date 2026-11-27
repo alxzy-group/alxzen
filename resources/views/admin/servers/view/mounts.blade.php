@@ -21,10 +21,10 @@
         <div class="col-sm-12">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Available Mounts</h3>
+                    <h3 class="box-title"><i class="fa fa-hdd-o" style="color: #38bdf8; margin-right: 8px;"></i>Available Mounts</h3>
                 </div>
 
-                <div class="box-body table-responsible no-padding">
+                <div class="box-body table-responsive no-padding">
                     <table class="table table-hover">
                         <tr>
                             <th>ID</th>

@@ -173,6 +173,14 @@ export default () => {
     const defaultPage = Number(new URLSearchParams(search).get('page') || '1');
     const [page, setPage] = useState(!isNaN(defaultPage) && defaultPage > 0 ? defaultPage : 1);
     const [filterQuery, setFilterQuery] = useState('');
+    const [debouncedQuery, setDebouncedQuery] = useState('');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedQuery(filterQuery.trim());
+        }, 280);
+        return () => clearTimeout(timer);
+    }, [filterQuery]);
 
     const { clearFlashes, clearAndAddHttpError } = useFlash();
     const uuid = useStoreState((state) => state.user.data!.uuid);
@@ -191,13 +199,18 @@ export default () => {
     const [isWorldOpen, setIsWorldOpen] = useState(false);
 
     const { data: servers, error } = useSWR<PaginatedResult<Server>>(
-        ['/api/client/servers', showOnlyAdmin && isOwner, page],
-        () => getServers({ page, type: showOnlyAdmin && isOwner ? 'admin' : undefined })
+        ['/api/client/servers', showOnlyAdmin && isOwner, page, debouncedQuery],
+        () =>
+            getServers({
+                page,
+                query: debouncedQuery || undefined,
+                type: showOnlyAdmin && isOwner ? 'admin' : undefined,
+            })
     );
 
     useEffect(() => {
         setPage(1);
-    }, [showOnlyAdmin]);
+    }, [showOnlyAdmin, debouncedQuery]);
 
     useEffect(() => {
         if (error) clearAndAddHttpError({ key: 'dashboard', error });
@@ -300,7 +313,7 @@ export default () => {
                 <AnnounceBar displayLocation="dashboard" />
 
                 {/* Lightweight Cloud Command Toolbar: Instant Filter + IP Privacy Mask + Grid/List Toggle */}
-                {servers && servers.items.length > 0 && (
+                {servers && (servers.items.length > 0 || filterQuery.trim().length > 0) && (
                     <CommandToolbar>
                         <SearchInputBox>
                             <FontAwesomeIcon
@@ -401,7 +414,35 @@ export default () => {
                                   })
                                 : items;
 
-                            if (items.length === 0) {
+                            if (visibleItems.length === 0) {
+                                if (filterQuery.trim().length > 0) {
+                                    return (
+                                        <EmptyStateBox>
+                                            <FontAwesomeIcon
+                                                icon={faSearch}
+                                                style={{ fontSize: 24, color: '#38bdf8', opacity: 0.7 }}
+                                            />
+                                            <p
+                                                style={{
+                                                    color: 'hsl(var(--text-primary))',
+                                                    fontWeight: 700,
+                                                    fontSize: 14,
+                                                    margin: 0,
+                                                }}
+                                            >
+                                                No matching instances for &ldquo;{filterQuery}&rdquo;
+                                            </p>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFilterQuery('')}
+                                                className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-sky-500/15 text-sky-400 border border-sky-500/30 hover:bg-sky-500/25 transition-colors cursor-pointer"
+                                            >
+                                                Reset Filter
+                                            </button>
+                                        </EmptyStateBox>
+                                    );
+                                }
+
                                 return (
                                     <EmptyStateBox>
                                         <span style={{ fontSize: 36, opacity: 0.18, color: 'hsl(var(--text-primary))' }}>
@@ -422,34 +463,6 @@ export default () => {
                                         <p style={{ color: 'hsl(var(--text-muted))', fontSize: 12, margin: 0 }}>
                                             Create or assign a server to get started.
                                         </p>
-                                    </EmptyStateBox>
-                                );
-                            }
-
-                            if (visibleItems.length === 0) {
-                                return (
-                                    <EmptyStateBox>
-                                        <FontAwesomeIcon
-                                            icon={faSearch}
-                                            style={{ fontSize: 24, color: '#38bdf8', opacity: 0.7 }}
-                                        />
-                                        <p
-                                            style={{
-                                                color: 'hsl(var(--text-primary))',
-                                                fontWeight: 700,
-                                                fontSize: 14,
-                                                margin: 0,
-                                            }}
-                                        >
-                                            No matching instances for &ldquo;{filterQuery}&rdquo;
-                                        </p>
-                                        <button
-                                            type="button"
-                                            onClick={() => setFilterQuery('')}
-                                            className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-sky-500/15 text-sky-400 border border-sky-500/30 hover:bg-sky-500/25 transition-colors cursor-pointer"
-                                        >
-                                            Reset Filter
-                                        </button>
                                     </EmptyStateBox>
                                 );
                             }

@@ -57,13 +57,25 @@ class MultiFieldServerFilter implements Filter
             return;
         }
 
+        $value = trim((string) $value);
+        if ($value === '') {
+            return;
+        }
+
+        $lower = mb_strtolower($value);
+
         $query
-            ->where(function (Builder $builder) use ($value) {
-                $builder->where('servers.uuid', $value)
-                    ->orWhere('servers.uuid', 'LIKE', "$value%")
-                    ->orWhere('servers.uuidShort', $value)
-                    ->orWhere('servers.external_id', $value)
-                    ->orWhereRaw('LOWER(servers.name) LIKE ?', ["%$value%"]);
+            ->where(function (Builder $builder) use ($lower) {
+                $builder->whereRaw('LOWER(servers.uuid) = ?', [$lower])
+                    ->orWhereRaw('LOWER(servers.uuid) LIKE ?', [$lower . '%'])
+                    ->orWhereRaw('LOWER(servers.uuidShort) = ?', [$lower])
+                    ->orWhereRaw('LOWER(servers.uuidShort) LIKE ?', [$lower . '%'])
+                    ->orWhereRaw('LOWER(servers.external_id) = ?', [$lower])
+                    ->orWhereRaw('LOWER(servers.name) LIKE ?', ['%' . $lower . '%'])
+                    ->orWhereRaw("LOWER(COALESCE(servers.description, '')) LIKE ?", ['%' . $lower . '%'])
+                    ->orWhereHas('node', function (Builder $node) use ($lower) {
+                        $node->whereRaw('LOWER(name) LIKE ?', ['%' . $lower . '%']);
+                    });
             });
     }
 }

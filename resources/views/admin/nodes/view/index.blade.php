@@ -15,70 +15,70 @@
 
 @section('content')
 <style>
-/* Info card */
+/* Info card (Obsidian + Electric Cyan Bento) */
 .alx-card {
-    background: #171717;
+    background: #0f0f12;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-    box-shadow: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
     overflow: hidden;
     margin-bottom: 20px;
 }
 .alx-card-header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 22px;
+    padding: 15px 22px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    background: #171717;
+    background: rgba(255, 255, 255, 0.015);
 }
-.alx-card-title { font-size:15px; font-weight:500; color:#e5e5e5; display:flex; align-items:center; gap:8px; margin:0; }
-.alx-card-title i { color:#a3a3a3; font-size:14px; }
+.alx-card-title { font-size:15px; font-weight:700; color:#ffffff; display:flex; align-items:center; gap:9px; margin:0; letter-spacing: -0.01em; }
+.alx-card-title i { color:#38bdf8; font-size:14px; }
 
-.alx-info-table { width:100%; border-collapse:collapse; }
+.alx-info-table { width:100%; border-collapse:collapse; min-width: 480px; }
 .alx-info-table tr { border-bottom:1px solid rgba(255, 255, 255, 0.04); }
 .alx-info-table tr:last-child { border-bottom:none; }
 .alx-info-table td { padding:14px 22px; font-size:13px; vertical-align:middle; }
-.alx-info-table td:first-child { color:#a3a3a3; font-weight:500; width:40%; }
-.alx-info-table td:last-child { color:#e5e5e5; }
+.alx-info-table td:first-child { color:#a1a1aa; font-weight:600; width:40%; }
+.alx-info-table td:last-child { color:#f4f4f5; }
 .alx-info-table td code {
-    background: #0a0a0a; border:1px solid rgba(255, 255, 255, 0.08);
-    border-radius:4px; padding:2px 7px; font-size:12px; color:#a3a3a3;
+    background: #09090b; border:1px solid rgba(56, 189, 248, 0.25);
+    border-radius:6px; padding:2px 8px; font-size:12px; color:#38bdf8;
 }
 
 /* danger zone */
 .alx-danger-card {
     background: rgba(239, 68, 68, 0.05);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    border-radius: 8px;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 16px;
     overflow: hidden;
     margin-bottom: 20px;
 }
 .alx-danger-header {
-    padding: 16px 22px;
-    border-bottom: 1px solid rgba(239, 68, 68, 0.1);
-    background: rgba(239, 68, 68, 0.05);
-    font-size: 14px; font-weight: 500; color: #ef4444;
+    padding: 15px 22px;
+    border-bottom: 1px solid rgba(239, 68, 68, 0.14);
+    background: rgba(239, 68, 68, 0.06);
+    font-size: 14px; font-weight: 700; color: #f87171;
     display: flex; align-items: center; gap: 8px;
 }
-.alx-danger-body { padding: 16px 22px; font-size: 13px; color: #e5e5e5; line-height: 1.6; }
-.alx-danger-footer { padding: 14px 22px; border-top: 1px solid rgba(239, 68, 68, 0.1); display: flex; justify-content: flex-end; }
+.alx-danger-body { padding: 16px 22px; font-size: 13px; color: #e4e4e7; line-height: 1.6; }
+.alx-danger-footer { padding: 14px 22px; border-top: 1px solid rgba(239, 68, 68, 0.14); display: flex; justify-content: flex-end; }
 .alx-btn-danger {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    padding: 8px 16px; border-radius: 9px; font-size: 13px; font-weight: 600;
     background: #ef4444; color: #fff;
     border: 1px solid transparent; cursor: pointer;
-    transition: all 0.2s; text-decoration: none;
+    transition: all 0.15s; text-decoration: none;
 }
 .alx-btn-danger:hover { background: #dc2626; color: #fff; }
 .alx-btn-danger:disabled, .alx-btn-danger[disabled] { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
 /* description */
 .alx-desc-card {
-    background: #171717;
+    background: #0f0f12;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px; padding: 18px 22px;
+    border-radius: 16px; padding: 18px 22px;
     margin-bottom: 20px;
 }
-.alx-desc-card pre { color: #e5e5e5; font-size: 13px; margin: 0; white-space: pre-wrap; background: transparent; border: none; padding: 0; font-family: 'Inter', sans-serif; }
+.alx-desc-card pre { color: #e4e4e7; font-size: 13px; margin: 0; white-space: pre-wrap; background: transparent; border: none; padding: 0; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; }
 </style>
 
 <div class="row">
@@ -101,10 +101,10 @@
             <div class="alx-card-header">
                 <h3 class="alx-card-title"><i class="fa fa-pie-chart"></i> Node Resource Allocation</h3>
             </div>
-            <div class="alx-card-body" style="padding: 30px 15px;">
-                <div style="display: flex; flex-wrap: nowrap; gap: 20px; overflow-x: auto; padding-bottom: 20px; -webkit-overflow-scrolling: touch;">
+            <div class="alx-card-body" style="padding: 26px 16px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; padding-bottom: 12px;">
                     {{-- Memory Chart --}}
-                    <div style="flex: 0 0 auto; width: 45%; min-width: 250px; text-align: center; margin: 0 auto;">
+                    <div style="flex: 1 1 260px; max-width: 420px; text-align: center; margin: 0 auto;">
                         <h4 style="color: #e2e8f0; font-weight: 600; margin-bottom: 20px;">Memory Usage (GiB)</h4>
                         <div style="position: relative; width: 200px; height: 200px; margin: 0 auto;">
                             <canvas id="chartMem"></canvas>
@@ -117,7 +117,7 @@
                     </div>
 
                     {{-- Disk Chart --}}
-                    <div style="flex: 0 0 auto; width: 45%; min-width: 250px; text-align: center; margin: 0 auto;">
+                    <div style="flex: 1 1 260px; max-width: 420px; text-align: center; margin: 0 auto;">
                         <h4 style="color: #e2e8f0; font-weight: 600; margin-bottom: 20px;">Disk Space Usage (GiB)</h4>
                         <div style="position: relative; width: 200px; height: 200px; margin: 0 auto;">
                             <canvas id="chartDisk"></canvas>
@@ -131,10 +131,10 @@
                 </div>
 
                 {{-- Status Widget --}}
-                <div style="margin-top: 40px; padding: 20px; background: #171717; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; text-align: center;">
-                    <h4 style="margin: 0; color: #a3a3a3; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Remaining Physical Disk Space</h4>
-                    <div id="diskRemaining" style="font-size: 28px; font-weight: 500; color: #10b981; margin-top: 8px;">-- GiB</div>
-                    <div style="font-size: 12px; color: #737373; margin-top: 5px;">(Total Node Capacity minus Real-Time Active Usage)</div>
+                <div style="margin-top: 28px; padding: 20px; background: #16161b; border: 1px solid rgba(56, 189, 248, 0.18); border-radius: 12px; text-align: center;">
+                    <h4 style="margin: 0; color: #a1a1aa; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;">Remaining Physical Disk Space</h4>
+                    <div id="diskRemaining" style="font-size: 28px; font-weight: 700; color: #34d399; margin-top: 8px; font-variant-numeric: tabular-nums;">-- GiB</div>
+                    <div style="font-size: 12px; color: #71717a; margin-top: 5px;">(Total Node Capacity minus Real-Time Active Usage)</div>
                 </div>
             </div>
         </div>
@@ -152,7 +152,7 @@
                     <i class="fa fa-circle" style="font-size:8px"></i> Online
                 </span>
             </div>
-            <div style="overflow-x: auto;">
+            <div class="table-responsive">
                 <table class="alx-info-table">
                     <tr>
                         <td><i class="fa fa-code-fork" style="margin-right:6px;color:#a3a3a3"></i> Daemon Version</td>
@@ -281,10 +281,10 @@
         plugins: {
             legend: { display: false },
             tooltip: {
-                backgroundColor: 'rgba(15,23,42,0.9)',
+                backgroundColor: 'rgba(15, 15, 18, 0.95)',
                 titleColor: '#fff',
                 bodyColor: '#cbd5e1',
-                borderColor: 'rgba(99,102,241,0.3)',
+                borderColor: 'rgba(56, 189, 248, 0.35)',
                 borderWidth: 1,
                 callbacks: {
                     label: function(context) {
@@ -305,14 +305,14 @@
                 {
                     // Inner ring: Active Usage vs Total
                     data: [0, 1],
-                    backgroundColor: ['#10b981', 'rgba(30,41,59,0.0)'], // inner uses green
+                    backgroundColor: ['#10b981', 'rgba(30,41,59,0.0)'], // inner uses emerald
                     borderWidth: 0,
                     weight: 1
                 },
                 {
                     // Outer ring: Allocated vs Total
                     data: [0, 1],
-                    backgroundColor: ['#3b82f6', 'rgba(30,41,59,0.5)'], // outer uses blue
+                    backgroundColor: ['#0ea5e9', 'rgba(30,41,59,0.5)'], // outer uses cyan
                     borderWidth: 0,
                     weight: 0.5
                 }
@@ -328,7 +328,7 @@
             datasets: [
                 {
                     data: [0, 1],
-                    backgroundColor: ['#8b5cf6', 'rgba(30,41,59,0.0)'],
+                    backgroundColor: ['#38bdf8', 'rgba(30,41,59,0.0)'],
                     borderWidth: 0,
                     weight: 1
                 },

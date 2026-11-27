@@ -1,5 +1,20 @@
 # Changelog
 
+## [v4.6.0] - 2026-11-27
+### Fixed & Polished (Admin Panel Mobile UX, Global Search & Sub-Page Cohesion)
+- **Fixed Server Search (`SearchModal.tsx`, `DashboardContainer.tsx`, `MultiFieldServerFilter.php`)**:
+  - Replaced Formik's inline re-mounting input wrapper in `SearchModal` with a controlled React ref input + `220ms` debounce, instant initial server list on open, clear button, and empty-result state.
+  - Wired `DashboardContainer` filter input to query `/api/client?filter[*]=...` (`280ms` debounce) across all pages alongside instant current-page filtering, keeping the Command Toolbar visible during empty searches.
+  - Updated `MultiFieldServerFilter.php` with trimmed case-insensitive `LOWER(...)` matching across `name`, `description`, `uuid`, `uuidShort`, `external_id`, and `node` name.
+  - Compacted the topbar search trigger (`SearchContainer.tsx`) into a clean `Ctrl+K` icon button so search isn't duplicated on the dashboard.
+- **Fixed Mobile Horizontal Table Scrolling Across All Admin Pages (`layouts/admin.blade.php`, `admin/api/index.blade.php`, `admin/servers/view/*`)**:
+  - Added global `.table-responsive`, `.table-responsible`, and `.alx-table-container` horizontal touch scroll rules (`overflow-x: auto !important; -webkit-overflow-scrolling: touch !important;`) plus grid/wrapper `min-width: 0` & `overflow-x: hidden` guards.
+  - Rebuilt `admin/api/index.blade.php` on the unified Bento `.box.box-primary` container with `.table-responsive` (`min-width: 820px`) so Application API Keys swipe smoothly on mobile screens.
+  - Fixed typo `table-responsible` -> `table-responsive` in `admin/servers/view/database.blade.php` and `admin/servers/view/mounts.blade.php`.
+- **Renamed "Control Plane" -> "Admin Panel" & Unified Remaining Admin Views**:
+  - Updated `NavigationBar.tsx`, `layouts/admin.blade.php` sidebar section headings (`ADMIN PANEL`, `SERVERS & USERS`, `NESTS & EGGS`), and `admin/index.blade.php` titles/hero text to **Admin Panel**.
+  - Updated `admin/nodes/view/index.blade.php` (Obsidian + Electric Cyan / Emerald charts & wrapping flex cards) and added header icons + empty states to `admin/nodes/view/servers.blade.php`, `admin/locations/view.blade.php`, and `admin/databases/view.blade.php`.
+
 ## [v4.5.0] - 2026-11-23
 ### Enhanced (Cloud-Native UI/UX & 60fps Lightweight Polish)
 - **Dashboard Command Toolbar & Grid/List `ServerRow` (`DashboardContainer.tsx`, `ServerRow.tsx`)**:

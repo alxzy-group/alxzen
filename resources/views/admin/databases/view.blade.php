@@ -56,7 +56,7 @@
         <div class="col-sm-6">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">User Details</h3>
+                    <h3 class="box-title"><i class="fa fa-user" style="color: #38bdf8; margin-right: 8px;"></i>User Details</h3>
                 </div>
                 <div class="box-body">
                     <div class="form-group">
@@ -83,9 +83,9 @@
 </form>
 <div class="row">
     <div class="col-xs-12">
-        <div class="box">
+        <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Databases</h3>
+                <h3 class="box-title"><i class="fa fa-database" style="color: #38bdf8; margin-right: 8px;"></i>Databases</h3>
             </div>
             <div class="box-body table-responsive no-padding">
                 <table class="table table-hover">
