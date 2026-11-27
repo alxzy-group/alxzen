@@ -15,6 +15,8 @@
 @section('content')
 @php
     $isSuperOwner = Auth::user()->id === 1;
+    $quotaService = app(\Pterodactyl\Services\Admin\AdminQuotaService::class);
+    $quotaSchemaReady = $quotaService->hasSchemaColumns();
     $overviewStats = \Illuminate\Support\Facades\Cache::remember(
         'alx:admin_overview:' . ($isSuperOwner ? 'all' : Auth::user()->id),
         30,
@@ -46,6 +48,11 @@
     $recentServers = ($isSuperOwner
         ? \Pterodactyl\Models\Server::with(['user', 'node', 'allocation'])->latest('id')->limit(5)->get()
         : \Pterodactyl\Models\Server::with(['user', 'node', 'allocation'])->where('owner_id', Auth::user()->id)->latest('id')->limit(5)->get());
+
+    $subAdmins = $isSuperOwner
+        ? \Pterodactyl\Models\User::where('root_admin', true)->where('id', '!=', 1)->orderBy('id')->get()
+        : collect();
+    $myQuota = !$isSuperOwner ? $quotaService->getUsage(Auth::user()) : null;
 @endphp
 
 <style>
@@ -235,6 +242,141 @@
         </div>
     </a>
 </div>
+
+{{-- Sub-Admin Creation Quotas (Super Admin Manager / Sub-Admin Self Usage) --}}
+@if($isSuperOwner)
+    <div class="box box-primary" style="margin-bottom:24px !important;">
+        <div class="box-header with-border" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+            <div>
+                <h3 class="box-title">
+                    <i class="fa fa-sliders" style="color:#38bdf8; margin-right:8px;"></i>Sub-Admin Creation Quotas (Batas Create Admin)
+                    <span class="label label-primary" style="margin-left:8px;">{{ $subAdmins->count() }} Sub-Admin</span>
+                </h3>
+                <div style="font-size:12px; color:#a1a1aa; margin-top:4px;">
+                    Atur batas maksimal Server, RAM, Disk, dan CPU untuk setiap akun admin selain ID 1 (berlaku di Panel &amp; PTLA API).
+                </div>
+            </div>
+            <a href="{{ route('admin.users.new') }}" class="btn btn-xs btn-default">
+                <i class="fa fa-user-plus" style="margin-right:4px;"></i> Tambah Admin
+            </a>
+        </div>
+        @if(!$quotaSchemaReady)
+            <div style="padding:14px 20px;">
+                <div class="alert alert-warning" style="margin-bottom:0;">
+                    <i class="fa fa-database" style="margin-right:6px;"></i>
+                    Skema database kuota belum aktif. Jalankan <code>php artisan migrate --force</code> di VPS untuk mengaktifkan pengaturan batas create admin.
+                </div>
+            </div>
+        @endif
+        <div class="box-body table-responsive no-padding">
+            @if($subAdmins->isEmpty())
+                <div style="padding:32px 20px; text-align:center; color:#71717a; font-size:13px;">
+                    Belum ada akun admin tambahan selain Owner Utama (ID 1).
+                </div>
+            @else
+                <table class="table table-hover" style="min-width:960px;">
+                    <thead>
+                        <tr>
+                            <th>Admin Account</th>
+                            <th>Pemakaian Saat Ini (Used / Limit)</th>
+                            <th>Max Server</th>
+                            <th>Max RAM (MiB)</th>
+                            <th>Max Disk (MiB)</th>
+                            <th>Max CPU (%)</th>
+                            <th style="text-align:right; width:100px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($subAdmins as $adm)
+                            @php
+                                $q = $quotaService->getUsage($adm);
+                                $srvRatio = ($q['server_limit'] && $q['server_limit'] > 0) ? ($q['servers_used'] / $q['server_limit']) : 0;
+                                $srvColor = $q['server_limit'] === 0 || $srvRatio >= 1 ? '#fb7185' : ($srvRatio >= 0.8 ? '#fbbf24' : '#34d399');
+                            @endphp
+                            <tr>
+                                <td>
+                                    <a href="{{ route('admin.users.view', $adm->id) }}" style="font-weight:700; color:#f4f4f5;">
+                                        <i class="fa fa-user-circle" style="color:#38bdf8; margin-right:6px;"></i>{{ $adm->username }}
+                                    </a>
+                                    <div style="font-size:11.5px; color:#71717a;">#{{ $adm->id }} &middot; {{ $adm->email }}</div>
+                                </td>
+                                <td style="font-size:12px; font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;">
+                                    <div style="color:{{ $srvColor }}; font-weight:700;">
+                                        Srv: {{ $q['servers_used'] }} / {{ $q['server_limit'] === null ? '∞' : $q['server_limit'] }}
+                                    </div>
+                                    <div style="color:#a1a1aa; font-size:11px; margin-top:2px;">
+                                        RAM {{ number_format($q['memory_used']) }}/{{ $q['memory_limit'] === null ? '∞' : number_format($q['memory_limit']) }} MiB
+                                        &middot; Disk {{ number_format($q['disk_used']) }}/{{ $q['disk_limit'] === null ? '∞' : number_format($q['disk_limit']) }} MiB
+                                        &middot; CPU {{ $q['cpu_used'] }}/{{ $q['cpu_limit'] === null ? '∞' : $q['cpu_limit'] }}%
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" name="server_create_limit" form="quota-form-{{ $adm->id }}" value="{{ $adm->server_create_limit }}" placeholder="∞ Unlimited" class="form-control input-sm" style="min-width:95px; font-family:'JetBrains Mono',monospace;" {{ $quotaSchemaReady ? '' : 'disabled' }}>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" name="memory_create_limit" form="quota-form-{{ $adm->id }}" value="{{ $adm->memory_create_limit }}" placeholder="∞ MiB" class="form-control input-sm" style="min-width:110px; font-family:'JetBrains Mono',monospace;" {{ $quotaSchemaReady ? '' : 'disabled' }}>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" name="disk_create_limit" form="quota-form-{{ $adm->id }}" value="{{ $adm->disk_create_limit }}" placeholder="∞ MiB" class="form-control input-sm" style="min-width:110px; font-family:'JetBrains Mono',monospace;" {{ $quotaSchemaReady ? '' : 'disabled' }}>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" name="cpu_create_limit" form="quota-form-{{ $adm->id }}" value="{{ $adm->cpu_create_limit }}" placeholder="∞ %" class="form-control input-sm" style="min-width:95px; font-family:'JetBrains Mono',monospace;" {{ $quotaSchemaReady ? '' : 'disabled' }}>
+                                </td>
+                                <td style="text-align:right;">
+                                    <button type="submit" form="quota-form-{{ $adm->id }}" class="btn btn-xs btn-primary" {{ $quotaSchemaReady ? '' : 'disabled' }}>
+                                        <i class="fa fa-save"></i> Save
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                @foreach($subAdmins as $adm)
+                    <form id="quota-form-{{ $adm->id }}" action="{{ route('admin.quotas.update', $adm->id) }}" method="POST" style="display:none;">
+                        {!! csrf_field() !!}
+                        {!! method_field('PATCH') !!}
+                    </form>
+                @endforeach
+            @endif
+        </div>
+        <div class="box-footer" style="font-size:12px; color:#71717a;">
+            <i class="fa fa-info-circle" style="color:#38bdf8; margin-right:6px;"></i>
+            Kosongkan input untuk akses <strong>Unlimited (&infin;)</strong>. Isi <strong><code>0</code></strong> pada Max Server untuk menonaktifkan hak create server admin tersebut.
+        </div>
+    </div>
+@elseif($myQuota && $quotaSchemaReady)
+    <div class="box box-primary" style="margin-bottom:24px !important;">
+        <div class="box-header with-border">
+            <h3 class="box-title"><i class="fa fa-tachometer" style="color:#38bdf8; margin-right:8px;"></i>Kuota Create Server Akun Anda</h3>
+        </div>
+        <div class="box-body" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px;">
+            <div style="background:#09090b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:12px 14px;">
+                <div style="font-size:11px; color:#71717a; font-weight:700; text-transform:uppercase;">Servers Created</div>
+                <div style="font-size:18px; font-weight:800; color:#f4f4f5; font-family:'JetBrains Mono',monospace; margin-top:4px;">
+                    {{ $myQuota['servers_used'] }} / {{ $myQuota['server_limit'] === null ? '∞' : $myQuota['server_limit'] }}
+                </div>
+            </div>
+            <div style="background:#09090b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:12px 14px;">
+                <div style="font-size:11px; color:#71717a; font-weight:700; text-transform:uppercase;">RAM Quota</div>
+                <div style="font-size:18px; font-weight:800; color:#38bdf8; font-family:'JetBrains Mono',monospace; margin-top:4px;">
+                    {{ number_format($myQuota['memory_used']) }} / {{ $myQuota['memory_limit'] === null ? '∞' : number_format($myQuota['memory_limit']) }} MiB
+                </div>
+            </div>
+            <div style="background:#09090b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:12px 14px;">
+                <div style="font-size:11px; color:#71717a; font-weight:700; text-transform:uppercase;">Disk Quota</div>
+                <div style="font-size:18px; font-weight:800; color:#34d399; font-family:'JetBrains Mono',monospace; margin-top:4px;">
+                    {{ number_format($myQuota['disk_used']) }} / {{ $myQuota['disk_limit'] === null ? '∞' : number_format($myQuota['disk_limit']) }} MiB
+                </div>
+            </div>
+            <div style="background:#09090b; border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:12px 14px;">
+                <div style="font-size:11px; color:#71717a; font-weight:700; text-transform:uppercase;">CPU Quota</div>
+                <div style="font-size:18px; font-weight:800; color:#fbbf24; font-family:'JetBrains Mono',monospace; margin-top:4px;">
+                    {{ $myQuota['cpu_used'] }} / {{ $myQuota['cpu_limit'] === null ? '∞' : $myQuota['cpu_limit'] }}%
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 
 {{-- 2-Column Bento: Recent Deployed Servers & Security Engine --}}
 <div class="alx-bento-row">

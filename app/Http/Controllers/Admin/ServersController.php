@@ -153,11 +153,21 @@ class ServersController extends Controller
         $this->validateServerAccess($request, $server);
 
         try {
+            app(\Pterodactyl\Services\Admin\AdminQuotaService::class)->assertCanUpdateBuild(
+                $request->user(),
+                $server,
+                $request->only(['memory', 'disk', 'cpu'])
+            );
+
             $this->buildModificationService->handle($server, $request->only([
                 'allocation_id', 'add_allocations', 'remove_allocations',
                 'memory', 'swap', 'io', 'cpu', 'threads', 'disk',
                 'database_limit', 'allocation_limit', 'backup_limit', 'domain_limit', 'oom_disabled',
             ]));
+        } catch (DisplayException $exception) {
+            $this->alert->danger($exception->getMessage())->flash();
+
+            return redirect()->back()->withInput();
         } catch (DataValidationException $exception) {
             throw new ValidationException($exception->getValidator());
         }

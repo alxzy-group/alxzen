@@ -3,12 +3,15 @@
 namespace Pterodactyl\Http\Controllers\Admin\Servers;
 
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 use Pterodactyl\Models\Nest;
 use Pterodactyl\Models\Node;
 use Pterodactyl\Models\Location;
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
+use Pterodactyl\Exceptions\DisplayException;
 use Pterodactyl\Http\Controllers\Controller;
+use Pterodactyl\Services\Admin\AdminQuotaService;
 use Pterodactyl\Repositories\Eloquent\NestRepository;
 use Pterodactyl\Repositories\Eloquent\NodeRepository;
 use Pterodactyl\Http\Requests\Admin\ServerFormRequest;
@@ -24,6 +27,7 @@ class CreateServerController extends Controller
         private NestRepository $nestRepository,
         private NodeRepository $nodeRepository,
         private ServerCreationService $creationService,
+        private AdminQuotaService $quotaService,
     ) {
     }
 
@@ -32,7 +36,7 @@ class CreateServerController extends Controller
      *
      * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
      */
-    public function index(): View|RedirectResponse
+    public function index(Request $request): View|RedirectResponse
     {
         $nodes = Node::all();
         if (count($nodes) < 1) {
@@ -55,6 +59,7 @@ class CreateServerController extends Controller
         return view('admin.servers.new', [
             'locations' => Location::all(),
             'nests' => $nests,
+            'quotaUsage' => $request->user()->id !== 1 ? $this->quotaService->getUsage($request->user()) : null,
         ]);
     }
 
@@ -74,6 +79,16 @@ class CreateServerController extends Controller
             $data['image'] = $data['custom_image'];
             unset($data['custom_image']);
         }
+
+        try {
+            $this->quotaService->assertCanCreateServer($request->user(), $data);
+        } catch (DisplayException $exception) {
+            $this->alert->danger($exception->getMessage())->flash();
+
+            return redirect()->back()->withInput();
+        }
+
+        $data['created_by'] = $request->user()->id;
 
         $server = $this->creationService->handle($data);
 

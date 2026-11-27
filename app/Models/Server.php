@@ -154,6 +154,7 @@ class Server extends Model implements Identifiable
     public static array $validationRules = [
         'external_id' => 'sometimes|nullable|string|between:1,191|unique:servers',
         'owner_id' => 'required|integer|exists:users,id',
+        'created_by' => 'sometimes|nullable|integer|exists:users,id',
         'name' => 'required|string|min:1|max:191',
         'node_id' => 'required|exists:nodes,id',
         'description' => 'string',
@@ -184,6 +185,7 @@ class Server extends Model implements Identifiable
         'node_id' => 'integer',
         'skip_scripts' => 'boolean',
         'owner_id' => 'integer',
+        'created_by' => 'integer',
         'memory' => 'integer',
         'swap' => 'integer',
         'disk' => 'integer',

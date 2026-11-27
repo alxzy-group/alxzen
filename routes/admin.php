@@ -5,6 +5,9 @@ use Pterodactyl\Http\Controllers\Admin;
 use Pterodactyl\Http\Middleware\Admin\Servers\ServerInstalled;
 
 Route::get('/', [Admin\BaseController::class, 'index'])->name('admin.index');
+Route::patch('/quotas/{user:id}', [Admin\AdminQuotaController::class, 'update'])
+    ->middleware(['admin.superuser'])
+    ->name('admin.quotas.update');
 
 Route::group(['prefix' => 'api'], function () {
     Route::get('/', [Admin\ApiController::class, 'index'])->name('admin.api.index');

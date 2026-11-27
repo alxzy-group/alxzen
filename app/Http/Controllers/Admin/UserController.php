@@ -76,9 +76,13 @@ class UserController extends Controller
      */
     public function view(User $user): View
     {
+        $quotaService = app(\Pterodactyl\Services\Admin\AdminQuotaService::class);
+
         return view('admin.users.view', [
             'user' => $user,
             'languages' => $this->getAvailableLanguages(true),
+            'quotaUsage' => $user->root_admin && $user->id !== 1 ? $quotaService->getUsage($user) : null,
+            'quotaSchemaReady' => $quotaService->hasSchemaColumns(),
         ]);
     }
 
@@ -122,6 +126,7 @@ class UserController extends Controller
         // Hanya Super Admin (ID 1) yang berhak membuat akun Root Admin baru
         if ($request->user()->id !== 1) {
             $data['root_admin'] = false;
+            unset($data['server_create_limit'], $data['memory_create_limit'], $data['disk_create_limit'], $data['cpu_create_limit']);
         }
 
         $user = $this->creationService->handle($data);
@@ -148,7 +153,7 @@ class UserController extends Controller
             return redirect()->back();
         }
 
-        // 3. Admin lain (ID != 1) dilarang membuat Admin baru atau mengubah status root_admin.
+        // 3. Admin lain (ID != 1) dilarang membuat Admin baru atau mengubah status/kuota root_admin.
         $data = $request->normalize();
         if ($request->user()->id !== 1) {
             if (!empty($data['root_admin']) && !$user->root_admin) {
@@ -156,6 +161,15 @@ class UserController extends Controller
                 return redirect()->back();
             }
             $data['root_admin'] = $user->root_admin;
+            unset($data['server_create_limit'], $data['memory_create_limit'], $data['disk_create_limit'], $data['cpu_create_limit']);
+        } elseif (!app(\Pterodactyl\Services\Admin\AdminQuotaService::class)->hasSchemaColumns()) {
+            unset($data['server_create_limit'], $data['memory_create_limit'], $data['disk_create_limit'], $data['cpu_create_limit']);
+        } else {
+            foreach (['server_create_limit', 'memory_create_limit', 'disk_create_limit', 'cpu_create_limit'] as $qField) {
+                if (array_key_exists($qField, $data) && ($data[$qField] === '' || $data[$qField] === null)) {
+                    $data[$qField] = null;
+                }
+            }
         }
 
         $this->updateService

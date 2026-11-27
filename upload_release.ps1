@@ -6,21 +6,17 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.8.0"
+$tag = "v4.9.0"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.8.0 - Deep API Hardening, Dunia Alxzy Code-Splitting & Performance Polish
+### AlxZen Panel v4.9.0 - Per-Admin Creation Quotas & Dashboard Controls
 
-- **Deep Application API & Network Hardening:**
-  - Restricted `NodeConfigurationController` (Wings daemon config/token) and write/delete endpoints on `NodeController`, `AllocationController`, and `LocationController` to Super Admin (ID 1).
-  - Enforced server ownership / ID 1 Anti-Intip checks across `Application\Servers\DatabaseController`.
-  - Added Panel-side SSRF protection on remote file Pull URLs (`PullFileRequest`) and upgraded security headers (`SetSecurityHeaders`).
-- **Frontend Code-Splitting, Auth Fixes & Lightweight Rendering:**
-  - Split `DuniaAlxzyOverlay` (Three.js/WebGL) into an on-demand lazy chunk (`React.lazy`) to shrink the initial Dashboard bundle.
-  - Optimized `BackgroundEngine` (`localforage` loaded only for video mode) and removed heavy `backdrop-filter` / `filter: blur(40px)` on Auth cards.
-  - Added Show/Hide Password toggle on Login, fixed flex form bugs & missing 2FA label on Forgot/Reset/Checkpoint screens, and persisted announcement dismissals to DB (`markAnnouncementRead`).
-- **Backend & Admin Performance:**
-  - Switched `CheckServerExpirations` to `chunkById(50)` and added 30s cache to Admin sidebar counters and Overview KPI counts.
+- **Per-Admin Creation Limits (`AdminQuotaService`, `2026_11_27_000000_add_admin_creation_quotas.php`):**
+  - Restricts sub-admins (`id !== 1`) across both Web Admin Panel and Application API (`POST /api/application/servers`) by Max Servers, Max RAM (MiB), Max Disk (MiB), and Max CPU (%).
+  - Blocks quota bypass via post-creation Build modifications (`ServersController::updateBuild`, `ServerDetailsController::build`).
+- **Admin Dashboard Quota Control Center (`admin/index.blade.php`, `AdminQuotaController`, `admin/users/view.blade.php`):**
+  - Super Admin (ID 1) can view real-time quota usage and adjust every sub-admin's creation limits inline directly from `/admin` or `/admin/users/view/{id}` (blank = Unlimited, `0` = Blocked).
+  - Displays live remaining quota status to sub-admins on `/admin` and `/admin/servers/new`.
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag

@@ -1,5 +1,15 @@
 # Changelog
 
+## [v4.9.0] - 2026-11-27
+### Added (Per-Admin Server & Resource Creation Quotas)
+- **Per-Admin Quota System (`2026_11_27_000000_add_admin_creation_quotas.php`, `AdminQuotaService.php`)**:
+  - Added per-admin configurable limits (`server_create_limit`, `memory_create_limit`, `disk_create_limit`, `cpu_create_limit`) on `users` and attribution column `created_by` on `servers`.
+  - Enforced sub-admin (`id !== 1`) creation limits across both Web Admin (`CreateServerController::store`) and Application API (`Application\Servers\ServerController::store`), plus post-creation upgrade protection on `ServersController::updateBuild` and `ServerDetailsController::build`.
+  - Setting an empty value keeps an admin Unlimited (`∞`); setting `0` on `Max Server` blocks server creation completely.
+- **Inline Quota Management Right on Admin Panel Dashboard (`admin/index.blade.php`, `AdminQuotaController.php`, `admin/users/view.blade.php`, `admin/servers/new.blade.php`)**:
+  - Super Admin (ID 1) can inspect live usage (`Used / Limit`) and edit every sub-admin's quotas directly from the Admin Overview Dashboard (`/admin`) or the user's edit page (`/admin/users/view/{id}`).
+  - Sub-admins see their live quota summary banner on `/admin` and `/admin/servers/new`.
+
 ## [v4.8.0] - 2026-11-27
 ### Enhanced & Hardened (Deep API Audit, Bundle Code-Splitting & Auth/Admin Performance)
 - **Application API & SSRF Security Hardening**:

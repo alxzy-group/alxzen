@@ -23,6 +23,10 @@ class UserFormRequest extends AdminFormRequest
             'password',
             'language',
             'root_admin',
+            'server_create_limit',
+            'memory_create_limit',
+            'disk_create_limit',
+            'cpu_create_limit',
         ])->toArray();
     }
 }

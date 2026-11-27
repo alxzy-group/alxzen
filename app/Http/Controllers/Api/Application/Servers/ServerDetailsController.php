@@ -59,7 +59,10 @@ class ServerDetailsController extends ApplicationApiController
             throw new AccessDeniedHttpException('Akses ditolak: Anda tidak diizinkan mengubah konfigurasi build server milik pengguna lain.');
         }
 
-        $server = $this->buildModificationService->handle($server, $request->validated());
+        $data = $request->validated();
+        app(\Pterodactyl\Services\Admin\AdminQuotaService::class)->assertCanUpdateBuild($request->user(), $server, $data);
+
+        $server = $this->buildModificationService->handle($server, $data);
 
         return $this->fractal->item($server)
             ->transformWith($this->getTransformer(ServerTransformer::class))

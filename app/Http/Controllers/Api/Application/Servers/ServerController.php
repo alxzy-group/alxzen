@@ -6,6 +6,7 @@ use Illuminate\Http\Response;
 use Pterodactyl\Models\Server;
 use Illuminate\Http\JsonResponse;
 use Spatie\QueryBuilder\QueryBuilder;
+use Pterodactyl\Services\Admin\AdminQuotaService;
 use Pterodactyl\Services\Servers\ServerCreationService;
 use Pterodactyl\Services\Servers\ServerDeletionService;
 use Pterodactyl\Transformers\Api\Application\ServerTransformer;
@@ -25,6 +26,7 @@ class ServerController extends ApplicationApiController
     public function __construct(
         private ServerCreationService $creationService,
         private ServerDeletionService $deletionService,
+        private AdminQuotaService $quotaService,
     ) {
         parent::__construct();
     }
@@ -63,7 +65,11 @@ class ServerController extends ApplicationApiController
      */
     public function store(StoreServerRequest $request): JsonResponse
     {
-        $server = $this->creationService->handle($request->validated(), $request->getDeploymentObject());
+        $data = $request->validated();
+        $this->quotaService->assertCanCreateServer($request->user(), $data);
+        $data['created_by'] = $request->user()->id;
+
+        $server = $this->creationService->handle($data, $request->getDeploymentObject());
 
         return $this->fractal->item($server)
             ->transformWith($this->getTransformer(ServerTransformer::class))

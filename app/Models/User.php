@@ -134,6 +134,10 @@ class User extends Model implements
         'totp_authenticated_at',
         'gravatar',
         'root_admin',
+        'server_create_limit',
+        'memory_create_limit',
+        'disk_create_limit',
+        'cpu_create_limit',
     ];
 
     /**
@@ -144,6 +148,10 @@ class User extends Model implements
         'use_totp' => 'boolean',
         'gravatar' => 'boolean',
         'totp_authenticated_at' => 'datetime',
+        'server_create_limit' => 'integer',
+        'memory_create_limit' => 'integer',
+        'disk_create_limit' => 'integer',
+        'cpu_create_limit' => 'integer',
     ];
 
     /**
@@ -174,6 +182,10 @@ class User extends Model implements
         'name_last' => 'required|string|between:1,191',
         'password' => 'sometimes|nullable|string',
         'root_admin' => 'boolean',
+        'server_create_limit' => 'sometimes|nullable|integer|min:0',
+        'memory_create_limit' => 'sometimes|nullable|integer|min:0',
+        'disk_create_limit' => 'sometimes|nullable|integer|min:0',
+        'cpu_create_limit' => 'sometimes|nullable|integer|min:0',
         'language' => 'string',
         'use_totp' => 'boolean',
         'totp_secret' => 'nullable|string',

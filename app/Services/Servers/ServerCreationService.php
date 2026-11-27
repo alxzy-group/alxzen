@@ -4,6 +4,7 @@ namespace Pterodactyl\Services\Servers;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Schema;
 use Pterodactyl\Models\Egg;
 use Pterodactyl\Models\User;
 use Webmozart\Assert\Assert;
@@ -136,8 +137,7 @@ class ServerCreationService
     {
         $uuid = $this->generateUniqueUuidCombo();
 
-        /** @var Server $model */
-        $model = $this->repository->create([
+        $attributes = [
             'external_id' => Arr::get($data, 'external_id'),
             'uuid' => $uuid,
             'uuidShort' => substr($uuid, 0, 8),
@@ -164,7 +164,14 @@ class ServerCreationService
             'backup_limit' => is_numeric(Arr::get($data, 'backup_limit')) ? (int) $data['backup_limit'] : 0,
             'domain_limit' => is_numeric(Arr::get($data, 'domain_limit')) ? (int) $data['domain_limit'] : 0,
             'expires_at' => Carbon::now()->addDays(30),
-        ]);
+        ];
+
+        if (isset($data['created_by']) && Schema::hasColumn('servers', 'created_by')) {
+            $attributes['created_by'] = $data['created_by'];
+        }
+
+        /** @var Server $model */
+        $model = $this->repository->create($attributes);
 
         return $model;
     }

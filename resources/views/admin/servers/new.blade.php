@@ -14,6 +14,16 @@
 @endsection
 
 @section('content')
+@if(isset($quotaUsage) && $quotaUsage && ($quotaUsage['server_limit'] !== null || $quotaUsage['memory_limit'] !== null || $quotaUsage['disk_limit'] !== null || $quotaUsage['cpu_limit'] !== null))
+    <div class="alert {{ ($quotaUsage['server_limit'] !== null && ($quotaUsage['server_limit'] === 0 || $quotaUsage['servers_used'] >= $quotaUsage['server_limit'])) ? 'alert-danger' : 'alert-info' }}" style="margin-bottom:20px;">
+        <i class="fa fa-tachometer" style="margin-right:8px;"></i>
+        <strong>Kuota Create Server Anda:</strong>
+        Servers <code>{{ $quotaUsage['servers_used'] }}/{{ $quotaUsage['server_limit'] === null ? '∞' : $quotaUsage['server_limit'] }}</code> &middot;
+        RAM <code>{{ number_format($quotaUsage['memory_used']) }}/{{ $quotaUsage['memory_limit'] === null ? '∞' : number_format($quotaUsage['memory_limit']) }} MiB</code> &middot;
+        Disk <code>{{ number_format($quotaUsage['disk_used']) }}/{{ $quotaUsage['disk_limit'] === null ? '∞' : number_format($quotaUsage['disk_limit']) }} MiB</code> &middot;
+        CPU <code>{{ $quotaUsage['cpu_used'] }}/{{ $quotaUsage['cpu_limit'] === null ? '∞' : $quotaUsage['cpu_limit'] }}%</code>
+    </div>
+@endif
 <form action="{{ route('admin.servers.new') }}" method="POST">
     <div class="row">
         <div class="col-xs-12">
