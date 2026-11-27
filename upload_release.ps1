@@ -6,15 +6,15 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.10.2"
+$tag = "v4.11.0"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.10.2 - Fix 500 Server Error on Admin Server Search
+### AlxZen Panel v4.11.0 - Real-Time Node RAM, Disk & CPU Telemetry Dashboard
 
-- **Admin Server Search Fix (`resources/views/admin/servers/index.blade.php`):**
-  - Fixed fatal 500 `TypeError` caused by `request()->input('filter.*', '')` wildcard returning an array to Blade `htmlspecialchars`, and added a Clear Search button.
-- **Filter Hardening (`AdminServerFilter.php`, `MultiFieldServerFilter.php`, `ServerController.php`):**
-  - Safely handles comma-split array `$value` inputs from Spatie QueryBuilder and eliminates `groupBy('servers.id')` + `join` in favor of `whereHas` queries for full strict-SQL & pagination compatibility.
+- **Live Wings Telemetry (`NodeSystemUsageController.php`):**
+  - Aggregates real active RAM (`memory_bytes`), real Disk (`disk_bytes`), live CPU (`cpu_absolute`), Network RX/TX, Docker engine stats, and top container resource consumers directly from Wings (`/api/system?v=2` + `/api/servers/{uuid}` via concurrent pool).
+- **Complete Node Overview Redesign (`resources/views/admin/nodes/view/index.blade.php`):**
+  - Replaces static Allocated-only gauges with live 5s Real Memory Used, Real Disk Used, and Live CPU/Network doughnut charts + KPI strip + Remaining Real Free RAM/Disk cards, per-server live usage breakdown table, and complete System & Daemon info.
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag

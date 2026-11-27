@@ -1,5 +1,13 @@
 # Changelog
 
+## [v4.11.0] - 2026-11-27
+### Improved (Real-Time Node RAM, Disk & CPU Telemetry Dashboard)
+- **Live Wings Telemetry Backend (`app/Http/Controllers/Admin/Nodes/NodeSystemUsageController.php`)**:
+  - Polls Wings `/api/system?v=2` and `/api/servers/{uuid}` concurrently via `Http::pool(...)` (with a 4-second cache) to aggregate **real physical RAM used (`memory_bytes`)**, **real Disk used (`disk_bytes`)**, **live CPU load (`cpu_absolute`)**, **Network RX/TX**, host Docker info, and per-server resource breakdown (respecting sub-admin Anti-Intip boundaries).
+- **Redesigned Node Overview Page (`resources/views/admin/nodes/view/index.blade.php`)**:
+  - Replaced static `Allocated` gauges with live 5-second **Real Memory Used**, **Real Disk Used**, and **Live CPU & Network** doughnut charts + KPI strip + Remaining Real Free RAM/Disk cards, while displaying Allocated quotas cleanly alongside total capacity.
+  - Added a **Live Container Resource Breakdown** table (sorted by real RAM & disk usage) and complete **System & Daemon Information** (Docker engine, host RAM, endpoint/proxy status, SFTP port, upload limit, location, and Super Admin quick links).
+
 ## [v4.10.2] - 2026-11-27
 ### Fixed (Admin Server Search 500 Error & Strict-SQL Filter Hardening)
 - **Fixed 500 Server Error on `/admin/servers?filter[*]=...` (`resources/views/admin/servers/index.blade.php`)**:
