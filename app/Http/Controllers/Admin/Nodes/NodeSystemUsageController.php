@@ -69,9 +69,10 @@ class NodeSystemUsageController extends Controller
             if ($sysResponse instanceof Response && $sysResponse->successful()) {
                 $reachable = true;
                 $sys = $sysResponse->json() ?: [];
+                $sysHardware = is_array($sys['system'] ?? null) ? $sys['system'] : $sys;
                 $hostInfo = [
-                    'memory_bytes' => (int) ($sys['memory_bytes'] ?? 0),
-                    'cpu_threads' => (int) ($sys['cpu_threads'] ?? $sys['cpu_count'] ?? 0),
+                    'memory_bytes' => (int) ($sysHardware['memory_bytes'] ?? $sys['memory_bytes'] ?? 0),
+                    'cpu_threads' => (int) ($sysHardware['cpu_threads'] ?? $sysHardware['cpu_count'] ?? $sys['cpu_threads'] ?? $sys['cpu_count'] ?? 0),
                     'docker_version' => $sys['docker']['version'] ?? null,
                     'containers' => [
                         'total' => (int) ($sys['docker']['containers']['total'] ?? 0),
@@ -179,7 +180,7 @@ class NodeSystemUsageController extends Controller
             ->take(10)
             ->map(function (array $item) {
                 unset($item['owner_id']);
-                $item['url'] = route('admin.servers.view', $item['id']);
+                $item['url'] = route('admin.servers.view', $item['id'], false);
                 return $item;
             })
             ->values()

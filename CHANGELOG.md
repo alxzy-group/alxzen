@@ -1,5 +1,10 @@
 # Changelog
 
+## [v4.11.1] - 2026-11-27
+### Fixed (Wings v2 Nested System Info & Active Instance Count)
+- **Live Telemetry Polish (`NodeSystemUsageController.php`, `resources/views/admin/nodes/view/index.blade.php`)**:
+  - Parsed Wings `/api/system?v=2` nested `system.memory_bytes` / `system.cpu_threads` properly, used relative admin server links (`route(..., false)`), and counted `running + starting` containers accurately under `Live Instances`.
+
 ## [v4.11.0] - 2026-11-27
 ### Improved (Real-Time Node RAM, Disk & CPU Telemetry Dashboard)
 - **Live Wings Telemetry Backend (`app/Http/Controllers/Admin/Nodes/NodeSystemUsageController.php`)**:

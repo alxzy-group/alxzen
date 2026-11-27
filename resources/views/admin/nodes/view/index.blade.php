@@ -820,8 +820,9 @@
         $('#kpiCpuSub').text(cpuNormalizedPct.toFixed(1) + '% across ' + hostThreads + ' host threads');
 
         var counts = data.counts || { total: 0, running: 0, starting: 0, offline: 0 };
-        $('#kpiSrvVal').text(counts.running + ' / ' + counts.total + ' Running');
-        $('#kpiSrvSub').text(counts.offline + ' offline · Alloc: {{ number_format($memAllocatedGiB, 1) }} GiB RAM / {{ number_format($diskAllocatedGiB, 1) }} GiB Disk');
+        var activeCount = (Number(counts.running) || 0) + (Number(counts.starting) || 0);
+        $('#kpiSrvVal').text(activeCount + ' / ' + counts.total + ' Active');
+        $('#kpiSrvSub').text(counts.running + ' running · ' + counts.starting + ' starting · ' + counts.offline + ' offline');
 
         // Doughnuts & Bars
         $('#memActiveText').text(formatBytes(memBytes));

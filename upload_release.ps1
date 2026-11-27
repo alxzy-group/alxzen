@@ -6,15 +6,14 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.11.0"
+$tag = "v4.11.1"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.11.0 - Real-Time Node RAM, Disk & CPU Telemetry Dashboard
+### AlxZen Panel v4.11.1 - Live Telemetry Polish for Wings v2 Nodes
 
-- **Live Wings Telemetry (`NodeSystemUsageController.php`):**
-  - Aggregates real active RAM (`memory_bytes`), real Disk (`disk_bytes`), live CPU (`cpu_absolute`), Network RX/TX, Docker engine stats, and top container resource consumers directly from Wings (`/api/system?v=2` + `/api/servers/{uuid}` via concurrent pool).
-- **Complete Node Overview Redesign (`resources/views/admin/nodes/view/index.blade.php`):**
-  - Replaces static Allocated-only gauges with live 5s Real Memory Used, Real Disk Used, and Live CPU/Network doughnut charts + KPI strip + Remaining Real Free RAM/Disk cards, per-server live usage breakdown table, and complete System & Daemon info.
+- **Fixes (`NodeSystemUsageController.php`, `admin/nodes/view/index.blade.php`):**
+  - Correctly reads nested `system.memory_bytes` and `system.cpu_threads` from Wings `/api/system?v=2`.
+  - Shows active (`running + starting`) container counts accurately and uses relative server URLs in the top consumers table.
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag
