@@ -1,5 +1,12 @@
 # Changelog
 
+## [v4.9.3] - 2026-11-27
+### Fixed (Stale Dev Cache Crash on Fresh Panel Installs)
+- **Exclude Stale `bootstrap/cache/*.php` & Clean Composer `--no-dev` (`setup.sh`, release tarball)**:
+  - Fixed `Class "Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider" not found` during `php artisan package:discover` / `migrate` on fresh VPS installations.
+  - Cleared `bootstrap/cache/*.php` on extraction/setup and switched `install_panel_composer()` + `update_panel()` to run `composer install --no-dev --optimize-autoloader` (preserving `composer.lock`) so dev-only service providers (`laravel-ide-helper`, `clockwork`, `collision`, `laravel-ignition`) are cleanly stripped from both `vendor/` and `bootstrap/cache/`.
+  - Excluded `bootstrap/cache/*.php` and stale dev `storage/framework/*` caches from `panel.tar.gz` releases.
+
 ## [v4.9.2] - 2026-11-27
 ### Fixed & Improved (Ubuntu 24.04 Fresh Installer & Private Repo Support)
 - **Ubuntu 24.04 Non-Interactive & Repository Resilience (`setup.sh`)**:

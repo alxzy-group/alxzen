@@ -315,6 +315,7 @@ download_panel() {
     download_panel_archive "/tmp/panel.tar.gz"
     tar -xzf /tmp/panel.tar.gz -C "$PANEL_DIR"
     rm -f /tmp/panel.tar.gz
+    rm -f "$PANEL_DIR"/bootstrap/cache/*.php
     
     mkdir -p storage/logs storage/framework/{sessions,views,cache} bootstrap/cache
     chmod -R 755 storage/* bootstrap/cache/ 2>/dev/null || true
@@ -372,13 +373,9 @@ install_panel_composer() {
     print_step "Configuring Composer Dependencies"
 
     cd "$PANEL_DIR"
-    if [ -f "$PANEL_DIR/vendor/autoload.php" ]; then
-        COMPOSER_ALLOW_SUPERUSER=1 php -d memory_limit=-1 /usr/local/bin/composer dump-autoload --optimize --no-dev --no-interaction
-        print_ok "Pre-bundled Composer autoload optimized."
-    else
-        COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_AUDIT=1 php -d memory_limit=-1 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction --no-security-blocking
-        print_ok "Composer dependencies installed."
-    fi
+    rm -f "$PANEL_DIR"/bootstrap/cache/*.php
+    COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_AUDIT=1 php -d memory_limit=-1 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction --no-security-blocking
+    print_ok "Composer production dependencies ready."
 }
 
 setup_panel_artisan() {
@@ -955,15 +952,12 @@ update_panel() {
     download_panel_archive "/tmp/panel.tar.gz"
     tar -xzf /tmp/panel.tar.gz -C "$PANEL_DIR"
     rm -f /tmp/panel.tar.gz
+    rm -f "$PANEL_DIR"/bootstrap/cache/*.php
     print_ok "Panel files extracted."
 
-    # Optimize Composer autoloader (or install if vendor missing)
+    # Optimize Composer autoloader (strip dev packages safely using composer.lock)
     print_step "Updating Composer dependencies"
-    if [ -f "$PANEL_DIR/vendor/autoload.php" ]; then
-        COMPOSER_ALLOW_SUPERUSER=1 php -d memory_limit=-1 /usr/local/bin/composer dump-autoload --optimize --no-dev --no-interaction
-    else
-        COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_AUDIT=1 php -d memory_limit=-1 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction --no-security-blocking
-    fi
+    COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_AUDIT=1 php -d memory_limit=-1 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction --no-security-blocking
     print_ok "Composer ready (pre-built frontend assets included)."
 
     # Run database migrations

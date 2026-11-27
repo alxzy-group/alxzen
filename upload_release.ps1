@@ -6,17 +6,15 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.9.2"
+$tag = "v4.9.3"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.9.2 - Ubuntu 24.04 Fresh Installer & Private Repo Support
+### AlxZen Panel v4.9.3 - Fix Fresh Install Stale Dev Cache Crash
 
-- **Ubuntu 24.04 Fresh VPS Compatibility (`setup.sh`):**
-  - Added non-interactive `DEBIAN_FRONTEND=noninteractive` & `NEEDRESTART_MODE=a` flags, native `amd64`/`arm64` Wings binary detection, resilient PHP/Redis repo fallbacks, and explicit service enablement (`php8.3-fpm`, `redis-server`, `mariadb`, `nginx`).
-- **Private GitHub Release Support (`setup.sh`):**
-  - Added `download_panel_archive()` with `GITHUB_TOKEN` API asset lookup + `tar -tzf` integrity verification for both fresh installs and `[4] Update Panel`.
-- **Installer Bug Fixes (`setup.sh`):**
-  - Fixed PM2 port env injection for `dunia-alxzy`, preserved pre-bundled `vendor/`, removed slow `yarn install` on updates, auto-populated `HASHIDS_SALT`, and fixed undefined `print_error` / `${PURPLE}` bugs.
+- **Fresh Install Fix (`setup.sh` & clean `panel.tar.gz`):**
+  - Fixed `Class "Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider" not found` on fresh Ubuntu/Debian installs caused by pre-bundled `bootstrap/cache/*.php` dev manifests.
+  - Now clears `bootstrap/cache/*.php` in both `download_panel()` / `install_panel_composer()` / `update_panel()`, preserves `composer.lock`, and runs `composer install --no-dev --optimize-autoloader` to cleanly strip dev-only packages.
+  - Excluded `bootstrap/cache/*.php` and runtime caches from `panel.tar.gz`.
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag
