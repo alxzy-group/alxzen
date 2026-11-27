@@ -1,5 +1,13 @@
 # Changelog
 
+## [v4.10.0] - 2026-11-27
+### Improved & Fixed (Flagship Split-Layout Auth UI & Nginx/PHP-FPM Hardening)
+- **Split-Layout Auth & Login Redesign (`LoginFormContainer.tsx`, `LoginContainer.tsx`, `ForgotPasswordContainer.tsx`, `ResetPasswordContainer.tsx`, `LoginCheckpointContainer.tsx`, `AuthenticationRouter.tsx`)**:
+  - Replaced the narrow centered card and stock Pterodactyl orange bird with an asymmetric two-column Cloud Platform authentication workspace on desktop (`>= 1024px`) featuring a blueprint grid brand panel, custom `alxzen` wordmark/logo support, live system status indicator, and 3 architecture highlights while remaining clean and lightweight (zero GPU blur).
+  - Fixed password eye-toggle vertical misalignment, added icon-prefixed inputs (`faUser`, `faLock`, `faEnvelope`, `faShieldAlt`, `faKey`), moved `Lupa kata sandi?` inline beside the password label, and removed extra `xl:pt-32` top padding from `AuthenticationRouter.tsx`.
+- **Installer Nginx & PHP-FPM Hardening (`setup.sh`)**:
+  - Updated Nginx FastCGI config to use `\$realpath_root\$fastcgi_script_name` + `DOCUMENT_ROOT \$realpath_root`, verified `public/index.php` after archive extraction, enforced `755` traversal permissions on `/var/www`, `$PANEL_DIR`, and `$PANEL_DIR/public`, and restarted `php8.3-fpm` alongside `nginx` to prevent `File not found.` (`Primary script unknown`) errors.
+
 ## [v4.9.3] - 2026-11-27
 ### Fixed (Stale Dev Cache Crash on Fresh Panel Installs)
 - **Exclude Stale `bootstrap/cache/*.php` & Clean Composer `--no-dev` (`setup.sh`, release tarball)**:

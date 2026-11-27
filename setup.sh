@@ -315,6 +315,9 @@ download_panel() {
     download_panel_archive "/tmp/panel.tar.gz"
     tar -xzf /tmp/panel.tar.gz -C "$PANEL_DIR"
     rm -f /tmp/panel.tar.gz
+    if [ ! -f "$PANEL_DIR/public/index.php" ]; then
+        print_err "Extracted panel archive is missing public/index.php"
+    fi
     rm -f "$PANEL_DIR"/bootstrap/cache/*.php
     
     mkdir -p storage/logs storage/framework/{sessions,views,cache} bootstrap/cache
@@ -396,6 +399,8 @@ set_panel_permissions() {
     print_step "Setting File Permissions"
 
     chown -R www-data:www-data "$PANEL_DIR"
+    chmod 755 /var/www "$PANEL_DIR" "$PANEL_DIR/public" 2>/dev/null || true
+    chmod 644 "$PANEL_DIR/public/index.php" 2>/dev/null || true
     chmod -R 755 "$PANEL_DIR/storage" "$PANEL_DIR/bootstrap/cache"
 
     print_ok "Permissions set (owner: www-data)."
@@ -537,7 +542,8 @@ server {
         fastcgi_index index.php;
         include fastcgi_params;
         fastcgi_param PHP_VALUE "upload_max_filesize = 100M \n post_max_size=100M";
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT \$realpath_root;
         fastcgi_param HTTP_PROXY "";
         fastcgi_intercept_errors off;
         fastcgi_buffer_size 16k;
@@ -600,7 +606,8 @@ server {
         fastcgi_index index.php;
         include fastcgi_params;
         fastcgi_param PHP_VALUE "upload_max_filesize = 100M \n post_max_size=100M";
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT \$realpath_root;
         fastcgi_param HTTP_PROXY "";
         fastcgi_intercept_errors off;
         fastcgi_buffer_size 16k;
@@ -634,6 +641,7 @@ NGINX_HTTP
     if nginx -t; then
         systemctl enable --now nginx 2>/dev/null || true
         systemctl restart nginx
+        systemctl restart php8.3-fpm 2>/dev/null || true
         print_ok "Nginx configured and restarted."
     else
         print_warn "Nginx config test failed. Please check /etc/nginx/sites-available/pterodactyl.conf"
@@ -952,6 +960,9 @@ update_panel() {
     download_panel_archive "/tmp/panel.tar.gz"
     tar -xzf /tmp/panel.tar.gz -C "$PANEL_DIR"
     rm -f /tmp/panel.tar.gz
+    if [ ! -f "$PANEL_DIR/public/index.php" ]; then
+        print_err "Extracted panel archive is missing public/index.php"
+    fi
     rm -f "$PANEL_DIR"/bootstrap/cache/*.php
     print_ok "Panel files extracted."
 
@@ -975,7 +986,11 @@ update_panel() {
 
     # Fix permissions
     chown -R www-data:www-data "$PANEL_DIR"
+    chmod 755 /var/www "$PANEL_DIR" "$PANEL_DIR/public" 2>/dev/null || true
+    chmod 644 "$PANEL_DIR/public/index.php" 2>/dev/null || true
     chmod -R 755 "$PANEL_DIR/storage" "$PANEL_DIR/bootstrap/cache"
+    systemctl restart php8.3-fpm 2>/dev/null || true
+    systemctl reload nginx 2>/dev/null || true
 
     # Bring panel back online
     php artisan up

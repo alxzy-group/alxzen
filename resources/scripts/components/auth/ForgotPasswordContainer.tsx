@@ -1,32 +1,23 @@
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import requestPasswordResetEmail from '@/api/auth/requestPasswordResetEmail';
 import { httpErrorToHuman } from '@/api/http';
-import LoginFormContainer from '@/components/auth/LoginFormContainer';
+import LoginFormContainer, {
+    AuthFieldGroup,
+    AuthSecondaryLink,
+    AuthSubmitButton,
+    InputLeadingIcon,
+} from '@/components/auth/LoginFormContainer';
 import { useStoreState } from 'easy-peasy';
 import Field from '@/components/elements/Field';
+import Label from '@/components/elements/Label';
 import { Formik, FormikHelpers } from 'formik';
 import { object, string } from 'yup';
 import tw from 'twin.macro';
-import Button from '@/components/elements/Button';
-import styled from 'styled-components/macro';
 import Reaptcha from 'reaptcha';
 import useFlash from '@/plugins/useFlash';
-
-const SubmitButton = styled(Button)`
-    ${tw`w-full border-none rounded-xl text-white font-bold py-3.5 transition-all duration-200 tracking-wide text-sm`}
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 60%, #2563eb 100%) !important;
-    box-shadow: 0 4px 16px rgba(14, 165, 233, 0.35) !important;
-    &:hover:not(:disabled) {
-        background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 60%, #1d4ed8 100%) !important;
-        box-shadow: 0 6px 24px rgba(14, 165, 233, 0.5) !important;
-        transform: translateY(-2px);
-    }
-    &:active:not(:disabled) {
-        transform: translateY(0) scale(0.99);
-    }
-`;
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faEnvelope, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 interface Values {
     email: string;
@@ -87,25 +78,40 @@ export default () => {
             })}
         >
             {({ isSubmitting, setSubmitting, submitForm }) => (
-                <LoginFormContainer title={'Request Password Reset'}>
-                    <Field
-                        label={'Email'}
-                        description={
-                            'Enter your account email address to receive instructions on resetting your password.'
-                        }
-                        name={'email'}
-                        type={'email'}
-                    />
+                <LoginFormContainer
+                    heading={'Pulihkan Kata Sandi'}
+                    subtitle={'Masukkan alamat email akun Anda untuk menerima tautan reset kata sandi.'}
+                >
+                    <div>
+                        <Label htmlFor={'forgot-email'}>Alamat Email</Label>
+                        <AuthFieldGroup>
+                            <InputLeadingIcon>
+                                <FontAwesomeIcon icon={faEnvelope} />
+                            </InputLeadingIcon>
+                            <Field
+                                id={'forgot-email'}
+                                name={'email'}
+                                type={'email'}
+                                disabled={isSubmitting}
+                                placeholder={'nama@domain.com'}
+                                description={'Kami akan mengirimkan instruksi pemulihan ke email terdaftar Anda.'}
+                                autoComplete={'email'}
+                            />
+                        </AuthFieldGroup>
+                    </div>
+
                     <div css={tw`mt-7`}>
-                        <SubmitButton 
-                            type={'submit'} 
-                            size={'xlarge'} 
-                            disabled={isSubmitting} 
+                        <AuthSubmitButton
+                            type={'submit'}
+                            size={'xlarge'}
+                            disabled={isSubmitting}
                             isLoading={isSubmitting}
                         >
-                            Kirim Tautan Reset
-                        </SubmitButton>
+                            <span>Kirim Tautan Reset</span>
+                            {!isSubmitting && <FontAwesomeIcon icon={faPaperPlane} css={tw`text-xs`} />}
+                        </AuthSubmitButton>
                     </div>
+
                     {recaptchaEnabled && (
                         <Reaptcha
                             ref={ref}
@@ -121,13 +127,12 @@ export default () => {
                             }}
                         />
                     )}
+
                     <div css={tw`mt-5 text-center`}>
-                        <Link
-                            to={'/auth/login'}
-                            css={tw`text-xs sm:text-sm text-gray-400 hover:text-sky-400 font-medium no-underline transition-colors duration-150 inline-block`}
-                        >
-                            Kembali ke Halaman Login
-                        </Link>
+                        <AuthSecondaryLink to={'/auth/login'}>
+                            <FontAwesomeIcon icon={faArrowLeft} css={tw`text-xs`} />
+                            <span>Kembali ke Halaman Login</span>
+                        </AuthSecondaryLink>
                     </div>
                 </LoginFormContainer>
             )}

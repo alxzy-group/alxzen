@@ -1,33 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import login from '@/api/auth/login';
-import LoginFormContainer from '@/components/auth/LoginFormContainer';
+import LoginFormContainer, {
+    AuthFieldGroup,
+    AuthSubmitButton,
+    InputLeadingIcon,
+    PasswordToggleButton,
+} from '@/components/auth/LoginFormContainer';
 import { useStoreState } from 'easy-peasy';
 import { Formik, FormikHelpers } from 'formik';
 import { object, string } from 'yup';
 import Field from '@/components/elements/Field';
 import tw from 'twin.macro';
-import Button from '@/components/elements/Button';
 import Reaptcha from 'reaptcha';
 import useFlash from '@/plugins/useFlash';
-import styled from 'styled-components/macro';
 import Label from '@/components/elements/Label';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-
-const SubmitButton = styled(Button)`
-    ${tw`w-full border-none rounded-xl text-white font-bold py-3.5 transition-all duration-200 tracking-wide text-sm`}
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 60%, #2563eb 100%) !important;
-    box-shadow: 0 4px 16px rgba(14, 165, 233, 0.35) !important;
-    &:hover:not(:disabled) {
-        background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 60%, #1d4ed8 100%) !important;
-        box-shadow: 0 6px 24px rgba(14, 165, 233, 0.5) !important;
-        transform: translateY(-2px);
-    }
-    &:active:not(:disabled) {
-        transform: translateY(0) scale(0.99);
-    }
-`;
+import { faArrowRight, faEye, faEyeSlash, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 
 interface Values {
     username: string;
@@ -93,46 +82,74 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
             })}
         >
             {({ isSubmitting, setSubmitting, submitForm }) => (
-                <LoginFormContainer title={'Sign in to your account'}>
-                    <Field
-                        type={'text'}
-                        label={'Username atau Email'}
-                        name={'username'}
-                        disabled={isSubmitting}
-                        placeholder={'Masukkan username atau email'}
-                    />
+                <LoginFormContainer
+                    heading={'Masuk ke Workspace'}
+                    subtitle={'Masukkan username atau email dan kata sandi akun Anda untuk melanjutkan.'}
+                >
+                    <div>
+                        <Label htmlFor={'login-username'}>Username atau Email</Label>
+                        <AuthFieldGroup>
+                            <InputLeadingIcon>
+                                <FontAwesomeIcon icon={faUser} />
+                            </InputLeadingIcon>
+                            <Field
+                                id={'login-username'}
+                                type={'text'}
+                                name={'username'}
+                                disabled={isSubmitting}
+                                placeholder={'namauser atau email@domain.com'}
+                                autoComplete={'username'}
+                            />
+                        </AuthFieldGroup>
+                    </div>
+
                     <div css={tw`mt-5`}>
-                        <Label htmlFor={'login-password'}>Kata Sandi / Password</Label>
-                        <div css={tw`relative`}>
+                        <div css={tw`flex items-center justify-between mb-1.5`}>
+                            <Label htmlFor={'login-password'} style={{ marginBottom: 0 }}>
+                                Kata Sandi
+                            </Label>
+                            <Link
+                                to={'/auth/password'}
+                                css={tw`text-xs font-semibold text-sky-400 hover:text-sky-300 no-underline transition-colors duration-150`}
+                            >
+                                Lupa kata sandi?
+                            </Link>
+                        </div>
+                        <AuthFieldGroup hasRightAction>
+                            <InputLeadingIcon>
+                                <FontAwesomeIcon icon={faLock} />
+                            </InputLeadingIcon>
                             <Field
                                 id={'login-password'}
                                 type={showPassword ? 'text' : 'password'}
                                 name={'password'}
                                 disabled={isSubmitting}
                                 placeholder={'••••••••••••'}
-                                css={tw`pr-10`}
+                                autoComplete={'current-password'}
                             />
-                            <button
+                            <PasswordToggleButton
                                 type={'button'}
                                 onClick={() => setShowPassword((s) => !s)}
                                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                                 title={showPassword ? 'Sembunyikan password' : 'Lihat password'}
-                                css={tw`absolute right-3 top-2.5 text-gray-400 hover:text-sky-400 transition-colors duration-150 p-1.5 bg-transparent border-0 cursor-pointer`}
                             >
                                 <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} css={tw`text-sm`} />
-                            </button>
-                        </div>
+                            </PasswordToggleButton>
+                        </AuthFieldGroup>
                     </div>
+
                     <div css={tw`mt-7`}>
-                        <SubmitButton
+                        <AuthSubmitButton
                             type={'submit'}
                             size={'xlarge'}
                             isLoading={isSubmitting}
                             disabled={isSubmitting}
                         >
-                            Masuk ke Panel
-                        </SubmitButton>
+                            <span>Masuk ke Panel</span>
+                            {!isSubmitting && <FontAwesomeIcon icon={faArrowRight} css={tw`text-xs`} />}
+                        </AuthSubmitButton>
                     </div>
+
                     {recaptchaEnabled && (
                         <Reaptcha
                             ref={ref}
@@ -148,14 +165,6 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                             }}
                         />
                     )}
-                    <div css={tw`mt-5 text-center`}>
-                        <Link
-                            to={'/auth/password'}
-                            css={tw`text-xs sm:text-sm text-gray-400 hover:text-sky-400 font-medium no-underline transition-colors duration-150 inline-block`}
-                        >
-                            Lupa kata sandi?
-                        </Link>
-                    </div>
                 </LoginFormContainer>
             )}
         </Formik>
