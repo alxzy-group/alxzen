@@ -1,5 +1,13 @@
 # Changelog
 
+## [v4.10.2] - 2026-11-27
+### Fixed (Admin Server Search 500 Error & Strict-SQL Filter Hardening)
+- **Fixed 500 Server Error on `/admin/servers?filter[*]=...` (`resources/views/admin/servers/index.blade.php`)**:
+  - Replaced `request()->input('filter.*', '')` (where Laravel treated `*` as a `data_get` wildcard and returned an `array`, crashing Blade's `{{ }}` / `htmlspecialchars`) with safe literal `$rawFilter['*']` extraction plus a one-click Clear Search button.
+- **Hardened Search Filters (`AdminServerFilter.php`, `MultiFieldServerFilter.php`, `ServerController.php`)**:
+  - Normalized comma-split array `$value` inputs from Spatie QueryBuilder so commas never trigger `Array to string conversion`.
+  - Replaced `leftJoin`/`join` + `groupBy('servers.id')` with clean `whereHas` subqueries (`user`, `node`, `allocation`/`allocations`) so strict `ONLY_FULL_GROUP_BY` and pagination counts stay accurate.
+
 ## [v4.10.1] - 2026-11-27
 ### Improved & Fixed (Pre-Flight Upload Size Guard & 1024MB Defaults)
 - **Instant Pre-Flight Upload Size Validation (`FileUploadController.php`, `getFileUploadUrl.ts`, `UploadButton.tsx`)**:

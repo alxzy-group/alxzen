@@ -6,16 +6,15 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.10.1"
+$tag = "v4.10.2"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.10.1 - Pre-Flight Upload Size Guard & 1024MB Defaults
+### AlxZen Panel v4.10.2 - Fix 500 Server Error on Admin Server Search
 
-- **Instant Upload Size Guard (`FileUploadController`, `getFileUploadUrl`, `UploadButton`):**
-  - Exposes the target node's `upload_limit_mb` before starting upload and extends signed Wings upload JWT expiry from 15 minutes to 60 minutes.
-  - Rejects oversized files immediately in the browser before wasting bandwidth/time uploading to Wings, and sets `timeout: 0` for large valid uploads.
-- **Higher Defaults (`Node`, `MakeNodeCommand`, `setup.sh`):**
-  - Sets default node `upload_size` and Nginx/PHP-FPM upload limits to `1024` MiB (`1024M`).
+- **Admin Server Search Fix (`resources/views/admin/servers/index.blade.php`):**
+  - Fixed fatal 500 `TypeError` caused by `request()->input('filter.*', '')` wildcard returning an array to Blade `htmlspecialchars`, and added a Clear Search button.
+- **Filter Hardening (`AdminServerFilter.php`, `MultiFieldServerFilter.php`, `ServerController.php`):**
+  - Safely handles comma-split array `$value` inputs from Spatie QueryBuilder and eliminates `groupBy('servers.id')` + `join` in favor of `whereHas` queries for full strict-SQL & pagination compatibility.
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag

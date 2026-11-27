@@ -67,17 +67,30 @@
                     <span style="margin-left:10px;padding:2px 9px;border-radius:999px;background:rgba(14,165,233,0.12);color:#38bdf8;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;">{{ $servers->total() }} Total</span>
                 </h3>
                 <div class="box-tools">
+                    @php
+                        $rawFilter = request()->input('filter');
+                        $searchTerm = is_array($rawFilter) ? ($rawFilter['*'] ?? '') : '';
+                        if (is_array($searchTerm)) {
+                            $searchTerm = implode(',', array_map('strval', $searchTerm));
+                        }
+                        $searchTerm = (string) $searchTerm;
+                    @endphp
                     <form action="{{ route('admin.servers') }}" method="GET" class="alx-toolbar-form">
                         <input
                             type="text"
                             name="filter[*]"
                             class="form-control alx-toolbar-input"
-                            value="{{ request()->input('filter.*', '') }}"
+                            value="{{ $searchTerm }}"
                             placeholder="Search servers or UUID..."
                         >
                         <button type="submit" class="btn btn-sm btn-default">
                             <i class="fa fa-search" style="margin-right:4px;"></i> Search
                         </button>
+                        @if($searchTerm !== '')
+                            <a href="{{ route('admin.servers') }}" class="btn btn-sm btn-default" title="Clear search">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        @endif
                         <a href="{{ route('admin.servers.new') }}" class="btn btn-sm btn-primary">
                             <i class="fa fa-plus" style="margin-right:5px;"></i> Deploy Server
                         </a>

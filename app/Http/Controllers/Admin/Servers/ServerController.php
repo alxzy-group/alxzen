@@ -23,7 +23,7 @@ class ServerController extends Controller
 
         // 2. ANTI-INTIP: Sub-admin (ID != 1) HANYA diizinkan melihat server milik mereka sendiri
         if ($request->user()->id !== 1) {
-            $query->where('owner_id', $request->user()->id);
+            $query->where('servers.owner_id', $request->user()->id);
         }
 
         // 3. Masukkan query yang sudah difilter ke QueryBuilder
