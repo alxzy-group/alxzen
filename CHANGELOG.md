@@ -1,5 +1,15 @@
 # Changelog
 
+## [v4.9.2] - 2026-11-27
+### Fixed & Improved (Ubuntu 24.04 Fresh Installer & Private Repo Support)
+- **Ubuntu 24.04 Non-Interactive & Repository Resilience (`setup.sh`)**:
+  - Set `DEBIAN_FRONTEND=noninteractive` and `NEEDRESTART_MODE=a` so fresh Ubuntu 24.04 installs never stall on kernel/service restart prompts.
+  - Added graceful fallbacks for `ppa:ondrej/php` and `packages.redis.io`, explicit `systemctl enable --now` for `php8.3-fpm`, `redis-server`, `mariadb`, `nginx`, and dynamic `amd64`/`arm64` Wings binary architecture detection.
+- **Private GitHub Release Downloader (`setup.sh`)**:
+  - Added `download_panel_archive()` supporting `GITHUB_TOKEN` (environment variable or interactive prompt) via the GitHub Releases API + `jq` asset lookup and `tar -tzf` integrity check, used across both fresh install and `update_panel()`.
+- **Pre-Bundled Vendor, PM2 Port & Script Reliability Fixes (`setup.sh`)**:
+  - Preserved `vendor/` & `composer.lock` from `panel.tar.gz` (`composer dump-autoload --optimize` when bundled), removed unnecessary `yarn install` during updates, auto-generated `HASHIDS_SALT` when empty, defaulted timezone prompt to `Asia/Jakarta`, fixed broken PM2 `.env` flag in `setup_multiplayer_server()` (`PORT=... pm2 start --update-env`), normalized permissions, and fixed undefined `print_error` / `${PURPLE}` typos.
+
 ## [v4.9.1] - 2026-11-27
 ### Changed (Simplified Admin Total Server Creation Limit)
 - **Focused Per-Admin Limit on Total Servers Only (`AdminQuotaService.php`, `AdminQuotaController.php`, `admin/index.blade.php`, `admin/users/view.blade.php`, `admin/servers/new.blade.php`)**:

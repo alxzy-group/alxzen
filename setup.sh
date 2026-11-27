@@ -9,6 +9,8 @@
 # ==============================================================================
 
 set -e
+export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=a
 
 # ─── Colors & Formatting ─────────────────────────────────────────────────────
 RED='\033[0;31m'
@@ -25,12 +27,20 @@ NC='\033[0m'
 PANEL_DIR="/var/www/pterodactyl"
 WINGS_DIR="/etc/pterodactyl"
 WINGS_BIN="/usr/local/bin/wings"
-GITHUB_PANEL="https://github.com/alxzy-group/alxzen"
+GITHUB_REPO="alxzy-group/alxzen"
+GITHUB_TOKEN="${GITHUB_TOKEN:-}"
+GITHUB_PANEL="https://github.com/${GITHUB_REPO}"
 GITHUB_WINGS="https://github.com/alxzy-group/wings"
 GITHUB_PANEL_DL="${GITHUB_PANEL}/releases/latest/download/panel.tar.gz"
-GITHUB_WINGS_DL="${GITHUB_WINGS}/releases/latest/download/wings_linux_amd64"
+MACHINE_ARCH=$(uname -m)
+if [ "$MACHINE_ARCH" = "aarch64" ] || [ "$MACHINE_ARCH" = "arm64" ]; then
+    WINGS_ARCH="arm64"
+else
+    WINGS_ARCH="amd64"
+fi
+GITHUB_WINGS_DL="${GITHUB_WINGS}/releases/latest/download/wings_linux_${WINGS_ARCH}"
 # Fallback to official Pterodactyl wings if alxzen wings release is not available
-OFFICIAL_WINGS_DL="https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_amd64"
+OFFICIAL_WINGS_DL="https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_${WINGS_ARCH}"
 
 OS=""
 OS_VERSION=""
@@ -178,7 +188,7 @@ install_panel_dependencies() {
     apt-get update -y -qq
     apt-get upgrade -y -qq
     apt-get install -y -qq curl apt-transport-https \
-        ca-certificates gnupg tar unzip git wget lsb-release cron
+        ca-certificates gnupg tar unzip git wget lsb-release cron jq
     
     if [ "$OS" == "ubuntu" ]; then
         apt-get install -y -qq software-properties-common
@@ -189,21 +199,23 @@ install_panel_dependencies() {
     print_step "Adding PHP 8.3 Repository"
 
     if [ "$OS" == "ubuntu" ]; then
-        LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php 2>/dev/null
+        LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php 2>/dev/null || true
     elif [ "$OS" == "debian" ]; then
-        curl -sSLo /usr/share/keyrings/php-sury.gpg https://packages.sury.org/php/apt.gpg 2>/dev/null
+        curl -fsSLo /usr/share/keyrings/php-sury.gpg https://packages.sury.org/php/apt.gpg 2>/dev/null
         echo "deb [signed-by=/usr/share/keyrings/php-sury.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" \
             > /etc/apt/sources.list.d/sury-php.list
     fi
-    print_ok "PHP repository added."
+    print_ok "PHP repository ready."
 
     # ── Redis Repository ──
     print_step "Adding Redis Repository"
 
-    curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg --yes 2>/dev/null
-    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" \
-        | tee /etc/apt/sources.list.d/redis.list > /dev/null
-    print_ok "Redis repository added."
+    (
+        curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg --yes 2>/dev/null && \
+        echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" \
+            | tee /etc/apt/sources.list.d/redis.list > /dev/null
+    ) || print_warn "Upstream Redis repository unavailable; falling back to Ubuntu/Debian native redis-server."
+    print_ok "Redis repository configured."
 
     # ── Install PHP, MariaDB, Nginx, Redis ──
     print_step "Installing PHP 8.3, MariaDB, Nginx & Redis"
@@ -211,12 +223,13 @@ install_panel_dependencies() {
     apt-get update -y -qq
     # Updated to avoid brace expansion issues with `sh`
     apt-get install -y -qq php8.3 php8.3-common php8.3-cli php8.3-gd php8.3-mysql php8.3-mbstring php8.3-bcmath php8.3-xml php8.3-fpm php8.3-curl php8.3-zip php8.3-intl php8.3-sqlite3 php8.3-redis mariadb-server nginx redis-server
+    systemctl enable --now php8.3-fpm redis-server mariadb nginx 2>/dev/null || true
     print_ok "PHP 8.3, MariaDB, Nginx, and Redis installed."
 
     # ── Composer ──
     print_step "Installing Composer"
 
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer 2>/dev/null
+    curl -fsSL https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
     print_ok "Composer installed."
 
     # ── Node.js 22 ──
@@ -254,15 +267,54 @@ MYSQL_SCRIPT
     print_ok "User 'pterodactyl' configured."
 }
 
+download_panel_archive() {
+    local dest_file="$1"
+
+    if ! command -v jq &> /dev/null; then
+        apt-get update -y -qq && apt-get install -y -qq jq
+    fi
+
+    if [ -z "$GITHUB_TOKEN" ]; then
+        if curl -fsSLI "$GITHUB_PANEL_DL" >/dev/null 2>&1; then
+            curl -fL --progress-bar -o "$dest_file" "$GITHUB_PANEL_DL"
+        else
+            print_warn "Repository is private or requires a GitHub token to download releases."
+            GITHUB_TOKEN=$(ask_input "Enter GitHub Personal Access Token (ghp_...)" "")
+            if [ -z "$GITHUB_TOKEN" ]; then
+                print_err "GitHub token is required to download panel.tar.gz from a private repository."
+            fi
+        fi
+    fi
+
+    if [ -n "$GITHUB_TOKEN" ]; then
+        local release_json asset_id
+        release_json=$(curl -fsSL -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/${GITHUB_REPO}/releases/latest") || print_err "Failed to fetch latest release metadata from GitHub API. Check your token."
+        asset_id=$(printf '%s' "$release_json" | jq -r '.assets[] | select(.name=="panel.tar.gz") | .id' | head -n1)
+        if [ -z "$asset_id" ] || [ "$asset_id" = "null" ]; then
+            print_err "Could not find panel.tar.gz asset in the latest GitHub release."
+        fi
+        curl -fL --progress-bar \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Accept: application/octet-stream" \
+            "https://api.github.com/repos/${GITHUB_REPO}/releases/assets/${asset_id}" \
+            -o "$dest_file" || print_err "Failed to download panel.tar.gz asset (${asset_id})."
+    fi
+
+    if ! tar -tzf "$dest_file" >/dev/null 2>&1; then
+        rm -f "$dest_file"
+        print_err "Downloaded archive is corrupted or not a valid tar.gz file."
+    fi
+}
+
 download_panel() {
     print_step "Downloading Alxzen Panel"
 
     mkdir -p "$PANEL_DIR"
     cd "$PANEL_DIR"
 
-    curl -Lo panel.tar.gz "$GITHUB_PANEL_DL" 2>/dev/null
-    tar -xzf panel.tar.gz
-    rm -f panel.tar.gz
+    download_panel_archive "/tmp/panel.tar.gz"
+    tar -xzf /tmp/panel.tar.gz -C "$PANEL_DIR"
+    rm -f /tmp/panel.tar.gz
     
     mkdir -p storage/logs storage/framework/{sessions,views,cache} bootstrap/cache
     chmod -R 755 storage/* bootstrap/cache/ 2>/dev/null || true
@@ -290,7 +342,10 @@ configure_environment() {
     fi
 
     local timezone
-    timezone=$(ask_input "Application timezone" "UTC")
+    timezone=$(ask_input "Application timezone" "Asia/Jakarta")
+
+    local hashids_salt
+    hashids_salt=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 20)
 
     sed -i "s|^APP_URL=.*|APP_URL=${app_url}|" .env
     sed -i "s|^APP_TIMEZONE=.*|APP_TIMEZONE=${timezone}|" .env
@@ -298,6 +353,9 @@ configure_environment() {
     sed -i "s|^CACHE_DRIVER=.*|CACHE_DRIVER=redis|" .env
     sed -i "s|^SESSION_DRIVER=.*|SESSION_DRIVER=redis|" .env
     sed -i "s|^QUEUE_CONNECTION=.*|QUEUE_CONNECTION=redis|" .env
+    if grep -q "^HASHIDS_SALT=$" .env; then
+        sed -i "s|^HASHIDS_SALT=.*|HASHIDS_SALT=${hashids_salt}|" .env
+    fi
 
     echo ""
     if ask_yn "Enable Subdomain Manager for users?" "y"; then
@@ -311,13 +369,16 @@ configure_environment() {
 }
 
 install_panel_composer() {
-    print_step "Installing Composer Dependencies (no-dev)"
+    print_step "Configuring Composer Dependencies"
 
     cd "$PANEL_DIR"
-    rm -f composer.lock
-    COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_AUDIT=1 php -d memory_limit=-1 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction --no-security-blocking
-
-    print_ok "Composer dependencies installed."
+    if [ -f "$PANEL_DIR/vendor/autoload.php" ]; then
+        COMPOSER_ALLOW_SUPERUSER=1 php -d memory_limit=-1 /usr/local/bin/composer dump-autoload --optimize --no-dev --no-interaction
+        print_ok "Pre-bundled Composer autoload optimized."
+    else
+        COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_AUDIT=1 php -d memory_limit=-1 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction --no-security-blocking
+        print_ok "Composer dependencies installed."
+    fi
 }
 
 setup_panel_artisan() {
@@ -337,9 +398,8 @@ setup_panel_artisan() {
 set_panel_permissions() {
     print_step "Setting File Permissions"
 
-    chown -R www-data:www-data "$PANEL_DIR"/*
-    chown -R www-data:www-data "$PANEL_DIR"/.[!.]*
-    chmod -R 755 "$PANEL_DIR"/storage/* "$PANEL_DIR"/bootstrap/cache/
+    chown -R www-data:www-data "$PANEL_DIR"
+    chmod -R 755 "$PANEL_DIR/storage" "$PANEL_DIR/bootstrap/cache"
 
     print_ok "Permissions set (owner: www-data)."
 }
@@ -412,12 +472,13 @@ setup_multiplayer_server() {
     
     # Ensure dependencies are installed
     if [ -f package.json ]; then
-        npm install --silent
+        npm install --omit=dev --silent
     fi
     
-    # Start or restart with PM2
-    pm2 start server.js --name "dunia-alxzy" --env .env || pm2 restart dunia-alxzy
-    pm2 save
+    # Start or restart with PM2 using explicit PORT env
+    pm2 delete dunia-alxzy 2>/dev/null || true
+    PORT="${MULTIPLAYER_PORT}" pm2 start server.js --name "dunia-alxzy" --update-env
+    pm2 save >/dev/null 2>&1 || true
     env PATH=$PATH:/usr/bin pm2 startup systemd -u root --hp /root > /dev/null 2>&1 || true
     
     print_ok "Multiplayer server started on port ${MULTIPLAYER_PORT} with PM2."
@@ -573,7 +634,8 @@ NGINX_HTTP
     ln -sf /etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-enabled/pterodactyl.conf
 
     # Test nginx config
-    if nginx -t 2>/dev/null; then
+    if nginx -t; then
+        systemctl enable --now nginx 2>/dev/null || true
         systemctl restart nginx
         print_ok "Nginx configured and restarted."
     else
@@ -587,10 +649,10 @@ configure_ssl() {
     apt-get install -y -qq certbot python3-certbot-nginx
 
     # Stop nginx temporarily for standalone mode
-    systemctl stop nginx
+    systemctl stop nginx 2>/dev/null || true
 
     if certbot certonly --standalone --non-interactive --agree-tos \
-        --register-unsafely-without-email -d "$FQDN" 2>/dev/null; then
+        --register-unsafely-without-email -d "$FQDN"; then
         print_ok "SSL certificate obtained for ${FQDN}"
 
         # Setup auto-renewal (safely using multi-line cron block)
@@ -759,6 +821,11 @@ uninstall_panel() {
     systemctl disable pteroq 2>/dev/null || true
     rm -f /etc/systemd/system/pteroq.service
 
+    if command -v pm2 &> /dev/null; then
+        pm2 delete dunia-alxzy 2>/dev/null || true
+        pm2 save >/dev/null 2>&1 || true
+    fi
+
     # Remove nginx config
     rm -f /etc/nginx/sites-enabled/pterodactyl.conf
     rm -f /etc/nginx/sites-available/pterodactyl.conf
@@ -773,6 +840,7 @@ uninstall_panel() {
     if command -v mysql &> /dev/null; then
         mysql -u root -e "DROP DATABASE IF EXISTS panel;" 2>/dev/null || true
         mysql -u root -e "DROP USER IF EXISTS 'pterodactyl'@'127.0.0.1';" 2>/dev/null || true
+        mysql -u root -e "DROP USER IF EXISTS 'pterodactyl'@'localhost';" 2>/dev/null || true
         mysql -u root -e "FLUSH PRIVILEGES;" 2>/dev/null || true
         print_ok "Database removed."
     fi
@@ -879,34 +947,24 @@ update_panel() {
     print_info "Updating Alxzen Panel to latest version..."
     
     cd "$PANEL_DIR"
-    git config --global --add safe.directory "$PANEL_DIR"
+    git config --global --add safe.directory "$PANEL_DIR" 2>/dev/null || true
     php artisan down
 
-    # Ensure Node.js & Yarn are installed for basic VPS
-    print_step "Checking Node.js & Yarn dependencies"
-    if ! command -v node &> /dev/null || ! command -v yarn &> /dev/null; then
-        curl -fsSL https://deb.nodesource.com/setup_22.x | bash - 2>/dev/null
-        apt-get install -y -qq nodejs
-        corepack enable 2>/dev/null || npm install -g yarn pm2 2>/dev/null || true
-    fi
-    print_ok "Node.js & Yarn are ready."
-
-    # Download & extract latest release
+    # Download & extract latest release (supports private repo via GITHUB_TOKEN)
     print_step "Downloading latest panel release"
-    curl -Lo /tmp/panel.tar.gz "$GITHUB_PANEL_DL"
-    tar -xzf /tmp/panel.tar.gz
+    download_panel_archive "/tmp/panel.tar.gz"
+    tar -xzf /tmp/panel.tar.gz -C "$PANEL_DIR"
     rm -f /tmp/panel.tar.gz
     print_ok "Panel files extracted."
 
-    # Update Composer dependencies
+    # Optimize Composer autoloader (or install if vendor missing)
     print_step "Updating Composer dependencies"
-    COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_AUDIT=1 php -d memory_limit=-1 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction --no-security-blocking
-    print_ok "Composer updated."
-
-    # Update Node modules
-    print_step "Updating Node modules (yarn install)"
-    yarn install --production=false --frozen-lockfile || yarn install
-    print_ok "Node modules updated."
+    if [ -f "$PANEL_DIR/vendor/autoload.php" ]; then
+        COMPOSER_ALLOW_SUPERUSER=1 php -d memory_limit=-1 /usr/local/bin/composer dump-autoload --optimize --no-dev --no-interaction
+    else
+        COMPOSER_ALLOW_SUPERUSER=1 COMPOSER_NO_AUDIT=1 php -d memory_limit=-1 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction --no-security-blocking
+    fi
+    print_ok "Composer ready (pre-built frontend assets included)."
 
     # Run database migrations
     print_step "Running database migrations"
@@ -919,12 +977,11 @@ update_panel() {
     php artisan config:clear
     php artisan cache:clear
     php artisan route:clear
-    php artisan optimize
-    print_ok "Caches cleared and optimized."
+    print_ok "Caches cleared."
 
     # Fix permissions
-    chown -R www-data:www-data "$PANEL_DIR"/*
-    chown -R www-data:www-data "$PANEL_DIR"/.[!.]*
+    chown -R www-data:www-data "$PANEL_DIR"
+    chmod -R 755 "$PANEL_DIR/storage" "$PANEL_DIR/bootstrap/cache"
 
     # Bring panel back online
     php artisan up
@@ -1364,7 +1421,7 @@ enable_gpu_passthrough() {
     echo ""
     
     if [ ! -d "/dev/dri" ]; then
-        print_error "No Intel GPU detected (/dev/dri not found)!"
+        print_warn "No Intel GPU detected (/dev/dri not found)!"
         echo "Please make sure your Intel graphics drivers are installed."
         sleep 3
         return
@@ -1381,7 +1438,7 @@ enable_gpu_passthrough() {
     
     CONFIG_FILE="/etc/pterodactyl/config.yml"
     if [ ! -f "$CONFIG_FILE" ]; then
-        print_error "Wings config not found at $CONFIG_FILE. Is Wings installed?"
+        print_warn "Wings config not found at $CONFIG_FILE. Is Wings installed?"
         sleep 3
         return
     fi
@@ -1448,7 +1505,7 @@ main_menu() {
         echo -e "    ${RED}[6]${NC} Uninstall Wings"
         echo ""
         echo -e "    ${CYAN}[7]${NC} Install Subdomain Proxy (Node Only)"
-        echo -e "    ${PURPLE}[8]${NC} Enable GPU Passthrough (Intel VAAPI)"
+        echo -e "    ${MAGENTA}[8]${NC} Enable GPU Passthrough (Intel VAAPI)"
         echo ""
         echo -e "    ${DIM}[0]${NC} Exit"
         echo ""

@@ -6,15 +6,17 @@ if (-not $token) {
     Write-Error "Please provide GitHub Token via -token or GITHUB_TOKEN environment variable."
     exit 1
 }
-$tag = "v4.9.1"
+$tag = "v4.9.2"
 $repo = "alxzy-group/alxzen"
 $bodyText = @'
-### AlxZen Panel v4.9.1 - Simplified Total Server Creation Limit per Admin
+### AlxZen Panel v4.9.2 - Ubuntu 24.04 Fresh Installer & Private Repo Support
 
-- **Total Server Limit Focus (`AdminQuotaService.php`, `AdminQuotaController.php`):**
-  - Simplified per-admin creation quotas to restrict strictly by **total server count (`server_create_limit`)** across Web Admin Panel and Application API (`POST /api/application/servers`), without RAM/Disk/CPU caps.
-- **Streamlined Admin Dashboard & User Edit UI (`admin/index.blade.php`, `admin/users/view.blade.php`, `admin/servers/new.blade.php`):**
-  - Clean inline table on `/admin` showing each sub-admin's created servers (`Used / Limit`), remaining slots, and a single `Batas Maksimal Server` input (`blank = Unlimited`, `0 = Blocked`).
+- **Ubuntu 24.04 Fresh VPS Compatibility (`setup.sh`):**
+  - Added non-interactive `DEBIAN_FRONTEND=noninteractive` & `NEEDRESTART_MODE=a` flags, native `amd64`/`arm64` Wings binary detection, resilient PHP/Redis repo fallbacks, and explicit service enablement (`php8.3-fpm`, `redis-server`, `mariadb`, `nginx`).
+- **Private GitHub Release Support (`setup.sh`):**
+  - Added `download_panel_archive()` with `GITHUB_TOKEN` API asset lookup + `tar -tzf` integrity verification for both fresh installs and `[4] Update Panel`.
+- **Installer Bug Fixes (`setup.sh`):**
+  - Fixed PM2 port env injection for `dunia-alxzy`, preserved pre-bundled `vendor/`, removed slow `yarn install` on updates, auto-populated `HASHIDS_SALT`, and fixed undefined `print_error` / `${PURPLE}` bugs.
 '@
 $releaseData = [System.Text.Encoding]::UTF8.GetBytes((@{
     tag_name = $tag
